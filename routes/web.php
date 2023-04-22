@@ -1,0 +1,134 @@
+<?php
+
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClassController;
+use App\Http\Controllers\ClassSubjectController;
+use App\Http\Controllers\ClassTeacherController;
+use App\Http\Controllers\ClassTimeTableController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExamController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+ */
+
+Route::get('/', [AuthController::class, 'login']);
+Route::post('login', [AuthController::class, 'AuthLogin']);
+Route::get('logout', [AuthController::class, 'authLogout']);
+Route::get('forgot-password', [AuthController::class, 'forgot_password']);
+Route::post('reset-password', [AuthController::class, 'reset_password']);
+Route::get('reset/{token}', [AuthController::class, 'reset']);
+Route::post('reset/{token}', [AuthController::class, 'changePassword']);
+
+Route::group(['middleware' => 'admin'], function () {
+    Route::get('admin/dashboard', [DashboardController::class, 'dashboard']);
+    Route::get('admin/admin/list', [AdminController::class, 'list']);
+    Route::get('admin/admin/add', [AdminController::class, 'add']);
+    Route::post('admin/admin/add', [AdminController::class, 'insertUser']);
+    Route::get('admin/admin/edit/{id}', [AdminController::class, 'edit']);
+    Route::post('admin/admin/edit/{id}', [AdminController::class, 'editUser']);
+    Route::get('admin/admin/delete/{id}', [AdminController::class, 'delete']);
+
+    Route::get('admin/admin/profile', [UserController::class, 'Profile']);
+    Route::get('admin/admin/profile-edit', [UserController::class, 'profileEdit']);
+    Route::post('admin/admin/profile-edit', [UserController::class, 'updateProfileAdmin']);
+    Route::post('admin/admin/profile', [UserController::class, 'updatePassword']);
+
+    //Student
+    Route::get('admin/student/list', [StudentController::class, 'list']);
+    Route::get('admin/student/add', [StudentController::class, 'add']);
+    Route::post('admin/student/add', [StudentController::class, 'addStudent']);
+    Route::get('admin/student/edit/{id}', [StudentController::class, 'edit']);
+    Route::post('admin/student/edit/{id}', [StudentController::class, 'editStudent']);
+    Route::get('admin/student/delete/{id}', [StudentController::class, 'delete']);
+
+    //Teacher
+    Route::get('admin/teacher/list', [TeacherController::class, 'list']);
+    Route::get('admin/teacher/add', [TeacherController::class, 'add']);
+    Route::post('admin/teacher/add', [TeacherController::class, 'addTeacher']);
+    Route::get('admin/teacher/edit/{id}', [TeacherController::class, 'edit']);
+    Route::post('admin/teacher/edit/{id}', [TeacherController::class, 'editTeacher']);
+    Route::get('admin/teacher/delete/{id}', [TeacherController::class, 'delete']);
+
+    //CLASS
+    Route::get('admin/class/list', [ClassController::class, 'list']);
+    Route::get('admin/class/add', [ClassController::class, 'add']);
+    Route::post('admin/class/add', [ClassController::class, 'insertClass']);
+    Route::get('admin/class/edit/{id}', [ClassController::class, 'edit']);
+    Route::post('admin/class/edit/{id}', [ClassController::class, 'editClass']);
+    Route::get('admin/class/delete/{id}', [ClassController::class, 'delete']);
+
+    //Subject
+    Route::get('admin/subject/list', [SubjectController::class, 'list']);
+    Route::get('admin/subject/add', [SubjectController::class, 'add']);
+    Route::post('admin/subject/add', [SubjectController::class, 'insertSubject']);
+    Route::get('admin/subject/edit/{id}', [SubjectController::class, 'edit']);
+    Route::post('admin/subject/edit/{id}', [SubjectController::class, 'editSubject']);
+    Route::get('admin/subject/delete/{id}', [SubjectController::class, 'delete']);
+
+    //Exam
+    Route::get('admin/exam/list', [ExamController::class, 'list']);
+    Route::get('admin/exam/add', [ExamController::class, 'add']);
+    Route::post('admin/exam/add', [ExamController::class, 'addExam']);
+    Route::get('admin/exam/edit/{id}', [ExamController::class, 'edit']);
+    Route::post('admin/exam/edit/{id}', [ExamController::class, 'update']);
+    Route::get('admin/exam/delete/{id}', [ExamController::class, 'delete']);
+
+    //TimeTable
+    Route::get('admin/class_timetable/list', [ClassTimeTableController::class, 'list']);
+    Route::post('admin/class_timetable/get_subject', [ClassTimeTableController::class, 'get_Subject']);
+    Route::post('admin/class_timetable/add', [ClassTimeTableController::class, 'add']);
+
+    //Assign Subject
+    Route::get('admin/assign_subject/list', [ClassSubjectController::class, 'list']);
+    Route::get('admin/assign_subject/add', [ClassSubjectController::class, 'add']);
+    Route::post('admin/assign_subject/add', [ClassSubjectController::class, 'assignSubject']);
+    Route::get('admin/assign_subject/edit/{id}', [ClassSubjectController::class, 'edit']);
+    Route::post('admin/assign_subject/edit/{id}', [ClassSubjectController::class, 'update']);
+    Route::get('admin/assign_subject/delete/{id}', [ClassSubjectController::class, 'delete']);
+
+//Assign Class Teacher
+    Route::get('admin/assign_class_teacher/list', [ClassTeacherController::class, 'list']);
+    Route::get('admin/assign_class_teacher/add', [ClassTeacherController::class, 'add']);
+    Route::post('admin/assign_class_teacher/add', [ClassTeacherController::class, 'assignTeacherClass']);
+    Route::get('admin/assign_class_teacher/edit/{id}', [ClassTeacherController::class, 'edit']);
+    Route::post('admin/assign_class_teacher/edit/{id}', [ClassTeacherController::class, 'update']);
+    Route::get('admin/assign_class_teacher/delete/{id}', [ClassTeacherController::class, 'delete']);
+});
+
+Route::group(['middleware' => 'teacher'], function () {
+    Route::get('teacher/dashboard', [DashboardController::class, 'dashboard']);
+    Route::get('teacher/profile', [UserController::class, 'Profile']);
+    Route::get('teacher/profile-edit', [UserController::class, 'profileEdit']);
+    Route::post('teacher/profile-edit', [UserController::class, 'updateProfileTeacher']);
+    Route::post('teacher/profile', [UserController::class, 'updatePassword']);
+    Route::get('teacher/my-subject-class', [ClassTeacherController::class, 'mySubjectClass']);
+    Route::get('teacher/my-student', [TeacherController::class, 'myStudent']);
+
+});
+
+Route::group(['middleware' => 'student'], function () {
+    Route::get('student/dashboard', [DashboardController::class, 'dashboard']);
+    Route::get('student/profile', [UserController::class, 'Profile']);
+    Route::get('student/profile-edit', [UserController::class, 'profileEdit']);
+    Route::get('student/my-subject', [SubjectController::class, 'mySubject']);
+    Route::post('student/profile-edit', [UserController::class, 'updateProfileStudent']);
+    Route::post('student/profile', [UserController::class, 'updatePassword']);
+});
+
+Route::group(['middleware' => 'parent'], function () {
+    Route::get('parent/dashboard', [DashboardController::class, 'dashboard']);
+});
