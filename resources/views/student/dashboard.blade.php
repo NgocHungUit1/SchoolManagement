@@ -9,7 +9,7 @@
                         <div class="page-sub-header">
                             <h3 class="page-title">Welcome {{ Auth::user()->name }}</h3>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ url('student/dashboard') }}">Home</a></li>
+                                <li class="breadcrumb-item"><a href="{{ url('admin/dashboard') }}">Home</a></li>
                                 <li class="breadcrumb-item active">{{ Auth::user()->name }}</li>
                             </ul>
                         </div>
@@ -25,7 +25,7 @@
                             <div class="db-widgets d-flex justify-content-between align-items-center">
                                 <div class="db-info">
                                     <h6>Students</h6>
-                                    <h3>50055</h3>
+                                    <h3>{{ $getStudent->count() }}</h3>
                                 </div>
                                 <div class="db-icon">
                                     <img src="/./assets/img/icons/dash-icon-01.svg" alt="Dashboard Icon">
@@ -39,8 +39,8 @@
                         <div class="card-body">
                             <div class="db-widgets d-flex justify-content-between align-items-center">
                                 <div class="db-info">
-                                    <h6>Awards</h6>
-                                    <h3>50+</h3>
+                                    <h6>Teachers</h6>
+                                    <h3>{{ $getTeacher->count() }}</h3>
                                 </div>
                                 <div class="db-icon">
                                     <img src="/./assets/img/icons/dash-icon-02.svg" alt="Dashboard Icon">
@@ -54,8 +54,8 @@
                         <div class="card-body">
                             <div class="db-widgets d-flex justify-content-between align-items-center">
                                 <div class="db-info">
-                                    <h6>Department</h6>
-                                    <h3>30+</h3>
+                                    <h6>Class</h6>
+                                    <h3>{{ $getClass->count() }}</h3>
                                 </div>
                                 <div class="db-icon">
                                     <img src="/./assets/img/icons/dash-icon-03.svg" alt="Dashboard Icon">
@@ -69,8 +69,8 @@
                         <div class="card-body">
                             <div class="db-widgets d-flex justify-content-between align-items-center">
                                 <div class="db-info">
-                                    <h6>Revenue</h6>
-                                    <h3>$505</h3>
+                                    <h6>Subjects</h6>
+                                    <h3>{{ $getSubject->count() }}</h3>
                                 </div>
                                 <div class="db-icon">
                                     <img src="/./assets/img/icons/dash-icon-04.svg" alt="Dashboard Icon">
@@ -128,6 +128,8 @@
                             <div id="bar"></div>
                         </div>
                     </div>
+
+
 
                 </div>
             </div>
@@ -314,55 +316,41 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-xl-3 col-sm-6 col-12">
-                    <div class="card flex-fill fb sm-box">
-                        <div class="social-likes">
-                            <p>Like us on facebook</p>
-                            <h6>50,095</h6>
-                        </div>
-                        <div class="social-boxs">
-                            <img src="/./assets/img/icons/social-icon-01.svg" alt="Social Icon">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-sm-6 col-12">
-                    <div class="card flex-fill twitter sm-box">
-                        <div class="social-likes">
-                            <p>Follow us on twitter</p>
-                            <h6>48,596</h6>
-                        </div>
-                        <div class="social-boxs">
-                            <img src="/./assets/img/icons/social-icon-02.svg" alt="Social Icon">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-sm-6 col-12">
-                    <div class="card flex-fill insta sm-box">
-                        <div class="social-likes">
-                            <p>Follow us on instagram</p>
-                            <h6>52,085</h6>
-                        </div>
-                        <div class="social-boxs">
-                            <img src="/./assets/img/icons/social-icon-03.svg" alt="Social Icon">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-sm-6 col-12">
-                    <div class="card flex-fill linkedin sm-box">
-                        <div class="social-likes">
-                            <p>Follow us on linkedin</p>
-                            <h6>69,050</h6>
-                        </div>
-                        <div class="social-boxs">
-                            <img src="/./assets/img/icons/social-icon-04.svg" alt="Social Icon">
-                        </div>
-                    </div>
-                </div>
-            </div>
+
         </div>
-        <footer>
-            <p>Copyright © 2022 Dreamguys.</p>
-        </footer>
+
     </div>
+    @push('js')
+        <script type="text/javascript">
+            $(document).ready(function() {
+                var donut = Morris.Donut({
+                    element: 'donut',
+                    resize: true,
+                    colors: [
+                        '#4287f5',
+                        '#f54242',
+                        '#cb42f5',
+                        '#f542b9',
+                    ],
+                    data: [{
+                            label: "Students",
+                            value: <?php echo $getStudent->count(); ?>
+                        },
+                        {
+                            label: "Teachers",
+                            value: <?php echo $getTeacher->count(); ?>
+                        },
+                        {
+                            label: "Class",
+                            value: <?php echo $getClass->count(); ?>
+                        },
+                        {
+                            label: "Subjects",
+                            value: <?php echo $getSubject->count(); ?>
+                        }
+                    ]
+                });
+            });
+        </script>
+    @endpush
 @endsection

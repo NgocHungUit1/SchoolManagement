@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TeacherRequest;
+use App\Http\Requests\UpdateTeacherRequest;
 use App\Models\ClassModel;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -15,6 +17,13 @@ class TeacherController extends Controller
         return view('admin.teacher.list', $data);
     }
 
+    public function getData()
+    {
+        $data['data'] = User::getTeacher();
+
+        return $data;
+    }
+
     public function add()
     {
         $data['getClass'] = ClassModel::getClass();
@@ -23,40 +32,26 @@ class TeacherController extends Controller
     public function edit($id)
     {
 
-        $data['getRecord'] = User::getUserId($id);
+        $data['getRecord'] = User::find($id);
         // if (!empty($data['getRecord'])) {
         //     $data['getClass'] = ClassModel::getClass();
         // } else {
         //     abort(404);
         // }
-
         return view('admin.teacher.edit', $data);
     }
 
-    public function addteacher(Request $request)
+    public function addTeacher(TeacherRequest $request)
     {
-        request()->validate([
-            'email' => 'required|email|unique:users',
-            'teacher_id' => 'required|unique:users',
-            'mobile_number' => 'max:15|min:8',
-        ],
-            [
-                'email.unique' => 'Email đã có,xin điền email khác',
-                'teacher_id.unique' => 'Id teacher đã có,xin điền ID khác',
-
-            ]
-        );
-
         $teacher = new User();
-        $teacher->name = trim($request->name);
-        $teacher->teacher_id = trim($request->teacher_id);
-        $teacher->joining_date = trim($request->joining_date);
-        $teacher->qualification = trim($request->qualification);
-        $teacher->experience = trim($request->experience);
-        $teacher->address = trim($request->address);
-        // $teacher->class_id = trim($request->class_id);
-        $teacher->gender = trim($request->gender);
-        $teacher->date_of_birth = $request->date_of_birth;
+        $teacher->name = ($request->name);
+        $teacher->teacher_id = ($request->teacher_id);
+        $teacher->joining_date = ($request->joining_date);
+        $teacher->qualification = ($request->qualification);
+        $teacher->experience = ($request->experience);
+        $teacher->address = ($request->address);
+        $teacher->gender = ($request->gender);
+        $teacher->date_of_birth = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
         $teacher->mobile_number = $request->mobile_number;
         $get_image = $request->user_avatar;
         if ($get_image) {
@@ -69,38 +64,25 @@ class TeacherController extends Controller
             $teacher->user_avatar = $new_image;
         }
 
-        $teacher->status = trim($request->status);
+        $teacher->status = ($request->status);
         $teacher->password = Hash::make($request->password);
-        $teacher->email = trim($request->email);
+        $teacher->email = ($request->email);
         $teacher->user_type = 2;
         $teacher->save();
         return redirect('admin/teacher/list')->with('success', 'Teacher successfully created ');
     }
 
-    public function editteacher(Request $request, $id)
+    public function editTeacher(UpdateTeacherRequest $request, $id)
     {
-        request()->validate([
-            'email' => 'required|email|unique:users,email,' . $id,
-            'teacher_id' => 'required|unique:users,teacher_id,' . $id,
-            'mobile_number' => 'max:15|min:8',
-
-        ],
-            [
-                'teacher_id.unique' => 'Id teacher đã có,xin điền IDs khác',
-                'email.unique' => 'Email c đã có,xin điền email khác',
-            ]
-        );
-
         $teacher = User::getUserId($id);
-        $teacher->name = trim($request->name);
-        $teacher->teacher_id = trim($request->teacher_id);
-        $teacher->joining_date = trim($request->joining_date);
-        $teacher->qualification = trim($request->qualification);
-        $teacher->experience = trim($request->experience);
-        $teacher->address = trim($request->address);
-        // $teacher->class_id = trim($request->class_id);
-        $teacher->gender = trim($request->gender);
-        $teacher->date_of_birth = $request->date_of_birth;
+        $teacher->name = ($request->name);
+        $teacher->joining_date = ($request->joining_date);
+        $teacher->qualification = ($request->qualification);
+        $teacher->experience = ($request->experience);
+        $teacher->address = ($request->address);
+        // $teacher->class_id = ($request->class_id);
+        $teacher->gender = ($request->gender);
+        $teacher->date_of_birth = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
         $teacher->mobile_number = $request->mobile_number;
         $get_image = $request->user_avatar;
         if ($get_image) {
@@ -116,8 +98,7 @@ class TeacherController extends Controller
 
             $teacher->user_avatar = $new_image;
         }
-        $teacher->email = trim($request->email);
-        $teacher->status = trim($request->status);
+        $teacher->status = ($request->status);
         if (!empty($request->password)) {
             $teacher->password = Hash::make($request->password);
         }
@@ -141,6 +122,15 @@ class TeacherController extends Controller
     {
         $data['getRecord'] = User::getStudentTeacher(Auth::user()->id);
         return view('teacher.my_student', $data);
+
+    }
+
+    public function getStudent()
+    {
+
+        $data['getRecord'] = User::getStudentTeacher(Auth::user()->id);
+
+        return $data;
 
     }
 

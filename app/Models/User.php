@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'date_of_birth',
     ];
 
     /**
@@ -41,8 +42,9 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'date_of_birth' => 'date',
-        'joining_date' => 'date',
+        'date_of_birth' => 'date:Y-m-d',
+        'joining_date' => 'date:Y-m-d',
+        'created_at' => 'date:Y-m-d',
     ];
 
     public static function getUserId($id)
@@ -104,8 +106,8 @@ class User extends Authenticatable
         if (!empty(Request::get('name'))) {
             $return = $return->where('users.name', 'like', '%' . Request::get('name') . '%');
         }
-        if (!empty(Request::get('class'))) {
-            $return = $return->where('class.name', 'like', '%' . Request::get('class') . '%');
+        if (!empty(Request::get('gender'))) {
+            $return = $return->where('users.gender', 'like', '%' . Request::get('gender') . '%');
         }
         $return = $return->orderBy('users.id', 'desc')->get();
         return $return;
@@ -120,6 +122,18 @@ class User extends Authenticatable
             ->where('teacher_class.teacher_id', '=', $teacher_id)
             ->where('teacher_class.is_delete', '=', 0)
             ->where('teacher_class.status', '=', 0)
+            ->where('users.user_type', '=', 3)
+            ->where('users.is_delete', '=', 0);
+        $return = $return->orderBy('users.id', 'desc')->groupBy('users.id')
+            ->get();
+        return $return;
+    }
+
+    public static function getStudentClass()
+    {
+        $return = self::select('users.*')
+            ->join('class', 'class.id', '=', 'users.class_id')
+            ->join('exam', 'exam.class_id', '=', 'class.id')
             ->where('users.user_type', '=', 3)
             ->where('users.is_delete', '=', 0);
         $return = $return->orderBy('users.id', 'desc')->groupBy('users.id')

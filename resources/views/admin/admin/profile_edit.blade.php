@@ -74,7 +74,7 @@
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
                                                     <label>Email ID <span class="login-danger">*</span></label>
-                                                    <input type="email" name="email"class="form-control"
+                                                    <input type="email" name="email"class="form-control" disabled
                                                         value="{{ old('email', $getRecord->email) }}"
                                                         placeholder="Enter Mail Id">
                                                     <div style="color:red">{{ $errors->first('email') }}</div>

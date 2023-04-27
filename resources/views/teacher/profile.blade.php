@@ -1,35 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 
+</html>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
     <title>My Profile</title>
 
-    <link rel="shortcut icon" href="/./assets/img/favicon.png">
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700&display=swap"
-        rel="stylesheet">
-
-    <link rel="stylesheet" href="/./assets/plugins/bootstrap/css/bootstrap.min.css">
-
-    <link rel="stylesheet" href="/./assets/plugins/feather/feather.css">
-
-    <link rel="stylesheet" href="/./assets/plugins/icons/flags/flags.css">
-
-    <link rel="stylesheet" href="/./assets/plugins/fontawesome/css/fontawesome.min.css">
-    <link rel="stylesheet" href="/./assets/plugins/fontawesome/css/all.min.css">
-
-    <link rel="stylesheet" href="/./assets/css/style.css">
 </head>
 @extends('layouts.app')
 @section('content')
 
     <body>
-
-        <div class="main-wrapper">
-
+        <div class="main-wrapper">=
             <div class="page-wrapper">
                 <div class="content container-fluid">
 
@@ -101,12 +85,15 @@
                                                     <div class="row">
                                                         <p class="col-sm-3 text-muted text-sm-end mb-0 mb-sm-3">Date of
                                                             Birth</p>
-                                                        <p class="col-sm-9">{{ $getRecord->date_of_birth }}</p>
+                                                        <p class="col-sm-9">
+                                                            {{ date('d-m-Y ', strtotime($getRecord->date_of_birth)) }}</p>
                                                     </div>
                                                     <div class="row">
                                                         <p class="col-sm-3 text-muted text-sm-end mb-0 mb-sm-3">Joining Date
                                                         </p>
-                                                        <p class="col-sm-9">{{ $getRecord->joining_date }}</p>
+                                                        <p class="col-sm-9">
+                                                            {{ date('d-m-Y ', strtotime($getRecord->joining_date)) }}</p>
+
                                                     </div>
                                                     <div class="row">
                                                         <p class="col-sm-3 text-muted text-sm-end mb-0 mb-sm-3">Email
@@ -153,8 +140,8 @@
                                                 <div class="card-body">
                                                     <h5 class="card-title d-flex justify-content-between">
                                                         <span>Skills </span>
-                                                        <a class="edit-link" href="#"><i
-                                                                class="far fa-edit me-1"></i> Edit</a>
+                                                        <a class="edit-link" href="#"><i class="far fa-edit me-1"></i>
+                                                            Edit</a>
                                                     </h5>
                                                     <div class="skill-tags">
                                                         <span>Html5</span>

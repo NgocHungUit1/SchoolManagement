@@ -12,15 +12,18 @@ class ClassModel extends Model
     use HasFactory;
     protected $table = 'class';
 
-    public function user(): BelongsTo
+    public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo('App\Models\User', 'created_by');
     }
 
     public static function getClassId($id)
     {
         return self::find($id);
     }
+    protected $casts = [
+        'created_at' => 'date:d-m-Y',
+    ];
 
     public static function getClass()
     {

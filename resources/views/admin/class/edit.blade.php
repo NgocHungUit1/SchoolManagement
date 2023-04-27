@@ -27,20 +27,21 @@
                                         <label>Class Name <span class="login-danger">*</span></label>
                                         <input class="form-control" type="text" name="name"
                                             value="{{ old('name', $getRecord->name) }}" placeholder="Enter Name Class">
-                                    </div>
-                                    <div class="form-group row">
-                                        <label>Status <span class="login-danger">*</span></label>
-                                        <select class="form-control select" name="status">
-                                            <option value="0">Active</option>
-                                            <option value="1">InActive</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-form-label col-md-2"></label>
-                                        <div class="col-md-10">
-                                            <button type="submit" class="btn btn-primary">Edit</button>
+                                        <div style="color:red">{{ $errors->first('name') }}
                                         </div>
-                                    </div>
+                                        <div class="form-group row">
+                                            <label>Status <span class="login-danger">*</span></label>
+                                            <select class="form-control select" name="status">
+                                                <option value="0">Active</option>
+                                                <option value="1">InActive</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-md-2"></label>
+                                            <div class="col-md-10">
+                                                <button type="submit" class="btn btn-primary">Edit</button>
+                                            </div>
+                                        </div>
                                 </form>
                             </div>
                         </div>

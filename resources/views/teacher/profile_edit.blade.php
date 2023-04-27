@@ -60,6 +60,7 @@
                                                     <input class="form-control" type="text" name="name"
                                                         value="{{ old('name', $getRecord->name) }}"
                                                         placeholder="Enter Full Name">
+                                                    <div style="color:red">{{ $errors->first('name') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -74,6 +75,7 @@
                                                         <option {{ $getRecord->gender == 'Others' ? 'selected' : '' }}
                                                             value="Others">Others</option>
                                                     </select>
+                                                    <div style="color:red">{{ $errors->first('gender') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -82,6 +84,7 @@
                                                     <input class="form-control datetimepicker" type="text"
                                                         value="{{ old('date_of_birth', $getRecord->date_of_birth) }}"
                                                         name="date_of_birth">
+                                                    <div style="color:red">{{ $errors->first('date_of_birth') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -99,7 +102,7 @@
                                                     <input class="form-control datetimepicker" type="text"
                                                         name="joining_date"
                                                         value="{{ old('joining_date', $getRecord->joining_date) }}"
-                                                        placeholder="DD-MM-YYYY">
+                                                        disabled placeholder="DD-MM-YYYY">
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4 local-forms">
@@ -107,14 +110,14 @@
                                                     <label>Qualification <span class="login-danger">*</span></label>
                                                     <input class="form-control" type="text" name="qualification"
                                                         value="{{ old('qualification', $getRecord->qualification) }}"
-                                                        placeholder="Enter Joining Date">
+                                                        disabled placeholder="Enter Qualification ">
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
                                                     <label>Experience <span class="login-danger">*</span></label>
                                                     <input class="form-control" type="text" name="experience"
-                                                        value="{{ old('experience', $getRecord->experience) }}"
+                                                        value="{{ old('experience', $getRecord->experience) }}" disabled
                                                         placeholder="Enter Experience">
                                                 </div>
                                             </div>
@@ -124,6 +127,7 @@
                                                     <input type="text" name="address" class="form-control"
                                                         value="{{ old('address', $getRecord->address) }}"
                                                         placeholder="Enter address">
+                                                    <div style="color:red">{{ $errors->first('address') }}</div>
                                                 </div>
                                             </div>
 
@@ -131,7 +135,7 @@
                                                 <div class="form-group local-forms">
                                                     <label>Email ID <span class="login-danger">*</span></label>
                                                     <input type="email" name="email"class="form-control"
-                                                        value="{{ old('email', $getRecord->email) }}"
+                                                        value="{{ old('email', $getRecord->email) }}" disabled
                                                         placeholder="Enter Mail Id">
                                                     <div style="color:red">{{ $errors->first('email') }}</div>
                                                 </div>

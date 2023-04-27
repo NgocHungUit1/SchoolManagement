@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\ClassModel;
 use App\Models\ClassSubject;
 use App\Models\ClassSubjectTimeTable;
+use App\Models\Subject;
 use App\Models\Week;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ClassTimeTableController extends Controller
 {
@@ -22,6 +24,23 @@ class ClassTimeTableController extends Controller
             $dataDay = array();
             $dataDay['day_id'] = $value->id;
             $dataDay['day_name'] = $value->name;
+            if (!empty($request->class_id) && !empty($request->subject_id)) {
+                $ClassSubject = ClassSubjectTimeTable::getRecord($request->class_id, $request->subject_id, $value->id);
+                if (!empty($ClassSubject)) {
+                    $dataDay['start_time'] = $ClassSubject->start_time;
+                    $dataDay['end_time'] = $ClassSubject->end_time;
+                    $dataDay['room_number'] = $ClassSubject->room_number;
+                } else { $dataDay['start_time'] = '';
+                    $dataDay['end_time'] = '';
+                    $dataDay['room_number'] = '';
+
+                }
+            } else {
+                $dataDay['start_time'] = '';
+                $dataDay['end_time'] = '';
+                $dataDay['room_number'] = '';
+
+            }
             $day[] = $dataDay;
         }
         $data['day'] = $day;
@@ -60,4 +79,64 @@ class ClassTimeTableController extends Controller
         return redirect()->back()->with('success', 'Class Time table successfully created ');
 
     }
+
+    public function myTimeTable()
+    {
+        $result = array();
+        $getRecord = ClassSubject::MySubject(Auth::user()->class_id);
+        foreach ($getRecord as $value) {
+            $dataS['name'] = $value->subject_name;
+            $getDay = Week::getRecord();
+            $day = array();
+            foreach ($getDay as $valueDay) {
+                $dataDay = array();
+                $dataDay['day_name'] = $valueDay->name;
+                $ClassSubject = ClassSubjectTimeTable::getRecord($value->class_id, $value->subject_id, $valueDay->id);
+                if (!empty($ClassSubject)) {
+                    $dataDay['start_time'] = $ClassSubject->start_time;
+                    $dataDay['end_time'] = $ClassSubject->end_time;
+                    $dataDay['room_number'] = $ClassSubject->room_number;
+                } else { $dataDay['start_time'] = '';
+                    $dataDay['end_time'] = '';
+                    $dataDay['room_number'] = '';
+
+                }
+                $day[] = $dataDay;
+            }
+            $dataS['day'] = $day;
+            $result[] = $dataS;
+
+        }
+        $data['getRecord'] = $result;
+
+        return view('student.my_timetable', $data)->with('success', 'My Time Table Student ');
+    }
+
+    public function myTimeTableTeacher($class_id, $subject_id)
+    {
+
+        $data['getClass'] = ClassModel::find($class_id);
+        $data['getSubject'] = Subject::find($subject_id);
+        $getDay = Week::getRecord();
+        $day = array();
+        foreach ($getDay as $valueDay) {
+            $dataDay = array();
+            $dataDay['day_name'] = $valueDay->name;
+            $ClassSubject = ClassSubjectTimeTable::getRecord($class_id, $subject_id, $valueDay->id);
+            if (!empty($ClassSubject)) {
+                $dataDay['start_time'] = $ClassSubject->start_time;
+                $dataDay['end_time'] = $ClassSubject->end_time;
+                $dataDay['room_number'] = $ClassSubject->room_number;
+            } else { $dataDay['start_time'] = '';
+                $dataDay['end_time'] = '';
+                $dataDay['room_number'] = '';
+
+            }
+            $result[] = $dataDay;
+        }
+
+        $data['getRecord'] = $result;
+        return view('teacher.my_timetable', $data)->with('success', 'My Time Table Teacher ');
+    }
+
 }

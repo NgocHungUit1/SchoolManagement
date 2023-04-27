@@ -14,6 +14,13 @@ class ClassController extends Controller
         return view('admin.class.list', $data);
     }
 
+    public function getData()
+    {
+        $data['data'] = ClassModel::getRecord();
+
+        return $data;
+    }
+
     public function add()
     {
         return view('admin.class.add');
@@ -21,9 +28,9 @@ class ClassController extends Controller
 
     public function insertClass(Request $request)
     {
-        // request()->validate([
-        //     'email' => 'required|email|unique:users',
-        // ]);
+        request()->validate([
+            'name' => 'required',
+        ]);
         $class = new ClassModel();
         $class->name = $request->name;
         $class->status = $request->status;
@@ -41,6 +48,9 @@ class ClassController extends Controller
 
     public function editClass(Request $request, $id)
     {
+        request()->validate([
+            'name' => 'required',
+        ]);
         $class = ClassModel::getClassId($id);
         $class->name = $request->name;
         $class->status = $request->status;

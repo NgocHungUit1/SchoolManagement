@@ -9,4 +9,9 @@ class ClassSubjectTimeTable extends Model
 {
     use HasFactory;
     protected $table = 'class_subject_timetable';
+
+    public static function getRecord($class_id, $subject_id, $day_id)
+    {
+        return self::where('class_id', '=', $class_id)->where('subject_id', '=', $subject_id)->where('day_id', '=', $day_id)->first();
+    }
 }

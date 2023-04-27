@@ -106,16 +106,18 @@
                                                         <p class="col-sm-9">{{ $getRecord->class_id }}</p>
 
                                                     </div>
+                                                    <div class="row">
+                                                        <p class="col-sm-3 text-muted text-sm-end mb-0 mb-sm-3">Gender
+                                                        </p>
+                                                        <p class="col-sm-9">{{ $getRecord->gender }}</p>
 
-
-
-
-
-
+                                                    </div>
                                                     <div class="row">
                                                         <p class="col-sm-3 text-muted text-sm-end mb-0 mb-sm-3">Date of
                                                             Birth</p>
-                                                        <p class="col-sm-9">{{ $getRecord->date_of_birth }}</p>
+                                                        <p class="col-sm-9">
+                                                            {{ date('d-m-Y', strtotime($getRecord->date_of_birth)) }}</p>
+
                                                     </div>
                                                     <div class="row">
                                                         <p class="col-sm-3 text-muted text-sm-end mb-0 mb-sm-3">Email

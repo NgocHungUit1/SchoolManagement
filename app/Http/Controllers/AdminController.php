@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AdminInsertUserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use PharIo\Manifest\Email;
 
 class AdminController extends Controller
 {
@@ -25,11 +26,8 @@ class AdminController extends Controller
         return view('admin.admin.edit', $data);
     }
 
-    public function insertUser(Request $request)
+    public function insertUser(AdminInsertUserRequest $request)
     {
-        request()->validate([
-            'email' => 'required|email|unique:users',
-        ]);
         $user = new User();
         $user->name = trim($request->name);
         $user->email = trim($request->email);
@@ -39,11 +37,8 @@ class AdminController extends Controller
         return redirect('admin/admin/list')->with('success', 'User successfully created ');
     }
 
-    public function editUser(Request $request, $id)
+    public function editUser(AdminInsertUserRequest $request, $id)
     {
-        request()->validate([
-            'email' => 'required|email|unique:users,email,' . $id,
-        ]);
         $user = User::getUserId($id);
         $user->name = trim($request->name);
         $user->email = trim($request->email);

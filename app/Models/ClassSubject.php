@@ -11,6 +11,10 @@ class ClassSubject extends Model
     use HasFactory;
     protected $table = 'class_subject';
 
+    protected $casts = [
+        'created_at' => 'date:Y-m-d',
+    ];
+
     public static function getRecord()
     {
         $return = self::select('class_subject.*', 'class.name as class_name', 'subject.name as subject_name', 'users.name as created_by_name')->join('subject', 'subject.id', '=', 'class_subject.subject_id')->join('class', 'class.id', '=', 'class_subject.class_id')->join('users', 'users.id', '=', 'class_subject.created_by')->where('class_subject.is_delete', '=', 0);

@@ -12,6 +12,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,6 +25,15 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
  */
+function set_active($url)
+{
+    if (is_array($url)) {
+        return in_array(Request::path(), $url) ? 'active' : '';
+
+    }
+    return Request::path() == $url ? 'active' : '';
+
+}
 
 Route::get('/', [AuthController::class, 'login']);
 Route::post('login', [AuthController::class, 'AuthLogin']);
@@ -49,6 +59,7 @@ Route::group(['middleware' => 'admin'], function () {
 
     //Student
     Route::get('admin/student/list', [StudentController::class, 'list']);
+    Route::get('admin/student/getData', [StudentController::class, 'getData']);
     Route::get('admin/student/add', [StudentController::class, 'add']);
     Route::post('admin/student/add', [StudentController::class, 'addStudent']);
     Route::get('admin/student/edit/{id}', [StudentController::class, 'edit']);
@@ -57,6 +68,7 @@ Route::group(['middleware' => 'admin'], function () {
 
     //Teacher
     Route::get('admin/teacher/list', [TeacherController::class, 'list']);
+    Route::get('admin/teacher/getData', [TeacherController::class, 'getData']);
     Route::get('admin/teacher/add', [TeacherController::class, 'add']);
     Route::post('admin/teacher/add', [TeacherController::class, 'addTeacher']);
     Route::get('admin/teacher/edit/{id}', [TeacherController::class, 'edit']);
@@ -65,6 +77,7 @@ Route::group(['middleware' => 'admin'], function () {
 
     //CLASS
     Route::get('admin/class/list', [ClassController::class, 'list']);
+    Route::get('admin/class/getData', [ClassController::class, 'getData']);
     Route::get('admin/class/add', [ClassController::class, 'add']);
     Route::post('admin/class/add', [ClassController::class, 'insertClass']);
     Route::get('admin/class/edit/{id}', [ClassController::class, 'edit']);
@@ -73,6 +86,7 @@ Route::group(['middleware' => 'admin'], function () {
 
     //Subject
     Route::get('admin/subject/list', [SubjectController::class, 'list']);
+    Route::get('admin/subject/getData', [SubjectController::class, 'getData']);
     Route::get('admin/subject/add', [SubjectController::class, 'add']);
     Route::post('admin/subject/add', [SubjectController::class, 'insertSubject']);
     Route::get('admin/subject/edit/{id}', [SubjectController::class, 'edit']);
@@ -81,7 +95,9 @@ Route::group(['middleware' => 'admin'], function () {
 
     //Exam
     Route::get('admin/exam/list', [ExamController::class, 'list']);
+    Route::get('admin/exam/getData', [ExamController::class, 'getData']);
     Route::get('admin/exam/add', [ExamController::class, 'add']);
+    Route::get('admin/exam/score/{id}', [ExamController::class, 'examScore']);
     Route::post('admin/exam/add', [ExamController::class, 'addExam']);
     Route::get('admin/exam/edit/{id}', [ExamController::class, 'edit']);
     Route::post('admin/exam/edit/{id}', [ExamController::class, 'update']);
@@ -89,11 +105,13 @@ Route::group(['middleware' => 'admin'], function () {
 
     //TimeTable
     Route::get('admin/class_timetable/list', [ClassTimeTableController::class, 'list']);
+    Route::get('admin/class_timetable/test', [ClassTimeTableController::class, 'invoke']);
     Route::post('admin/class_timetable/get_subject', [ClassTimeTableController::class, 'get_Subject']);
     Route::post('admin/class_timetable/add', [ClassTimeTableController::class, 'add']);
 
     //Assign Subject
     Route::get('admin/assign_subject/list', [ClassSubjectController::class, 'list']);
+    Route::get('admin/assign_subject/getData', [ClassSubjectController::class, 'getData']);
     Route::get('admin/assign_subject/add', [ClassSubjectController::class, 'add']);
     Route::post('admin/assign_subject/add', [ClassSubjectController::class, 'assignSubject']);
     Route::get('admin/assign_subject/edit/{id}', [ClassSubjectController::class, 'edit']);
@@ -116,7 +134,10 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::post('teacher/profile-edit', [UserController::class, 'updateProfileTeacher']);
     Route::post('teacher/profile', [UserController::class, 'updatePassword']);
     Route::get('teacher/my-subject-class', [ClassTeacherController::class, 'mySubjectClass']);
+    Route::get('teacher/my-subject-class/timetable/{class_id}/{subject_id}', [ClassTimeTableController::class, 'myTimeTableTeacher']);
     Route::get('teacher/my-student', [TeacherController::class, 'myStudent']);
+    Route::get('teacher/get-student', [TeacherController::class, 'getStudent']);
+    Route::get('teacher/get_subject', [ClassTeacherController::class, 'getSubject']);
 
 });
 
@@ -125,10 +146,7 @@ Route::group(['middleware' => 'student'], function () {
     Route::get('student/profile', [UserController::class, 'Profile']);
     Route::get('student/profile-edit', [UserController::class, 'profileEdit']);
     Route::get('student/my-subject', [SubjectController::class, 'mySubject']);
+    Route::get('student/my-timetable', [ClassTimeTableController::class, 'myTimeTable']);
     Route::post('student/profile-edit', [UserController::class, 'updateProfileStudent']);
     Route::post('student/profile', [UserController::class, 'updatePassword']);
-});
-
-Route::group(['middleware' => 'parent'], function () {
-    Route::get('parent/dashboard', [DashboardController::class, 'dashboard']);
 });

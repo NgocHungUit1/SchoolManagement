@@ -95,8 +95,7 @@
                                                 class="feather-grid"></i></a>
                                         <a href="#" class="btn btn-outline-primary me-2"><i
                                                 class="fas fa-download"></i> Download</a>
-                                        <a href="{{ url('admin/subject/add') }}" class="btn btn-primary"><i
-                                                class="fas fa-plus"></i> </a>
+
                                     </div>
                                 </div>
                             </div>
@@ -134,18 +133,4 @@
     </div>
 
     </div>
-
-
-
-
-    <script src="/../assets/js/jquery-3.6.0.min.js"></script>
-
-    <script src="/../assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <script src="/../assets/js/feather.min.js"></script>
-
-    <script src="/../assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
-
-    <script src="/../assets/plugins/datatables/datatables.min.js"></script>
-    <script src="/../assets/js/script.js"></script>
 @endsection

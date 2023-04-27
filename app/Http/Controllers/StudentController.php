@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\InsertStudentRequest;
+use App\Http\Requests\UpdateStudentRequest;
 use App\Models\ClassModel;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
 class StudentController extends Controller
@@ -16,6 +18,11 @@ class StudentController extends Controller
         return view('admin.student.list', $data);
     }
 
+    public function getData()
+    {
+        $data['data'] = User::getStudent();
+        return $data;
+    }
     public function add()
     {
         $data['getClass'] = ClassModel::getClass();
@@ -34,38 +41,17 @@ class StudentController extends Controller
         return view('admin.student.edit', $data);
     }
 
-    public function addStudent(Request $request)
+    public function addStudent(InsertStudentRequest $request)
     {
-        request()->validate([
-            'email' => 'required|email|unique:users',
-            'class_id' => 'required',
-            'admission_number' => 'required|unique:users',
-            'mobile_number' => 'max:15|min:8',
-
-        ],
-            [
-                'email.unique' => 'Email c đã có,xin điền email khác',
-                'admission_number.unique' => 'Id student đã có,xin điền IDs khác',
-                'class_id.required' => 'Tên danh mục khong được bỏ trống',
-            ]
-        );
-
         $student = new User();
-        $student->name = trim($request->name);
-        $student->admission_number = trim($request->admission_number);
-        $student->roll_number = trim($request->roll_number);
-        $student->class_id = trim($request->class_id);
-        $student->gender = trim($request->gender);
+        $student->name = ($request->name);
+        $student->admission_number = ($request->admission_number);
+        $student->roll_number = ($request->roll_number);
+        $student->class_id = ($request->class_id);
+        $student->gender = ($request->gender);
+        // $student->date_of_birth = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
         $student->date_of_birth = $request->date_of_birth;
         $student->mobile_number = $request->mobile_number;
-        // if (!empty($request->file('user_avatar'))) {
-        //     $ext = $request->file('user_avatar')->getClientOriginalExtension();
-        //     $file = $request->file('user_avatar');
-        //     $randomStr = Str::random(20);
-        //     $file_name = strtolower($randomStr) . '.' . $ext;
-        //     $file->move('public/upload/profile/', $file_name);
-        //     $student->user_avatar = $file_name;
-        // }
         $get_image = $request->user_avatar;
         if ($get_image) {
             $path = 'public/uploads/profile/';
@@ -77,37 +63,22 @@ class StudentController extends Controller
             $student->user_avatar = $new_image;
         }
 
-        $student->status = trim($request->status);
+        $student->status = ($request->status);
         $student->password = Hash::make($request->password);
-        $student->email = trim($request->email);
+        $student->email = ($request->email);
         $student->user_type = 3;
         $student->save();
         return redirect('admin/student/list')->with('success', 'Student successfully created ');
     }
 
-    public function editStudent(Request $request, $id)
+    public function editStudent(UpdateStudentRequest $request, $id)
     {
-        request()->validate([
-            'email' => 'required|email|unique:users,email,' . $id,
-            'admission_number' => 'required|unique:users,admission_number,' . $id,
-            'class_id' => 'required',
-            'mobile_number' => 'max:15|min:8',
-
-        ],
-            [
-                'admission_number.unique' => 'Id student đã có,xin điền IDs khác',
-                'email.unique' => 'Email c đã có,xin điền email khác',
-                'class_id.required' => 'Tên danh mục khong được bỏ trống',
-            ]
-        );
-
         $student = User::getUserId($id);
-        $student->name = trim($request->name);
-        $student->admission_number = trim($request->admission_number);
-        $student->roll_number = trim($request->roll_number);
-        $student->class_id = trim($request->class_id);
-        $student->gender = trim($request->gender);
-        $student->date_of_birth = $request->date_of_birth;
+        $student->name = ($request->name);
+        $student->roll_number = ($request->roll_number);
+        $student->class_id = ($request->class_id);
+        $student->gender = ($request->gender);
+        $student->date_of_birth = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
         $student->mobile_number = $request->mobile_number;
         $get_image = $request->user_avatar;
         if ($get_image) {
@@ -123,8 +94,7 @@ class StudentController extends Controller
 
             $student->user_avatar = $new_image;
         }
-        $student->email = trim($request->email);
-        $student->status = trim($request->status);
+        $student->status = ($request->status);
         if (!empty($request->password)) {
             $student->password = Hash::make($request->password);
         }
@@ -139,7 +109,5 @@ class StudentController extends Controller
         $student->save();
         return redirect('admin/student/list')->with('success', 'Student successfully deleted ');
     }
-
-    
 
 }

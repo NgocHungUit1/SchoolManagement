@@ -60,20 +60,21 @@
                                                     <input class="form-control" type="text" name="name"
                                                         value="{{ old('name', $getRecord->name) }}"
                                                         placeholder="Enter Full Name">
+                                                    <div style="color:red">{{ $errors->first('name') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
                                                     <label>Addmission Number<span class="login-danger">*</span></label>
                                                     <input class="form-control" type="text" name="admission_number"
-                                                        value="{{ old('name', $getRecord->admission_number) }}"
+                                                        disabled value="{{ old('name', $getRecord->admission_number) }}"
                                                         placeholder="Admission Number">
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
                                                     <label>Roll Number<span class="login-danger">*</span></label>
-                                                    <input class="form-control" type="text" name="roll_number"
+                                                    <input class="form-control" type="text" name="roll_number" disabled
                                                         value="{{ old('name', $getRecord->roll_number) }}"
                                                         placeholder="Roll Number">
                                                 </div>
@@ -90,12 +91,13 @@
                                                         <option {{ $getRecord->gender == 'Others' ? 'selected' : '' }}
                                                             value="Others">Others</option>
                                                     </select>
+                                                    <div style="color:red">{{ $errors->first('gender') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
                                                     <label>Class <span class="login-danger">*</span></label>
-                                                    <select class="form-control select" required name="class_id">
+                                                    <select class="form-control select" required name="class_id" disabled>
                                                         <option>Please Select Class </option>
                                                         @foreach ($getClass as $value)
                                                             <option
@@ -114,6 +116,7 @@
                                                     <input class="form-control datetimepicker" type="text"
                                                         value="{{ old('date_of_birth', $getRecord->date_of_birth) }}"
                                                         name="date_of_birth">
+                                                    <div style="color:red">{{ $errors->first('date_of_birth') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -134,11 +137,12 @@
                                                 </div>
                                             </div>
 
+
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
                                                     <label>Email ID <span class="login-danger">*</span></label>
                                                     <input type="email" name="email"class="form-control"
-                                                        value="{{ old('email', $getRecord->email) }}"
+                                                        value="{{ old('email', $getRecord->email) }}" disabled
                                                         placeholder="Enter Mail Id">
                                                     <div style="color:red">{{ $errors->first('email') }}</div>
                                                 </div>

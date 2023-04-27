@@ -33,32 +33,36 @@
                                             @endforeach
 
                                         </select>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label>Subject Name <span class="login-danger">*</span></label>
-                                        @foreach ($getSubject as $subject)
-                                            <div>
-                                                <label>
-                                                    <input type="checkbox" value="{{ $subject->id }}"
-                                                        name="subject_id[]">{{ $subject->name }}
-                                                </label>
-                                            </div>
-                                        @endforeach
-
-                                    </div>
-                                    <div class="form-group row">
-                                        <label>Status <span class="login-danger">*</span></label>
-                                        <select class="form-control select" name="status">
-                                            <option value="0">Active</option>
-                                            <option value="1">InActive</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-form-label col-md-2"></label>
-                                        <div class="col-md-10">
-                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                        <div style="color:red">{{ $errors->first('class_id') }}
                                         </div>
-                                    </div>
+                                        <div class="form-group row">
+                                            <label>Subject Name <span class="login-danger">*</span></label>
+
+                                            <div>
+                                                @foreach ($getSubject as $subject)
+                                                    <div>
+                                                        <label>
+                                                            <input type="checkbox" value="{{ $subject->id }}"
+                                                                name="subject_id[]">{{ $subject->name }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
+                                                <div style="color:red">{{ $errors->first('subject_id') }}
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <label>Status <span class="login-danger">*</span></label>
+                                                    <select class="form-control select" name="status">
+                                                        <option value="0">Active</option>
+                                                        <option value="1">InActive</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label class="col-form-label col-md-2"></label>
+                                                    <div class="col-md-10">
+                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                    </div>
+                                                </div>
                                 </form>
                             </div>
                         </div>

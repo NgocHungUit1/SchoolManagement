@@ -75,6 +75,7 @@
                                                     <input class="form-control" type="text" name="name"
                                                         value="{{ old('name', $getRecord->name) }}"
                                                         placeholder="Enter Full Name">
+                                                    <div style="color:red">{{ $errors->first('name') }}</div>
                                                 </div>
                                             </div>
 
@@ -89,8 +90,10 @@
                                                             value="Male">Male</option>
                                                         <option {{ $getRecord->gender == 'Others' ? 'selected' : '' }}
                                                             value="Others">Others</option>
+
                                                     </select>
                                                 </div>
+                                                <div style="color:red">{{ $errors->first('gender') }}</div>
                                             </div>
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms calendar-icon">
@@ -98,6 +101,7 @@
                                                     <input class="form-control datetimepicker" type="text"
                                                         value="{{ old('date_of_birth', $getRecord->date_of_birth) }}"
                                                         name="date_of_birth">
+                                                    <div style="color:red">{{ $errors->first('date_of_birth') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -107,6 +111,7 @@
                                                         placeholder="Enter Roll Number"
                                                         value="{{ old('roll_number', $getRecord->roll_number) }}"
                                                         name="roll_number">
+                                                    <div style="color:red">{{ $errors->first('roll_number') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -125,14 +130,12 @@
                                                     <div style="color:red">{{ $errors->first('class_id') }}</div>
                                                 </div>
                                             </div>
-
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
                                                     <label>Admission ID </label>
                                                     <input class="form-control" type="text" name="admission_number"
                                                         value="{{ old('admission_number', $getRecord->admission_number) }}"
-                                                        placeholder="Enter Admission ID">
-                                                    <div style="color:red">{{ $errors->first('admission_number') }}</div>
+                                                        disabled placeholder="Enter Admission ID">
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -164,16 +167,17 @@
                                                     <label>E-Mail <span class="login-danger">*</span></label>
 
                                                     <input class="form-control" type="text"
-                                                        value="{{ old('email', $getRecord->email) }}"
+                                                        value="{{ old('email', $getRecord->email) }}" disabled
                                                         placeholder="Enter Email Address" name="email">
-                                                    <div style="color:red">{{ $errors->first('email') }}</div>
                                                 </div>
 
                                             </div>
                                             <div class="col-12 col-sm-4">
-                                                <label>Password <span class="login-danger">*</span></label>
                                                 <div class="form-group local-forms">
-                                                    <input type="password" class="form-control" name="password">
+                                                    <label>Password <span class="login-danger">*</span></label>
+                                                    <input type="password" name="password" class="form-control"
+                                                        placeholder="Enter Password">
+                                                    <div style="color:red">{{ $errors->first('password') }}</div>
                                                 </div>
 
                                             </div>

@@ -44,7 +44,8 @@ class ClassTeacher extends Model
 
     public static function getMyClassSubject($teacher_id)
     {
-        return ClassTeacher::select('teacher_class.*', 'class.name as class_name', 'subject.name as subject_name', 'subject.type as subject_type')
+        return ClassTeacher::select('teacher_class.*', 'class.name as class_name', 'subject.name as subject_name', 'subject.type as subject_type',
+            'class.id as class_id', 'subject.id as subject_id')
             ->join('class', 'class.id', '=', 'teacher_class.class_id')
             ->join('class_subject', 'class_subject.class_id', '=', 'class.id')
             ->join('subject', 'subject.id', '=', 'class_subject.subject_id')

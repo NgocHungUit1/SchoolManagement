@@ -19,8 +19,8 @@ class Subject extends Model
         if (!empty(Request::get('type'))) {
             $return = $return->where('subject.type', 'like', '%' . Request::get('type') . '%');
         }
-        if (!empty(Request::get('date'))) {
-            $return = $return->whereDate('subject.created_at', '=', Request::get('date'));
+        if (!empty(Request::get('status'))) {
+            $return = $return->where('subject.status', 'like', '%' . Request::get('status') . '%');
         }
 
         $return = $return->where('subject.is_delete', '=', 0)->orderBy('subject.id', 'desc')->get();
@@ -40,4 +40,7 @@ class Subject extends Model
         return $return;
 
     }
+    protected $casts = [
+        'created_at' => 'date:Y-m-d',
+    ];
 }

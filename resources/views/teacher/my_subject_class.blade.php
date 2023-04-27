@@ -4,22 +4,7 @@
     <title>My Subject & Class</title>
     <link rel="shortcut icon" href="/..//../assets/img/favicon.png">
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700&display=swap"
-        rel="stylesheet">
 
-    <link rel="stylesheet" href="/..//../assets/plugins/bootstrap/css/bootstrap.min.css">
-
-    <link rel="stylesheet" href="/..//../assets/plugins/feather/feather.css">
-
-    <link rel="stylesheet" href="/..//../assets/plugins/icons/flags/flags.css">
-
-    <link rel="stylesheet" href="/..//../assets/plugins/fontawesome/css/fontawesome.min.css">
-    <link rel="stylesheet" href="/..//../assets/plugins/fontawesome/css/all.min.css">
-
-    <link rel="stylesheet" href="/..//../assets/plugins/datatables/datatables.min.css">
-
-    <link rel="stylesheet" href="/..//../assets/css/style.css">
     <div class="main-wrapper">
 
 
@@ -57,8 +42,7 @@
                                                 class="feather-grid"></i></a>
                                         <a href="#" class="btn btn-outline-primary me-2"><i
                                                 class="fas fa-download"></i> Download</a>
-                                        <a href="{{ url('admin/subject/add') }}" class="btn btn-primary"><i
-                                                class="fas fa-plus"></i> </a>
+
                                     </div>
                                 </div>
                             </div>
@@ -73,6 +57,7 @@
                                             <th>Subject Name</th>
                                             <th>Subject Type</th>
                                             <th>Created Day</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -83,6 +68,10 @@
                                                 <td>{{ $value->subject_name }}</td>
                                                 <td>{{ $value->subject_type }}</td>
                                                 <td>{{ date('d-m-Y H:i A', strtotime($value->created_at)) }}</td>
+                                                <td>
+                                                    <a href="{{ url('teacher/my-subject-class/timetable/' . $value->class_id . '/' . $value->subject_id) }}"
+                                                        class="btn btn-success"> My Class Time Table</a>
+                                                </td>
                                             </tr>
                                         @endforeach
 
@@ -100,18 +89,4 @@
     </div>
 
     </div>
-
-
-
-
-    <script src="/../assets/js/jquery-3.6.0.min.js"></script>
-
-    <script src="/../assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <script src="/../assets/js/feather.min.js"></script>
-
-    <script src="/../assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
-
-    <script src="/../assets/plugins/datatables/datatables.min.js"></script>
-    <script src="/../assets/js/script.js"></script>
 @endsection

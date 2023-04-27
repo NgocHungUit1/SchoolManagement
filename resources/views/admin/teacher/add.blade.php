@@ -66,6 +66,7 @@
                                                     <label>Name <span class="login-danger">*</span></label>
                                                     <input type="text" name="name" class="form-control"
                                                         placeholder="Full Name">
+                                                    <div style="color:red">{{ $errors->first('name') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -76,13 +77,15 @@
                                                         <option value="Male">Male</option>
                                                         <option value="Others">Others</option>
                                                     </select>
+                                                    <div style="color:red">{{ $errors->first('gender') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms calendar-icon">
                                                     <label>Date Of Birth <span class="login-danger">*</span></label>
-                                                    <input class="form-control datetimepicker" type="text"
+                                                    <input class="form-control datetimepicker " type="text"
                                                         name="date_of_birth">
+                                                    <div style="color:red">{{ $errors->first('date_of_birth') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -98,6 +101,7 @@
                                                     <label>Joining Date <span class="login-danger">*</span></label>
                                                     <input class="form-control datetimepicker" type="text"
                                                         name="joining_date" placeholder="DD-MM-YYYY">
+                                                    <div style="color:red">{{ $errors->first('joining_date') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4 local-forms">
@@ -105,6 +109,7 @@
                                                     <label>Qualification <span class="login-danger">*</span></label>
                                                     <input class="form-control" type="text" name="qualification"
                                                         placeholder="Enter Joining Date">
+                                                    <div style="color:red">{{ $errors->first('qualification') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -112,6 +117,7 @@
                                                     <label>Experience <span class="login-danger">*</span></label>
                                                     <input class="form-control" type="text" name="experience"
                                                         placeholder="Enter Experience">
+                                                    <div style="color:red">{{ $errors->first('experience') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -119,6 +125,7 @@
                                                     <label>Address <span class="login-danger">*</span></label>
                                                     <input type="text" name="address" class="form-control"
                                                         placeholder="Enter address">
+                                                    <div style="color:red">{{ $errors->first('address') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12">
@@ -135,8 +142,9 @@
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
                                                     <label>Password <span class="login-danger">*</span></label>
-                                                    <input type="text" name="password" class="form-control"
+                                                    <input type="password" name="password" class="form-control"
                                                         placeholder="Enter Password">
+                                                    <div style="color:red">{{ $errors->first('password') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">

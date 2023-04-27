@@ -1,28 +1,6 @@
 @extends('layouts.app')
 @section('content')
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>List User</title>
-    <link rel="shortcut icon" href="/..//../assets/img/favicon.png">
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700&display=swap"
-        rel="stylesheet">
-
-    <link rel="stylesheet" href="/..//../assets/plugins/bootstrap/css/bootstrap.min.css">
-
-    <link rel="stylesheet" href="/..//../assets/plugins/feather/feather.css">
-
-    <link rel="stylesheet" href="/..//../assets/plugins/icons/flags/flags.css">
-
-    <link rel="stylesheet" href="/..//../assets/plugins/fontawesome/css/fontawesome.min.css">
-    <link rel="stylesheet" href="/..//../assets/plugins/fontawesome/css/all.min.css">
-
-    <link rel="stylesheet" href="/..//../assets/plugins/datatables/datatables.min.css">
-
-    <link rel="stylesheet" href="/..//../assets/css/style.css">
     <div class="main-wrapper">
-
-
         <div class="page-wrapper">
             <div class="content container-fluid">
 
@@ -46,23 +24,21 @@
 
 
 
-
-
                             <div class="col-lg-3 col-md-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="name"
+                                    <input type="text" class="form-control name_search" name="name"
                                         value="{{ Request::get('name') }}" placeholder="Search by Name ...">
                                 </div>
                             </div>
                             <div class="col-lg-3 col-md-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="class"
+                                    <input type="text" class="form-control class_search" name="class"
                                         value="{{ Request::get('class') }}" placeholder="Search by Class Name ...">
                                 </div>
                             </div>
                             <div class="col-lg-3 col-md-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="mobile_number"
+                                    <input type="text" class="form-control mobile_number_search" name="mobile_number"
                                         value="{{ Request::get('mobile_number') }}"
                                         placeholder="Search by Moblie Phone ...">
                                 </div>
@@ -71,7 +47,9 @@
 
                             <div class="col-lg-3">
                                 <div class="search-student-btn">
-                                    <button type="submit" class="btn btn-primary">Search</button>
+                                    <button type="button" onclick="handleSearch()" class="btn btn-primary">Search</button>
+                                    <button type="button" onclick="handleReset()" class="btn btn-success"
+                                        style=" padding: 10px;">RESET</button>
                                 </div>
                             </div>
                     </form>
@@ -103,7 +81,7 @@
 
                             <div class="table-responsive" id="user">
                                 <table
-                                    class="table border-0 star-student table-hover table-center mb-0 datatable table-striped">
+                                    class="table border-0 star-student table-hover table-center mb-0 table-striped student_table">
                                     <thead class="student-thread">
                                         <tr>
                                             <th>Avatar</th>
@@ -121,50 +99,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($getRecord as $value)
-                                            <tr id="sid{{ $value->id }}">
-                                                <td><img class="rounded-circle"
-                                                        src="/public/uploads/profile/{{ $value->user_avatar }}"
-                                                        height="100" width="100"></td>
-                                                <td>{{ $value->admission_number }}</td>
-                                                <td>{{ $value->roll_number }} </td>
-                                                <td>{{ $value->name }} </td>
-                                                <td>{{ $value->class_name }}</td>
-                                                <td>{{ $value->gender }} </td>
-                                                <td>{{ $value->date_of_birth }} </td>
-                                                <td>{{ $value->mobile_number }} </td>
-                                                <td>{{ $value->email }}</td>
-                                                <td>{{ date('d-m-Y H:i A', strtotime($value->created_at)) }}</td>
-                                                <td>
 
-                                                    @if ($value->status == 0)
-                                                        <button style="width:85px" class="btn btn-success" type="button"><i
-                                                                class="fe fe-check-verified"></i>
-                                                            Active
-                                                        </button>
-                                                    @else
-                                                        <button class="btn btn-danger" type="button"><i
-                                                                class="fe fe-check-verified"></i>
-                                                            InActive
-                                                        </button>
-                                                    @endif
-
-                                                </td>
-                                                <td class="text-end">
-                                                    <div class="actions ">
-                                                        <a href="javascript:void(0)"
-                                                            onclick="deleteStudent({{ $value->id }})"
-                                                            class="btn btn-sm bg-danger">
-                                                            <i class="fa fa-trash " aria-hidden="true"></i>
-                                                        </a>
-                                                        <a href="{{ url('admin/student/edit/' . $value->id) }}"
-                                                            class="btn btn-sm bg-danger-light">
-                                                            <i class="feather-edit"></i>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
 
                                     </tbody>
                                 </table>
@@ -174,11 +109,6 @@
                 </div>
             </div>
         </div>
-
-        <footer>
-            <p>Copyright © 2022 Dreamguys.</p>
-        </footer>
-
     </div>
 
     </div>
@@ -200,17 +130,109 @@
             }
         }
     </script>
+    @push('js')
+        <script>
+            $(document).ready(function() {
+                var student_table = $('.student_table');
+                var table = student_table.DataTable({
+                    ajax: "/admin/student/getData",
+                    columns: [{
+                            data: "user_avatar"
+                        },
+                        {
+                            data: "admission_number"
+                        },
+                        {
+                            data: "roll_number"
+                        },
+                        {
+                            data: "name"
+                        },
+                        {
+                            data: "class_name"
+                        },
+                        {
+                            data: "gender"
+                        },
+                        {
+                            data: "date_of_birth"
+                        },
+                        {
+                            data: "mobile_number"
+                        },
+                        {
+                            data: "email"
+                        },
+                        {
+                            data: "created_at"
+                        },
+                        {
+                            data: "status"
+                        },
+                        {
+                            data: ""
+                        },
+                    ],
+                    columnDefs: [{
+                            targets: 0,
+                            render: function(data, type, full, meta) {
+                                return `<img class="rounded-circle" src="/public/uploads/profile/${full['user_avatar']} "height="100" width="100">`;
+                            },
+                        },
+                        {
+                            targets: 10,
+                            render: function(data, type, full, meta) {
+                                if (full['status'] == 0) {
+                                    return `<button style="width:85px" class="btn btn-success" type="button"><i
+                                                  class="fe fe-check-verified"></i>
+                                              Active
+                                          </button>`
+                                } else {
+                                    return `<button class = "btn btn-danger" type="button"> <i class = "fe fe-check-verified"></i>InActive</button>`
+                                }
+                            },
+                        },
+                        {
+                            targets: -1,
+                            render: function(data, type, full, meta) {
+                                return ` <div class="actions ">
+                                      <a href="javascript:void(0)"
+                                          onclick="deleteStudent(${full['id']})"
+                                          class="btn btn-sm bg-danger">
+                                          <i class="fa fa-trash " aria-hidden="true"></i>
+                                      </a>
+                                      <a href="/admin/student/edit/${full['id']}"
+                                          class="btn btn-sm bg-danger-light">
+                                          <i class="feather-edit"></i>
+                                      </a>
+                                  </div>`;
+                            },
+                        },
+                    ]
+                });
+            })
 
+            function handleSearch() {
+                const name = $(".name_search").val();
+                const class_search = $(".class_search").val();
+                const mobile_number_search = $(".mobile_number_search").val();
+                var student_table = $('.student_table').DataTable();
+                student_table.ajax.url(
+                        `/admin/student/getData?name=${name}&class=${class_search}&mobile_number=${mobile_number_search}`)
+                    .load();
+                student_table.draw();
+            }
 
-
-    <script src="/../assets/js/jquery-3.6.0.min.js"></script>
-
-    <script src="/../assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <script src="/../assets/js/feather.min.js"></script>
-
-    <script src="/../assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
-
-    <script src="/../assets/plugins/datatables/datatables.min.js"></script>
-    <script src="/../assets/js/script.js"></script>
+            function handleReset() {
+                const name = $(".name_search").val();
+                const class_search = $(".class_search").val();
+                const mobile_number_search = $(".mobile_number_search").val();
+                var student_table = $('.student_table').DataTable();
+                student_table.ajax.url(
+                        `/admin/student/getData`)
+                    .load();
+                student_table.draw();
+            }
+        </script>
+    @endpush
 @endsection

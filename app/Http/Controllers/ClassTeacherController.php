@@ -25,7 +25,6 @@ class ClassTeacherController extends Controller
 
     public function assignTeacherClass(Request $request)
     {
-
         if (!empty($request->teacher_id)) {
             foreach ($request->teacher_id as $teacher_id) {
                 $getAlready = ClassTeacher::getAlreadyFirst($request->class_id, $teacher_id);
@@ -41,7 +40,6 @@ class ClassTeacherController extends Controller
                     $save->created_by = Auth::user()->id;
                     $save->save();
                 }
-
             }
             return redirect('admin/assign_class_teacher/list')->with('success', 'Class Assigned Successfully');
         } else {
@@ -98,4 +96,11 @@ class ClassTeacherController extends Controller
         $data['getRecord'] = ClassTeacher::getMyClassSubject(Auth::user()->id);
         return view('teacher.my_subject_class', $data);
     }
+
+    public function getSubject()
+    {
+        $data['getRecord'] = ClassTeacher::getMyClassSubject(Auth::user()->id);
+        return $data;
+    }
+
 }

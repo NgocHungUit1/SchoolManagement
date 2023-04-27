@@ -76,23 +76,24 @@
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
                                                     <label>Class <span class="login-danger">*</span></label>
-                                                    <select class="form-control select" required name="class_id">
-                                                        <option>Please Select Class </option>
+                                                    <select class="form-control select" name="class_id">
+
                                                         @foreach ($getClass as $value)
                                                             <option
                                                                 {{ $getRecord->class_id == $value->id ? 'selected' : '' }}
                                                                 value="{{ $value->id }}">{{ $value->name }}</option>
                                                         @endforeach
                                                     </select>
-                                                    <div style="color:red">{{ $errors->first('class_id') }}</div>
+
                                                 </div>
+                                                <div style="color:red">{{ $errors->first('class_id') }}</div>
                                             </div>
 
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
                                                     <label>Subject Name <span class="login-danger">*</span></label>
-                                                    <select class="form-control select" required name="subject_id">
-                                                        <option>Please Select Subject </option>
+                                                    <select class="form-control select" name="subject_id">
+
                                                         @foreach ($getSubject as $value)
                                                             <option
                                                                 {{ $getRecord->subject_id == $value->id ? 'selected' : '' }}

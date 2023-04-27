@@ -4,22 +4,7 @@
     <title>My Student</title>
     <link rel="shortcut icon" href="/..//../assets/img/favicon.png">
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700&display=swap"
-        rel="stylesheet">
 
-    <link rel="stylesheet" href="/..//../assets/plugins/bootstrap/css/bootstrap.min.css">
-
-    <link rel="stylesheet" href="/..//../assets/plugins/feather/feather.css">
-
-    <link rel="stylesheet" href="/..//../assets/plugins/icons/flags/flags.css">
-
-    <link rel="stylesheet" href="/..//../assets/plugins/fontawesome/css/fontawesome.min.css">
-    <link rel="stylesheet" href="/..//../assets/plugins/fontawesome/css/all.min.css">
-
-    <link rel="stylesheet" href="/..//../assets/plugins/datatables/datatables.min.css">
-
-    <link rel="stylesheet" href="/..//../assets/css/style.css">
     <div class="main-wrapper">
 
 
@@ -57,15 +42,13 @@
                                                 class="feather-grid"></i></a>
                                         <a href="#" class="btn btn-outline-primary me-2"><i
                                                 class="fas fa-download"></i> Download</a>
-                                        <a href="{{ url('admin/student/add') }}" class="btn btn-primary"><i
-                                                class="fas fa-plus"></i> </a>
+
                                     </div>
                                 </div>
                             </div>
 
                             <div class="table-responsive" id="user">
-                                <table
-                                    class="table border-0 star-student table-hover table-center mb-0 datatable table-striped">
+                                <table class="table border-0 star-student table-hover table-center mb-0 table-striped ">
                                     <thead class="student-thread">
                                         <tr>
                                             <th>Avatar</th>
@@ -92,10 +75,10 @@
                                                 <td>{{ $value->name }} </td>
                                                 <td>{{ $value->class_name }}</td>
                                                 <td>{{ $value->gender }} </td>
-                                                <td>{{ $value->date_of_birth }} </td>
+                                                <td>{{ date('d-m-Y ', strtotime($value->date_of_birth)) }} </td>
                                                 <td>{{ $value->mobile_number }} </td>
                                                 <td>{{ $value->email }}</td>
-                                                <td>{{ date('d-m-Y H:i A', strtotime($value->created_at)) }}</td>
+                                                <td>{{ date('d-m-Y ', strtotime($value->created_at)) }}</td>
                                                 <td>
 
                                                     @if ($value->status == 0)
@@ -126,17 +109,91 @@
     </div>
 
     </div>
+    @push('js')
+        <script>
+            $(document).ready(function() {
+                var subject_table = $('.subject_table');
+                var table = subject_table.DataTable({
+                    ajax: "/admin/subject/getData",
+                    columns: [{
+                            data: "id"
+                        },
+                        {
+                            data: "name"
+                        },
+                        {
+                            data: "type"
+                        },
+                        {
+                            data: "created_at"
+                        },
+                        {
+                            data: "created_by_name"
+                        },
+                        {
+                            data: "status"
+                        },
+                        {
+                            data: ""
+                        },
+                    ],
+                    columnDefs: [{
+                            targets: 0,
+                            render: function(data, type, full, meta) {
+                                return `${full['id']}`;
+                            },
+                        },
+                        {
+                            targets: 5,
+                            render: function(data, type, full, meta) {
+                                if (full['status'] == 0) {
+                                    return `<button style="width:85px" class="btn btn-success" type="button"><i
+                                              class="fe fe-check-verified"></i>
+                                          Active
+                                      </button>`
+                                } else {
+                                    return `<button class = "btn btn-danger" type="button"> <i class = "fe fe-check-verified"></i>InActive</button>`
+                                }
+                            },
+                        },
+                        {
+                            targets: -1,
+                            render: function(data, type, full, meta) {
+                                return ` <div class="actions ">
+                                  <a href="javascript:void(0)"
+                                      onclick="deleteSubject(${full['id']})"
+                                      class="btn btn-sm bg-danger">
+                                      <i class="fa fa-trash " aria-hidden="true"></i>
+                                  </a>
+                                  <a href="/admin/subject/edit/${full['id']}"
+                                      class="btn btn-sm bg-danger-light">
+                                      <i class="feather-edit"></i>
+                                  </a>
+                              </div>`;
+                            },
+                        },
+                    ]
+                });
+            })
 
+            function handleSearch() {
+                const name = $(".name_search").val();
+                const type_search = $(".type_search").val();
 
+                var subject_table = $('.subject_table').DataTable();
+                subject_table.ajax.url(
+                        `/admin/subject/getData?name=${name}&type=${type_search}`)
+                    .load();
+                subject_table.draw();
+            }
 
-    <script src="/../assets/js/jquery-3.6.0.min.js"></script>
-
-    <script src="/../assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <script src="/../assets/js/feather.min.js"></script>
-
-    <script src="/../assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
-
-    <script src="/../assets/plugins/datatables/datatables.min.js"></script>
-    <script src="/../assets/js/script.js"></script>
+            function handleReset() {
+                var subject_table = $('.subject_table').DataTable();
+                subject_table.ajax.url(
+                        `/admin/subject/getData`)
+                    .load();
+                subject_table.draw();
+            }
+        </script>
+    @endpush
 @endsection

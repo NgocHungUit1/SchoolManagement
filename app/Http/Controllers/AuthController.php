@@ -36,18 +36,15 @@ class AuthController extends Controller
         $remember = !empty($request->remember) ? true : false;
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $remember)) {
             if (Auth::user()->user_type == 1) {
-                return redirect('admin/dashboard');
+                return redirect('admin/dashboard')->with('success', 'Hello Admin,Login successfully  ');
             } elseif (Auth::user()->user_type == 2) {
-                return redirect('teacher/dashboard');
+                return redirect('teacher/dashboard')->with('success', 'Hello Teacher,Login successfully  ');
             } elseif (Auth::user()->user_type == 3) {
-                return redirect('student/dashboard');
-            } elseif (Auth::user()->user_type == 4) {
-                return redirect('parent/dashboard');
+                return redirect('student/dashboard')->with('success', 'Hello Student,Login successfully  ');
             }
 
         } else {
             return redirect()->back()->with('error', 'please enter correct email and password ');
-
         }
 
     }
@@ -55,7 +52,7 @@ class AuthController extends Controller
     public function authLogout()
     {
         Auth::logout();
-        return redirect(url(''));
+        return redirect(url(''))->with('success', 'Logout successfully  ');
     }
 
     public function forgot_password()
@@ -89,13 +86,11 @@ class AuthController extends Controller
 
     public function changePassword($token, Request $request)
     {
-
         if ($request->password == $request->confirm_password) {
             $user = User::getToken(($token));
             $user->password = Hash::make($request->password);
             $user->remember_token = Str::random(30);
             $user->save();
-
             return redirect(url(''))->back()->with('success', 'Password success reset ');
         } else {
             return redirect()->back()->with('error', 'Password and confirm password not match ');

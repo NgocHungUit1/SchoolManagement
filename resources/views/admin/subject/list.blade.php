@@ -16,9 +16,7 @@
 
     <link rel="stylesheet" href="/../assets/plugins/fontawesome/css/fontawesome.min.css">
     <link rel="stylesheet" href="/../assets/plugins/fontawesome/css/all.min.css">
-
     <link rel="stylesheet" href="/../assets/plugins/datatables/datatables.min.css">
-
     <link rel="stylesheet" href="/../assets/css/style.css">
     <link rel="shortcut icon" href="assets/img/favicon.png">
     <div class="main-wrapper">
@@ -49,13 +47,13 @@
 
                                 <div class="col-lg-3 col-md-6">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" name="name"
+                                        <input type="text" class="form-control name_search" name="name"
                                             value="{{ Request::get('name') }}" placeholder="Search by Name ...">
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-6">
                                     <div class="form-group">
-                                        <select class="form-control select" name="type">
+                                        <select class="form-control select type_search" name="type">
                                             <option value="">Select Type</option>
                                             <option {{ Request::get('type') == 'Theory' ? 'selected' : '' }} value="Theory">
                                                 Theory</option>
@@ -65,16 +63,13 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-lg-4 col-md-6">
-                                    <div class="form-group">
-                                        <input type="date" class="form-control" name="date"
-                                            value="{{ Request::get('date') }}" placeholder="Search by Date ...">
-                                    </div>
-                                </div>
 
                                 <div class="col-lg-2">
                                     <div class="search-student-btn">
-                                        <button id="filter" type="submit" class="btn btn-primary">Search</button>
+                                        <button type="button" onclick="handleSearch()"
+                                            class="btn btn-primary">Search</button>
+                                        <button type="button" onclick="handleReset()" class="btn btn-success"
+                                            style=" padding: 10px;">RESET</button>
                                     </div>
                                 </div>
                         </form>
@@ -88,7 +83,8 @@
                                 <div class="page-header">
                                     <div class="row align-items-center">
                                         <div class="col">
-                                            <h3 class="page-title">Subject</h3>
+                                            <h3 class="page-title">Subject </h3>
+
                                         </div>
                                         <div class="col-auto text-end float-end ms-auto download-grp">
                                             <a href="students.html" class="btn btn-outline-gray me-2 active"><i
@@ -105,7 +101,7 @@
 
                                 <div class="table-responsive" id="user">
                                     <table
-                                        class="table border-0 star-student table-hover table-center mb-0 datatable table-striped">
+                                        class="table border-0 star-student table-hover table-center mb-0  table-striped subject_table">
                                         <thead class="student-thread">
                                             <tr>
                                                 <th>ID</th>
@@ -118,41 +114,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($getRecord as $key => $value)
-                                                <tr id="sid{{ $value->id }}">
-                                                    <td>{{ $key + 1 }} </td>
-                                                    <td>{{ $value->name }}</td>
-                                                    <td>{{ $value->type }}</td>
-                                                    <td>{{ date('d-m-Y H:i A', strtotime($value->created_at)) }}</td>
-                                                    <td>{{ $value->created_by_name }} </td>
-                                                    <td>
-                                                        @if ($value->status == 0)
-                                                            <button style="width:85px" class="btn btn-success"
-                                                                type="button"><i class="fe fe-check-verified"></i>
-                                                                Active
-                                                            </button>
-                                                        @else
-                                                            <button class="btn btn-danger" type="button"><i
-                                                                    class="fe fe-check-verified"></i>
-                                                                InActive
-                                                            </button>
-                                                        @endif
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <div class="actions ">
-                                                            <a href="javascript:void(0)"
-                                                                onclick="deleteSubject({{ $value->id }})"
-                                                                class="btn btn-sm bg-danger">
-                                                                <i class="fa fa-trash " aria-hidden="true"></i>
-                                                            </a>
-                                                            <a href="{{ url('admin/subject/edit/' . $value->id) }}"
-                                                                class="btn btn-sm bg-danger-light">
-                                                                <i class="feather-edit"></i>
-                                                            </a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
+
 
                                         </tbody>
                                     </table>
@@ -186,17 +148,91 @@
             }
         }
     </script>
+    @push('js')
+        <script>
+            $(document).ready(function() {
+                var subject_table = $('.subject_table');
+                var table = subject_table.DataTable({
+                    ajax: "/admin/subject/getData",
+                    columns: [{
+                            data: "id"
+                        },
+                        {
+                            data: "name"
+                        },
+                        {
+                            data: "type"
+                        },
+                        {
+                            data: "created_at"
+                        },
+                        {
+                            data: "created_by_name"
+                        },
+                        {
+                            data: "status"
+                        },
+                        {
+                            data: ""
+                        },
+                    ],
+                    columnDefs: [{
+                            targets: 0,
+                            render: function(data, type, full, meta) {
+                                return `${full['id']}`;
+                            },
+                        },
+                        {
+                            targets: 5,
+                            render: function(data, type, full, meta) {
+                                if (full['status'] == 0) {
+                                    return `<button style="width:85px" class="btn btn-success" type="button"><i
+                                                  class="fe fe-check-verified"></i>
+                                              Active
+                                          </button>`
+                                } else {
+                                    return `<button class = "btn btn-danger" type="button"> <i class = "fe fe-check-verified"></i>InActive</button>`
+                                }
+                            },
+                        },
+                        {
+                            targets: -1,
+                            render: function(data, type, full, meta) {
+                                return ` <div class="actions ">
+                                      <a href="javascript:void(0)"
+                                          onclick="deleteSubject(${full['id']})"
+                                          class="btn btn-sm bg-danger">
+                                          <i class="fa fa-trash " aria-hidden="true"></i>
+                                      </a>
+                                      <a href="/admin/subject/edit/${full['id']}"
+                                          class="btn btn-sm bg-danger-light">
+                                          <i class="feather-edit"></i>
+                                      </a>
+                                  </div>`;
+                            },
+                        },
+                    ]
+                });
+            })
 
+            function handleSearch() {
+                const name = $(".name_search").val();
+                const type_search = $(".type_search").val();
 
+                var subject_table = $('.subject_table').DataTable();
+                subject_table.ajax.url(
+                        `/admin/subject/getData?name=${name}&type=${type_search}`)
+                    .load();
+                subject_table.draw();
+            }
 
-    <script src="/../assets/js/jquery-3.6.0.min.js"></script>
-
-    <script src="/../assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <script src="/../assets/js/feather.min.js"></script>
-
-    <script src="/../assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
-
-    <script src="/../assets/plugins/datatables/datatables.min.js"></script>
-    <script src="/../assets/js/script.js"></script>
+            function handleReset() {
+                var subject_table = $('.subject_table').DataTable();
+                subject_table.ajax.url(
+                        `/admin/subject/getData`)
+                    .load();
+                subject_table.draw();
+            }
+        </script>
+    @endpush
 @endsection

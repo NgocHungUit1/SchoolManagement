@@ -27,6 +27,7 @@
                                         <label>Class Name <span class="login-danger">*</span></label>
                                         <input class="form-control" type="text" name="name"
                                             value="{{ old('name', $getRecord->name) }}" placeholder="Enter Name Class">
+                                        <div style="color:red">{{ $errors->first('name') }}</div>
                                     </div>
                                     <div class="form-group row">
                                         <label>Subject Type <span class="login-danger">*</span></label>
@@ -38,6 +39,7 @@
                                                 Practical</option>
                                         </select>
                                     </div>
+
 
                                     <div class="form-group row">
                                         <label>Status <span class="login-danger">*</span></label>

@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateProfileStudentRequest;
+use App\Http\Requests\UserRequest;
 use App\Models\ClassModel;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -38,28 +41,14 @@ class UserController extends Controller
 
     }
 
-    public function updateProfileTeacher(Request $request)
+    public function updateProfileTeacher(UpdateProfileStudentRequest $request)
     {
         $id = Auth::user()->id;
-        request()->validate([
-            'email' => 'required|email|unique:users,email,' . $id,
-            'mobile_number' => 'max:15|min:8',
-
-        ],
-            [
-                'email.unique' => 'Email đã có,xin điền email khác',
-            ]
-        );
-
         $teacher = User::getUserId($id);
-        $teacher->name = trim($request->name);
-        $teacher->joining_date = trim($request->joining_date);
-        $teacher->qualification = trim($request->qualification);
-        $teacher->experience = trim($request->experience);
-        $teacher->address = trim($request->address);
-        // $teacher->class_id = trim($request->class_id);
-        $teacher->gender = trim($request->gender);
-        $teacher->date_of_birth = $request->date_of_birth;
+        $teacher->name = ($request->name);
+        $teacher->address = ($request->address);
+        $teacher->gender = ($request->gender);
+        $teacher->date_of_birth = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
         $teacher->mobile_number = $request->mobile_number;
         $get_image = $request->user_avatar;
         if ($get_image) {
@@ -75,34 +64,17 @@ class UserController extends Controller
 
             $teacher->user_avatar = $new_image;
         }
-        $teacher->email = trim($request->email);
         $teacher->save();
-        return redirect('teacher/profile-edit')->with('success', 'teacher successfully updated ');
+        return redirect('teacher/profile')->with('success', 'teacher successfully updated ');
     }
 
-    public function updateProfileStudent(Request $request)
+    public function updateProfileStudent(UpdateProfileStudentRequest $request)
     {
         $id = Auth::user()->id;
-        request()->validate([
-            'email' => 'required|email|unique:users,email,' . $id,
-            'mobile_number' => 'max:15|min:8',
-            'admission_number' => 'required|unique:users,admission_number,' . $id,
-
-        ],
-            [
-                'email.unique' => 'Email đã có,xin điền email khác',
-                'admission_number.unique' => 'Id student đã có,xin điền IDs khác',
-            ]
-        );
-
         $student = User::getUserId($id);
-        $student->name = trim($request->name);
-        $student->admission_number = trim($request->admission_number);
-        $student->roll_number = trim($request->roll_number);
-
-        $student->address = trim($request->address);
-        $student->gender = trim($request->gender);
-        $student->date_of_birth = $request->date_of_birth;
+        $student->address = ($request->address);
+        $student->gender = ($request->gender);
+        $student->date_of_birth = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
         $student->mobile_number = $request->mobile_number;
         $get_image = $request->user_avatar;
         if ($get_image) {
@@ -118,26 +90,15 @@ class UserController extends Controller
 
             $student->user_avatar = $new_image;
         }
-        $student->email = trim($request->email);
         $student->save();
-        return redirect('student/profile-edit')->with('success', 'teacher successfully updated ');
+        return redirect('student/profile')->with('success', 'Student edit successfully updated ');
     }
 
-    public function updateProfileAdmin(Request $request)
+    public function updateProfileAdmin(UserRequest $request)
     {
         $id = Auth::user()->id;
-        request()->validate([
-            'email' => 'required|email|unique:users,email,' . $id,
-            'mobile_number' => 'max:15|min:8',
-
-        ],
-            [
-                'email.unique' => 'Email đã có,xin điền email khác',
-            ]
-        );
-
         $admin = User::getUserId($id);
-        $admin->name = trim($request->name);
+        $admin->name = ($request->name);
         $admin->mobile_number = $request->mobile_number;
         $get_image = $request->user_avatar;
         if ($get_image) {
@@ -153,9 +114,8 @@ class UserController extends Controller
 
             $admin->user_avatar = $new_image;
         }
-        $admin->email = trim($request->email);
         $admin->save();
-        return redirect('admin/admin/profile-edit')->with('success', 'Admin successfully updated ');
+        return redirect('admin/admin/profile')->with('success', 'Admin successfully updated profile ');
     }
 
     public function updatePassword(Request $request)

@@ -30,39 +30,52 @@
                                             <label>Exam Name</label>
                                             <input type="text" name="name" class="form-control">
                                         </div>
+                                        <div style="color:red">{{ $errors->first('name') }}</div>
                                     </div>
+
                                     <div class="col-12 col-sm-6">
                                         <div class="form-group">
                                             <label>Class Name <span class="login-danger">*</span></label>
-                                            <select class="form-control select" name="class_id">
+                                            <select class="form-control getClass" name="class_id">
                                                 <option value="">Select Class</option>
                                                 @foreach ($getClass as $class)
-                                                    <option value="{{ $class->id }}">{{ $class->name }}</option>
+                                                    <option {{ Request::get('class_id') == $class->id ? 'selected' : '' }}
+                                                        value="{{ $class->id }}">{{ $class->name }}</option>
                                                 @endforeach
                                             </select>
+                                            <div style="color:red">{{ $errors->first('class_id') }}</div>
                                         </div>
                                     </div>
+
                                     <div class="col-12 col-sm-6">
                                         <div class="form-group">
                                             <label>Subject <span class="login-danger">*</span></label>
-                                            <select class="form-control select" name="subject_id">
-                                                <option value="">Select Subject</option>
-                                                @foreach ($getSubject as $subject)
-                                                    <option value="{{ $subject->id }}">{{ $subject->name }}</option>
-                                                @endforeach
+                                            <select class="form-control getSubject" name="subject_id">
+                                                <option value="">Select Subject </option>
+                                                @if (!empty($getSubject))
+                                                    @foreach ($getSubject as $subject)
+                                                        <option
+                                                            {{ Request::get('subject_id') == $subject->subject_id ? 'selected' : '' }}
+                                                            value="{{ $subject->subject_id }}">{{ $subject->subject_name }}
+                                                        </option>
+                                                    @endforeach
+                                                @endif
                                             </select>
+                                            <div style="color:red">{{ $errors->first('subject_id') }}</div>
                                         </div>
                                     </div>
                                     <div class="col-12 col-sm-6">
                                         <div class="form-group">
                                             <label>Start Time</label>
                                             <input type="time" name="start_time" class="form-control">
+                                            <div style="color:red">{{ $errors->first('start_time') }}</div>
                                         </div>
                                     </div>
                                     <div class="col-12 col-sm-6">
                                         <div class="form-group">
                                             <label>End Time</label>
                                             <input type="time" name="end_time" class="form-control">
+                                            <div style="color:red">{{ $errors->first('end_time') }}</div>
                                         </div>
                                     </div>
                                     <div class="col-12 col-sm-6">
@@ -70,6 +83,17 @@
                                             <label>Create Date</label>
                                             <input type="date" name="created_at" class="form-control">
                                         </div>
+                                        <div style="color:red">{{ $errors->first('created_at') }}</div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <div class="form-group ">
+                                            <label>Status <span class="login-danger">*</span></label>
+                                            <select class="form-control select" name="status">
+                                                <option value="0">Active</option>
+                                                <option value="1">InActive</option>
+                                            </select>
+                                        </div>
+                                        <div style="color:red">{{ $errors->first('status') }}</div>
                                     </div>
                                     <div class="col-12">
                                         <button type="submit" class="btn btn-primary">Submit</button>
@@ -82,4 +106,23 @@
             </div>
         </div>
     </div>
+    @push('js')
+        <script type="text/javascript">
+            $('.getClass').change(function() {
+                var class_id = $(this).val();
+                $.ajax({
+                    url: " {{ url('admin/class_timetable/get_subject') }}",
+                    type: "POST",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        class_id: class_id,
+                    },
+                    dataType: "json",
+                    success: function(response) {
+                        $('.getSubject').html(response.html);
+                    },
+                });
+            });
+        </script>
+    @endpush
 @endsection

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AssignSubjectClassRequest;
 use App\Models\ClassModel;
 use App\Models\ClassSubject;
 use App\Models\Subject;
@@ -10,11 +11,19 @@ use Illuminate\Support\Facades\Auth;
 
 class CLassSubjectController extends Controller
 {
-    function list(Request $request) {
+    function list() {
         $data['getRecord'] = ClassSubject::getRecord();
         return view('admin.assign_subject.list', $data);
 
     }
+
+    public function getData()
+    {
+        $data['data'] = ClassSubject::getRecord();
+
+        return $data;
+    }
+
     public function add(Request $request)
     {
         $data['getClass'] = ClassModel::getClass();
@@ -34,7 +43,7 @@ class CLassSubjectController extends Controller
         return view('admin.assign_subject.edit', $data);
     }
 
-    public function assignSubject(Request $request)
+    public function assignSubject(AssignSubjectClassRequest $request)
     {
         if (!empty($request->subject_id)) {
             foreach ($request->subject_id as $subject_id) {
@@ -60,7 +69,7 @@ class CLassSubjectController extends Controller
         }
     }
 
-    public function update(Request $request)
+    public function update(AssignSubjectClassRequest $request)
     {
         ClassSubject::deleteSubject($request->class_id);
         if (!empty($request->subject_id)) {

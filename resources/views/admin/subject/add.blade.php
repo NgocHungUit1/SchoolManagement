@@ -23,11 +23,11 @@
                             <div class="card-body">
                                 <form action="" method="post">
                                     @csrf
-
                                     <div class="form-group row">
                                         <label>Subject Name <span class="login-danger">*</span></label>
                                         <input class="form-control" type="text" name="name"
                                             placeholder="Enter Name Subject">
+                                        <div style="color:red">{{ $errors->first('name') }}</div>
                                     </div>
                                     <div class="form-group row">
                                         <label>Status <span class="login-danger">*</span></label>
@@ -35,6 +35,7 @@
                                             <option value="0">Active</option>
                                             <option value="1">InActive</option>
                                         </select>
+                                        <div style="color:red">{{ $errors->first('status') }}</div>
                                     </div>
 
                                     <div class="form-group row">
@@ -43,6 +44,7 @@
                                             <option value="Theory">Theory</option>
                                             <option value="Practical">Practical</option>
                                         </select>
+                                        <div style="color:red">{{ $errors->first('type') }}</div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-form-label col-md-2"></label>

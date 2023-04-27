@@ -2,7 +2,7 @@
 @section('content')
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-    <title>Add Teacher</title>
+    <title>Edit Teacher</title>
 
     <link rel="shortcut icon" href="/../assets/img/favicon.png">
 
@@ -58,7 +58,7 @@
                                                     <label>Teacher ID <span class="login-danger">*</span></label>
                                                     <input type="text" name="teacher_id" class="form-control"
                                                         placeholder="Teacher ID"
-                                                        value="{{ old('teacher_id', $getRecord->teacher_id) }}">
+                                                        value="{{ old('teacher_id', $getRecord->teacher_id) }}" disabled>
                                                     <div style="color:red">{{ $errors->first('teacher_id') }}</div>
                                                 </div>
                                             </div>
@@ -68,6 +68,7 @@
                                                     <input class="form-control" type="text" name="name"
                                                         value="{{ old('name', $getRecord->name) }}"
                                                         placeholder="Enter Full Name">
+                                                    <div style="color:red">{{ $errors->first('name') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -82,14 +83,17 @@
                                                         <option {{ $getRecord->gender == 'Others' ? 'selected' : '' }}
                                                             value="Others">Others</option>
                                                     </select>
+
                                                 </div>
+                                                <div style="color:red">{{ $errors->first('gender') }}</div>
                                             </div>
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms calendar-icon">
                                                     <label>Date Of Birth <span class="login-danger">*</span></label>
                                                     <input class="form-control datetimepicker" type="text"
-                                                        value="{{ old('date_of_birth', $getRecord->date_of_birth) }}"
-                                                        name="date_of_birth">
+                                                        name="date_of_birth"
+                                                        value="{{ old('date_of_birth', $getRecord->date_of_birth) }}">
+                                                    <div style="color:red">{{ $errors->first('date_of_birth') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -105,9 +109,9 @@
                                                 <div class="form-group local-forms calendar-icon">
                                                     <label>Joining Date <span class="login-danger">*</span></label>
                                                     <input class="form-control datetimepicker" type="text"
-                                                        name="joining_date"
                                                         value="{{ old('joining_date', $getRecord->joining_date) }}"
-                                                        placeholder="DD-MM-YYYY">
+                                                        name="joining_date">
+                                                    <div style="color:red">{{ $errors->first('joining_date') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4 local-forms">
@@ -115,7 +119,8 @@
                                                     <label>Qualification <span class="login-danger">*</span></label>
                                                     <input class="form-control" type="text" name="qualification"
                                                         value="{{ old('qualification', $getRecord->qualification) }}"
-                                                        placeholder="Enter Joining Date">
+                                                        placeholder="Enter qualification ">
+                                                    <div style="color:red">{{ $errors->first('qualification') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -124,6 +129,8 @@
                                                     <input class="form-control" type="text" name="experience"
                                                         value="{{ old('experience', $getRecord->experience) }}"
                                                         placeholder="Enter Experience">
+
+                                                    <div style="color:red">{{ $errors->first('experience') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -132,25 +139,29 @@
                                                     <input type="text" name="address" class="form-control"
                                                         value="{{ old('address', $getRecord->address) }}"
                                                         placeholder="Enter address">
+                                                    <div style="color:red">{{ $errors->first('address') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12">
                                                 <h5 class="form-title"><span>Login Details</span></h5>
                                             </div>
                                             <div class="col-12 col-sm-4">
+
                                                 <div class="form-group local-forms">
-                                                    <label>Email ID <span class="login-danger">*</span></label>
-                                                    <input type="email" name="email"class="form-control"
-                                                        value="{{ old('email', $getRecord->email) }}"
-                                                        placeholder="Enter Mail Id">
-                                                    <div style="color:red">{{ $errors->first('email') }}</div>
+                                                    <label>E-Mail <span class="login-danger">*</span></label>
+
+                                                    <input class="form-control" type="text"
+                                                        value="{{ old('email', $getRecord->email) }}" disabled
+                                                        placeholder="Enter Email Address" name="email">
                                                 </div>
+
                                             </div>
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
                                                     <label>Password <span class="login-danger">*</span></label>
                                                     <input type="password" name="password" class="form-control"
                                                         placeholder="Enter Password">
+                                                    <div style="color:red">{{ $errors->first('password') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -175,9 +186,10 @@
                                                             Choose File <input type="file" name="user_avatar">
                                                         </label>
                                                     </div>
+                                                    <img src="/public/uploads/profile/{{ $getRecord->user_avatar }}"
+                                                        height="100" width="100">
                                                 </div>
-                                                <img src="/public/uploads/profile/{{ $getRecord->user_avatar }}"
-                                                    height="100" width="100">
+
                                             </div>
 
                                             <div class="col-12">

@@ -105,11 +105,11 @@
                                                     value="{{ $value['day_id'] }}">{{ $value['day_name'] }}
                                             </th>
                                             <td><input type="time" name="timetable[{{ $i }}][start_time]"
-                                                    class="form_control"></td>
+                                                    value="{{ $value['start_time'] }}" class="form_control"></td>
                                             <td><input type="time" name="timetable[{{ $i }}][end_time]"
-                                                    class="form_control"></td>
+                                                    value="{{ $value['end_time'] }}" class="form_control"></td>
                                             <td><input type="text" name="timetable[{{ $i }}][room_number]"
-                                                    class="form_control"></td>
+                                                    value="{{ $value['room_number'] }}" class="form_control"></td>
                                         </tr>
                                         @php
                                             $i++;
@@ -152,6 +152,7 @@
     <script type="text/javascript">
         $('.getClass').change(function() {
             var class_id = $(this).val();
+
             $.ajax({
                 url: " {{ url('admin/class_timetable/get_subject') }}",
                 type: "POST",

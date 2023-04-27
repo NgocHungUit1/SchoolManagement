@@ -34,11 +34,6 @@
 
         <div class="main-wrapper">
 
-
-
-
-
-
             <div class="page-wrapper">
                 <div class="content container-fluid">
 
@@ -74,6 +69,7 @@
                                                     <label>Full Name <span class="login-danger">*</span></label>
                                                     <input class="form-control" type="text" name="name"
                                                         placeholder="Enter First Name">
+                                                    <div style="color:red">{{ $errors->first('name') }}</div>
                                                 </div>
                                             </div>
 
@@ -81,11 +77,13 @@
                                                 <div class="form-group local-forms">
                                                     <label>Gender <span class="login-danger">*</span></label>
                                                     <select class="form-control select" name="gender">
-                                                        <option>Select Gender</option>
+                                                        <option value="">Select Gender</option>
                                                         <option value="Female">Female</option>
                                                         <option value="Male">Male</option>
                                                         <option value="Others">Others</option>
                                                     </select>
+                                                    <div style="color:red">{{ $errors->first('gender') }}</div>
+
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -93,6 +91,8 @@
                                                     <label>Date Of Birth <span class="login-danger">*</span></label>
                                                     <input class="form-control datetimepicker" type="text"
                                                         name="date_of_birth">
+                                                    <div style="color:red">{{ $errors->first('date_of_birth') }}</div>
+
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
@@ -101,17 +101,17 @@
                                                     <input class="form-control" type="text"
                                                         placeholder="Enter Roll Number" value="{{ old('roll_number') }}"
                                                         name="roll_number">
+                                                    <div style="color:red">{{ $errors->first('roll_number') }}</div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
                                                     <label>Class <span class="login-danger">*</span></label>
-                                                    <select class="form-control select" required name="class_id">
-                                                        <option>Please Select Class </option>
+                                                    <select class="form-control select" name="class_id">
+                                                        <option value="">Please Select Class </option>
                                                         @foreach ($getClass as $value)
                                                             <option value="{{ $value->id }}">{{ $value->name }}</option>
                                                         @endforeach
-
                                                     </select>
                                                     <div style="color:red">{{ $errors->first('class_id') }}</div>
                                                 </div>
@@ -159,6 +159,7 @@
                                                 <label>Password <span class="login-danger">*</span></label>
                                                 <div class="form-group local-forms">
                                                     <input type="password" class="form-control" name="password">
+                                                    <div style="color:red">{{ $errors->first('password') }}</div>
                                                 </div>
 
                                             </div>

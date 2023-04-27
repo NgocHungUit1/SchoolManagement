@@ -1,25 +1,5 @@
 @extends('layouts.app')
 @section('content')
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Exam List</title>
-    <link rel="shortcut icon" href="/../assets/img/favicon.png">
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700&display=swap"
-        rel="stylesheet">
-
-    <link rel="stylesheet" href="/../assets/plugins/bootstrap/css/bootstrap.min.css">
-
-    <link rel="stylesheet" href="/../assets/plugins/feather/feather.css">
-
-    <link rel="stylesheet" href="/../assets/plugins/icons/flags/flags.css">
-
-    <link rel="stylesheet" href="/../assets/plugins/fontawesome/css/fontawesome.min.css">
-    <link rel="stylesheet" href="/../assets/plugins/fontawesome/css/all.min.css">
-
-    <link rel="stylesheet" href="/../assets/plugins/datatables/datatables.min.css">
-
-    <link rel="stylesheet" href="/../assets/css/style.css">
     <div class="main-wrapper">
 
 
@@ -46,25 +26,35 @@
                             @include('_message')
                             <div class="col-lg-3 col-md-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="class_name"
+                                    <input type="text" class="form-control exam" name="exam"
+                                        value="{{ Request::get('exam_name') }}" placeholder="Search by Exam Name ...">
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="form-group">
+                                    <input type="text" class="form-control class" name="class"
                                         value="{{ Request::get('class_name') }}" placeholder="Search by Class Name ...">
                                 </div>
                             </div>
                             <div class="col-lg-3 col-md-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="subject_name"
+                                    <input type="text" class="form-control subject" name="subject"
                                         value="{{ Request::get('subject_name') }}" placeholder="Search by Subject Name ...">
                                 </div>
                             </div>
-                            <div class="col-lg-4 col-md-6">
+
+
+                            {{-- <div class="col-lg-4 col-md-6">
                                 <div class="form-group">
-                                    <input type="date" class="form-control" name="date"
+                                    <input type="date" class="form-control date" name="date"
                                         value="{{ Request::get('date') }}" placeholder="Search by Date ...">
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="col-lg-2">
                                 <div class="search-student-btn">
-                                    <button type="submit" class="btn btn-primary">Search</button>
+                                    <button type="button" onclick="handleSearch()" class="btn btn-primary">Search</button>
+                                    <button type="button" onclick="handleReset()" class="btn btn-success"
+                                        style=" padding: 10px;">Reset</button>
                                 </div>
                             </div>
                     </form>
@@ -94,7 +84,7 @@
 
                             <div class="table-responsive" id="user">
                                 <table
-                                    class="table border-0 star-student table-hover table-center mb-0 datatable table-striped">
+                                    class="table border-0 star-student table-hover table-center mb-0  table-striped exam_table">
                                     <thead class="student-thread">
                                         <tr>
                                             <th>ID</th>
@@ -110,44 +100,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($getRecord as $key => $value)
-                                            <tr id="sid{{ $value->id }}">
-                                                <td>{{ $key + 1 }} </td>
-                                                <td>{{ $value->name }}</td>
-                                                <td>{{ $value->class_name }}</td>
-                                                <td>{{ $value->subject_name }}</td>
-                                                <td>{{ $value->start_time }} </td>
-                                                <td>{{ $value->end_time }} </td>
-                                                <td>{{ $value->created_by_name }} </td>
-                                                <td>{{ date('d-m-Y H:i A', strtotime($value->created_at)) }}</td>
-                                                <td>
-                                                    @if ($value->status == 0)
-                                                        <button style="width:85px" class="btn btn-success" type="button"><i
-                                                                class="fe fe-check-verified"></i>
-                                                            Active
-                                                        </button>
-                                                    @else
-                                                        <button class="btn btn-danger" type="button"><i
-                                                                class="fe fe-check-verified"></i>
-                                                            InActive
-                                                        </button>
-                                                    @endif
-                                                </td>
-                                                <td class="text-end">
-                                                    <div class="actions ">
-                                                        <a href="javascript:void(0)"
-                                                            onclick="deleteExam({{ $value->id }})"
-                                                            class="btn btn-sm bg-danger">
-                                                            <i class="fa fa-trash " aria-hidden="true"></i>
-                                                        </a>
-                                                        <a href="{{ url('admin/exam/edit/' . $value->id) }}"
-                                                            class="btn btn-sm bg-danger-light">
-                                                            <i class="feather-edit"></i>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
+
 
                                     </tbody>
                                 </table>
@@ -181,17 +134,104 @@
             }
         }
     </script>
+    @push('js')
+        <script>
+            $(document).ready(function() {
+                var exam_table = $('.exam_table');
+                var table = exam_table.DataTable({
+                    ajax: "/admin/exam/getData",
+                    columns: [{
+                            data: "id"
+                        },
+                        {
+                            data: "name"
+                        },
+                        {
+                            data: "class_name"
+                        },
+                        {
+                            data: "subject_name"
+                        },
+                        {
+                            data: "start_time"
+                        },
+                        {
+                            data: "end_time"
+                        },
+                        {
+                            data: "created_by_name"
+                        },
+                        {
+                            data: "created_at"
+                        },
+                        {
+                            data: "status"
+                        },
+                        {
+                            data: ""
+                        },
+                    ],
+                    columnDefs: [{
+                            targets: 0,
+                            render: function(data, type, full, meta) {
+                                return `${full['id']}`;
+                            },
+                        },
+                        {
+                            targets: 8,
+                            render: function(data, type, full, meta) {
+                                if (full['status'] == 0) {
+                                    return `<button style="width:85px" class="btn btn-success" type="button"><i
+                                                class="fe fe-check-verified"></i>
+                                            Active
+                                        </button>`
+                                } else {
+                                    return `<button class = "btn btn-danger" type="button"> <i class = "fe fe-check-verified"></i>InActive</button>`
+                                }
+                            },
+                        },
+                        {
+                            targets: -1,
+                            render: function(data, type, full, meta) {
+                                return ` <div class="actions ">
+                                    <a href="javascript:void(0)"
+                                        onclick="deleteExam(${full['id']})"
+                                        class="btn btn-sm bg-danger">
+                                        <i class="fa fa-trash " aria-hidden="true"></i>
+                                    </a>
+                                    <a href="/admin/exam/edit/${full['id']}"
+                                        class="btn btn-sm bg-danger-light">
+                                        <i class="feather-edit"></i>
+                                    </a>
+                                    <a href="/admin/exam/score/${full['id']}"
+                                        class="btn btn-sm bg-danger-light">
+                                        <i class="feather-edit"></i>
+                                    </a>
+                                </div>`;
+                            },
+                        },
+                    ]
+                });
+            })
 
+            function handleSearch() {
+                const class_name = $(".class").val();
+                const subject_name = $(".subject").val();
+                const exam_name = $(".exam").val();
+                var exam_table = $('.exam_table').DataTable();
+                exam_table.ajax.url(
+                        `/admin/exam/getData?class=${class_name}&subject=${subject_name}&exam=${exam_name}`)
+                    .load();
+                exam_table.draw();
+            }
 
-
-    <script src="/../assets/js/jquery-3.6.0.min.js"></script>
-
-    <script src="/../assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <script src="/../assets/js/feather.min.js"></script>
-
-    <script src="/../assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
-
-    <script src="/../assets/plugins/datatables/datatables.min.js"></script>
-    <script src="/../assets/js/script.js"></script>
+            function handleReset() {
+                var exam_table = $('.exam_table').DataTable();
+                exam_table.ajax.url(
+                        `/admin/exam/getData`)
+                    .load();
+                exam_table.draw();
+            }
+        </script>
+    @endpush
 @endsection
