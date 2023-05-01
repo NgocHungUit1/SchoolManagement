@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ExamExport;
 use App\Http\Requests\ExamRequest;
 use App\Models\ClassModel;
 use App\Models\Exam;
@@ -9,6 +10,7 @@ use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ExamController extends Controller
 {
@@ -81,14 +83,12 @@ class ExamController extends Controller
 
     public function examScore($id)
     {
+        $data['getRecord'] = Exam::getStudent($id);
+        return view('admin.exam_score.student', $data);
+    }
 
-        $getRecord = Exam::find($id);
-        if (!empty($getRecord)) {
-            $data['getRecord'] = $getRecord;
-            $data['getStudentClass'] = User::getStudentClass();
-        }
-        dd($data);
-
-        return view('admin.exam.edit', $data);
+    public function export()
+    {
+        return Excel::download(new ExamExport, 'exam.xlsx');
     }
 }

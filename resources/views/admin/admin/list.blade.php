@@ -23,11 +23,7 @@
                 <div class="student-group-form">
                     <form action="" method="get">
                         <div class="row">
-
-
                             @include('_message')
-
-
                             <div class="col-lg-3 col-md-6">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="name"

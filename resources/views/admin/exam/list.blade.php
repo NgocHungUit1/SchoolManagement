@@ -74,8 +74,9 @@
                                                 class="feather-list"></i></a>
                                         <a href="students-grid.html" class="btn btn-outline-gray me-2"><i
                                                 class="feather-grid"></i></a>
-                                        <a href="#" class="btn btn-outline-primary me-2"><i
-                                                class="fas fa-download"></i> Download</a>
+                                        <a href="{{ url('admin/exam/export') }}" class="btn btn-outline-primary me-2"><i
+                                                class="fas fa-download"></i>
+                                            Download</a>
                                         <a href="{{ url('admin/exam/add') }}" class="btn btn-primary"><i
                                                 class="fas fa-plus"></i> </a>
                                     </div>
@@ -127,8 +128,7 @@
                         _token: $("input[name=_token]").val()
                     },
                     success: function(response) {
-
-                        $("#sid" + id).remove();
+                        $("#element" + id).parent().parent().parent().remove();
                     }
                 });
             }
@@ -194,7 +194,7 @@
                             targets: -1,
                             render: function(data, type, full, meta) {
                                 return ` <div class="actions ">
-                                    <a href="javascript:void(0)"
+                                    <a id="element${full['id']}" href="javascript:void(0)"
                                         onclick="deleteExam(${full['id']})"
                                         class="btn btn-sm bg-danger">
                                         <i class="fa fa-trash " aria-hidden="true"></i>
@@ -203,7 +203,7 @@
                                         class="btn btn-sm bg-danger-light">
                                         <i class="feather-edit"></i>
                                     </a>
-                                    <a href="/admin/exam/score/${full['id']}"
+                                    <a href="/admin/exam/score/${full['class_id']}"
                                         class="btn btn-sm bg-danger-light">
                                         <i class="feather-edit"></i>
                                     </a>

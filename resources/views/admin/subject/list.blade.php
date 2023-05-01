@@ -91,8 +91,9 @@
                                                     class="feather-list"></i></a>
                                             <a href="students-grid.html" class="btn btn-outline-gray me-2"><i
                                                     class="feather-grid"></i></a>
-                                            <a href="#" class="btn btn-outline-primary me-2"><i
-                                                    class="fas fa-download"></i> Download</a>
+                                            <a href="{{ url('admin/subject/export') }}"
+                                                class="btn btn-outline-primary me-2"><i class="fas fa-download"></i>
+                                                Download</a>
                                             <a href="{{ url('admin/subject/add') }}" class="btn btn-primary"><i
                                                     class="fas fa-plus"></i> </a>
                                         </div>
@@ -141,8 +142,7 @@
                         _token: $("input[name=_token]").val()
                     },
                     success: function(response) {
-
-                        $("#sid" + id).remove();
+                        $("#element" + id).parent().parent().parent().remove();
                     }
                 });
             }
@@ -199,7 +199,7 @@
                             targets: -1,
                             render: function(data, type, full, meta) {
                                 return ` <div class="actions ">
-                                      <a href="javascript:void(0)"
+                                      <a id="element${full['id']}" href="javascript:void(0)"
                                           onclick="deleteSubject(${full['id']})"
                                           class="btn btn-sm bg-danger">
                                           <i class="fa fa-trash " aria-hidden="true"></i>

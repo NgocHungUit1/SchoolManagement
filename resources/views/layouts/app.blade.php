@@ -22,29 +22,21 @@
 <body>
 
     <div class="main-wrapper">
-
         @include('layouts.header')
-
-
         @yield('content')
-
-
-
-
     </div>
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
     <script src="/./assets/js/jquery-3.6.0.min.js"></script>
     <script src="/./assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/./assets/js/feather.min.js"></script>
     <script src="/./assets/plugins/slimscroll/jquery.slimscroll.min.js"></script>
     <script src="/./assets/plugins/apexchart/apexcharts.min.js"></script>
     <script src="/./assets/plugins/apexchart/chart-data.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
     <script src="/./assets/plugins/datatables/datatables.min.js"></script>
     <script src="/./assets/js/script.js"></script>
-
     @stack('js')
 </body>
 

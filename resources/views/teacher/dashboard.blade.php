@@ -101,7 +101,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div id="apexcharts-area"></div>
+                            <div id="donut"></div>
                         </div>
                     </div>
 

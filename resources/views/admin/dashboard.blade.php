@@ -321,32 +321,41 @@
 
     </div>
     @push('js')
-        <script type="text/javascript">
+        <script>
             $(document).ready(function() {
-                var donut = Morris.Donut({
+                var colorDanger = "#FF1744";
+                Morris.Donut({
                     element: 'donut',
                     resize: true,
                     colors: [
-                        '#4287f5',
-                        '#f54242',
-                        '#cb42f5',
-                        '#f542b9',
+                        '#E0F7FA',
+                        '#B2EBF2',
+                        '#80DEEA',
+                        '#4DD0E1',
+                        '#26C6DA',
+                        '#00BCD4',
+                        '#00ACC1',
+                        '#0097A7',
+                        '#00838F',
+                        '#006064'
                     ],
+                    //labelColor:"#cccccc", // text color
+                    //backgroundColor: '#333333', // border color
                     data: [{
-                            label: "Students",
-                            value: "studnets",
+                            label: "Student",
+                            value: {{ $getStudent->count() }}
                         },
                         {
-                            label: "Students",
-                            value: "studnets",
+                            label: "Teacher",
+                            value: {{ $getTeacher->count() }}
                         },
                         {
-                            label: "Students",
-                            value: "studnets",
+                            label: "Subject",
+                            value: {{ $getSubject->count() }}
                         },
                         {
-                            label: "Students",
-                            value: "studnets",
+                            label: "Class",
+                            value: {{ $getClass->count() }}
                         }
                     ]
                 });

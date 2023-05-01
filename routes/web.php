@@ -56,6 +56,7 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get('admin/admin/profile-edit', [UserController::class, 'profileEdit']);
     Route::post('admin/admin/profile-edit', [UserController::class, 'updateProfileAdmin']);
     Route::post('admin/admin/profile', [UserController::class, 'updatePassword']);
+    Route::get('admin/users/export', [UserController::class, 'export']);
 
     //Student
     Route::get('admin/student/list', [StudentController::class, 'list']);
@@ -81,8 +82,10 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get('admin/class/add', [ClassController::class, 'add']);
     Route::post('admin/class/add', [ClassController::class, 'insertClass']);
     Route::get('admin/class/edit/{id}', [ClassController::class, 'edit']);
+    Route::get('admin/class/view/{id}', [ClassController::class, 'view']);
     Route::post('admin/class/edit/{id}', [ClassController::class, 'editClass']);
     Route::get('admin/class/delete/{id}', [ClassController::class, 'delete']);
+    Route::get('admin/class/export', [ClassController::class, 'export']);
 
     //Subject
     Route::get('admin/subject/list', [SubjectController::class, 'list']);
@@ -92,16 +95,18 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get('admin/subject/edit/{id}', [SubjectController::class, 'edit']);
     Route::post('admin/subject/edit/{id}', [SubjectController::class, 'editSubject']);
     Route::get('admin/subject/delete/{id}', [SubjectController::class, 'delete']);
+    Route::get('admin/subject/export', [SubjectController::class, 'export']);
 
     //Exam
     Route::get('admin/exam/list', [ExamController::class, 'list']);
     Route::get('admin/exam/getData', [ExamController::class, 'getData']);
     Route::get('admin/exam/add', [ExamController::class, 'add']);
-    Route::get('admin/exam/score/{id}', [ExamController::class, 'examScore']);
     Route::post('admin/exam/add', [ExamController::class, 'addExam']);
     Route::get('admin/exam/edit/{id}', [ExamController::class, 'edit']);
     Route::post('admin/exam/edit/{id}', [ExamController::class, 'update']);
     Route::get('admin/exam/delete/{id}', [ExamController::class, 'delete']);
+    Route::get('admin/exam/export', [ExamController::class, 'export']);
+    Route::get('admin/exam/score/{class_id}', [ExamController::class, 'examScore']);
 
     //TimeTable
     Route::get('admin/class_timetable/list', [ClassTimeTableController::class, 'list']);
@@ -117,8 +122,9 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get('admin/assign_subject/edit/{id}', [ClassSubjectController::class, 'edit']);
     Route::post('admin/assign_subject/edit/{id}', [ClassSubjectController::class, 'update']);
     Route::get('admin/assign_subject/delete/{id}', [ClassSubjectController::class, 'delete']);
+    Route::get('admin/assign_subject/export', [ClassSubjectController::class, 'export']);
 
-//Assign Class Teacher
+    //Assign Class Teacher
     Route::get('admin/assign_class_teacher/list', [ClassTeacherController::class, 'list']);
     Route::get('admin/assign_class_teacher/add', [ClassTeacherController::class, 'add']);
     Route::post('admin/assign_class_teacher/add', [ClassTeacherController::class, 'assignTeacherClass']);
@@ -136,8 +142,10 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::get('teacher/my-subject-class', [ClassTeacherController::class, 'mySubjectClass']);
     Route::get('teacher/my-subject-class/timetable/{class_id}/{subject_id}', [ClassTimeTableController::class, 'myTimeTableTeacher']);
     Route::get('teacher/my-student', [TeacherController::class, 'myStudent']);
+    Route::get('teacher/my-student/view/{id}', [ClassController::class, 'view']);
     Route::get('teacher/get-student', [TeacherController::class, 'getStudent']);
     Route::get('teacher/get_subject', [ClassTeacherController::class, 'getSubject']);
+    Route::get('teacher/get_class', [TeacherController::class, 'getClass']);
 
 });
 

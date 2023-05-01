@@ -35,4 +35,16 @@ class Exam extends Model
         return $return;
     }
 
+    public static function getStudent($id)
+    {
+        $return = User::select('users.*', 'users.name as student_name', 'class.name as class_name')
+            ->join('class', 'class.id', '=', 'users.class_id')
+            ->where('users.user_type', '=', 3)
+            ->where('users.is_delete', '=', 0)
+            ->where('class.status', '=', 0)
+            ->where('class.id', '=', $id)
+            ->orderBy('student_name', 'asc')->get();
+        return $return;
+    }
+
 }

@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+    php:
+        build:
+            context: ./docker/php
+            dockerfile: Dockerfile
+        container_name: container-php
+        restart: always
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www/
+        networks:
+            - poly-worker
+    nginx:
+        image: nginx:1.23.1-alpine
+        container_name: container-nginx
+        restart: always
+        ports:
+            - "80:80"
+        volumes:
+            - ./:/var/www/
+            - ./docker/nginx:/etc/nginx/conf.d
+        depends_on:
+            - php
+            - mysql
+        networks:
+            - poly-worker
+    mysql:
+        image: mysql:8.0
+        container_name: docker-mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: laravel
+            MYSQL_USER: user
+            MYSQL_PASSWORD: laravel
+        ports:
+            - "3306:3306"
+        networks:
+            - poly-worker
+    redis:
+        image: redis:7.0
+        container_name: docker-redis
+        ports:
+            - "6379:6379"
+        networks:
+            - poly-worker
+networks:
+    poly-worker:
+        driver: bridge

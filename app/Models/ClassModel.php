@@ -35,6 +35,18 @@ class ClassModel extends Model
         return $return;
     }
 
+    public static function getStudent($id)
+    {
+        $return = User::select('users.*', 'users.name as student_name', 'class.name as class_name')
+            ->join('class', 'class.id', '=', 'users.class_id')
+            ->where('users.user_type', '=', 3)
+            ->where('users.is_delete', '=', 0)
+            ->where('class.status', '=', 0)
+            ->where('class.id', '=', $id)
+            ->orderBy('student_name', 'asc')->get();
+        return $return;
+    }
+
     public static function getRecord()
     {
         $return = ClassModel::select('class.*', 'users.name as created_by_name')->join('users', 'users.id', 'class.created_by');
@@ -49,6 +61,32 @@ class ClassModel extends Model
         }
 
         $return = $return->where('class.is_delete', '=', 0)->orderBy('class.id', 'desc')->get();
+        return $return;
+    }
+    public static function getTeacherClass($id)
+    {
+        $return = ClassModel::select('class.*', 'class.name as class_name')
+            ->join('users', 'users.class_id', '=', 'class.id')
+            ->where('users.is_delete', '=', 0)
+            ->where('class.status', '=', 0)
+            ->where('users.id', '=', $id)
+            ->orderBy('class_name', 'asc')->get();
+        return $return;
+    }
+
+    public static function getStudentTeacher($teacher_id)
+    {
+
+        $return = ClassModel::select('class.*', 'class.name as class_name', 'users.name as created_by_name')
+            ->join('users', 'users.class_id', '=', 'class.id')
+            ->join('teacher_class', 'teacher_class.class_id', '=', 'class.id')
+            ->where('teacher_class.teacher_id', '=', $teacher_id)
+            ->where('teacher_class.is_delete', '=', 0)
+            ->where('teacher_class.status', '=', 0)
+            ->where('users.user_type', '=', 3)
+            ->where('users.is_delete', '=', 0)
+            ->orderBy('class.id', 'desc')->groupBy('class.id')
+            ->get();
         return $return;
     }
 

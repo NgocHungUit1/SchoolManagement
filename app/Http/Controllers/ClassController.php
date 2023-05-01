@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ClassExport;
 use App\Models\ClassModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ClassController extends Controller
 {
     function list() {
-
+        // $data['getStudent'] = ClassModel::getStudent();
+        // dd($data);
         $data['getRecord'] = ClassModel::getRecord();
         return view('admin.class.list', $data);
     }
@@ -46,6 +49,14 @@ class ClassController extends Controller
         return view('admin.class.edit', $data);
     }
 
+    public function view($id)
+    {
+
+        $data['getRecord'] = ClassModel::getStudent($id);
+        $data['getClass'] = ClassModel::find($id);
+        return view('admin.class.view', $data);
+    }
+
     public function editClass(Request $request, $id)
     {
         request()->validate([
@@ -65,6 +76,10 @@ class ClassController extends Controller
         $class->is_delete = 1;
         $class->save();
         return redirect('admin/admin/list')->with('success', 'Class successfully deleted ');
+    }
+    public function export()
+    {
+        return Excel::download(new ClassExport, 'class.xlsx');
     }
 
 }

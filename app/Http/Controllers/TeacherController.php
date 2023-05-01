@@ -80,7 +80,6 @@ class TeacherController extends Controller
         $teacher->qualification = ($request->qualification);
         $teacher->experience = ($request->experience);
         $teacher->address = ($request->address);
-        // $teacher->class_id = ($request->class_id);
         $teacher->gender = ($request->gender);
         $teacher->date_of_birth = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
         $teacher->mobile_number = $request->mobile_number;
@@ -120,8 +119,23 @@ class TeacherController extends Controller
     }
     public function myStudent()
     {
-        $data['getRecord'] = User::getStudentTeacher(Auth::user()->id);
-        return view('teacher.my_student', $data);
+        $data['getRecord'] = ClassModel::getStudentTeacher(Auth::user()->id);
+        return view('teacher.my_student_class', $data);
+
+    }
+
+    public function viewStudent($id)
+    {
+        $data['getRecord'] = ClassModel::getStudent($id);
+        $data['getClass'] = ClassModel::find($id);
+        return view('admin.class.view', $data);
+    }
+
+    public function getClass()
+    {
+        $data['getRecord'] = ClassModel::getTeacherClass(Auth::user()->id);
+        dd($data);
+        return view('teacher.my_student_class', $data);
 
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\UsersExport;
 use App\Http\Requests\UpdateProfileStudentRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\ClassModel;
@@ -134,6 +135,11 @@ class UserController extends Controller
 
         }
 
+    }
+
+    public function export()
+    {
+        return (new UsersExport)->download('users.xlsx');
     }
 
 }

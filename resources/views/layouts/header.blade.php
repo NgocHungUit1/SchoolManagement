@@ -183,12 +183,12 @@
                             href="{{ url('teacher/my-subject-class') }}"
                             class=" {{ set_active(['teacher/my-subject-class']) }}">
                             <i class="fas fa-book-reader"></i> <span>
-                                My Class Subject</span></a>
+                                My Subject</span></a>
                     </li>
                     <li class=" {{ set_active(['teacher/my-student']) }}"><a href="{{ url('teacher/my-student') }}"
                             class=" {{ set_active(['teacher/my-student']) }}">
                             <i class="fas fa-book-reader"></i> <span>
-                                My Student</span></a>
+                                My Class</span></a>
                     </li>
                 @elseif (Auth::user()->user_type == 3)
                     <li class="submenu ">

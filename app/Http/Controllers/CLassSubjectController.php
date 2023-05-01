@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AssignSubjectExport;
 use App\Http\Requests\AssignSubjectClassRequest;
 use App\Models\ClassModel;
 use App\Models\ClassSubject;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CLassSubjectController extends Controller
 {
@@ -100,5 +102,9 @@ class CLassSubjectController extends Controller
         $subject->is_delete = 1;
         $subject->save();
         return redirect('admin/assign_subject/list')->with('success', 'Subject successfully deleted ');
+    }
+    public function export()
+    {
+        return Excel::download(new AssignSubjectExport, 'assign_subject.xlsx');
     }
 }
