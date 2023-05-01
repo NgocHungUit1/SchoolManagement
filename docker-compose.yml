@@ -26,8 +26,8 @@ services:
             - mysql
         networks:
             - poly-worker
-    mysql:
-        image: mysql:8.0
+    db:
+        image: mariadb:10.3
         container_name: docker-mysql
         restart: always
         environment:
@@ -36,7 +36,9 @@ services:
             MYSQL_USER: user
             MYSQL_PASSWORD: laravel
         ports:
-            - "3306:3306"
+            - "3307:3306"
+        volumes:
+            - ./school_sms.sql:/docker-entrypoint-initdb.d/database.sql
         networks:
             - poly-worker
     redis:
