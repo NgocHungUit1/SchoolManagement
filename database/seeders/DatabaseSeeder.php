@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\ClassModel;
+use App\Models\Exam;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -24,6 +25,9 @@ class DatabaseSeeder extends Seeder
 
         User::factory()
             ->has(Subject::factory()->count(3))
+            ->create();
+        User::factory()
+            ->has(Exam::factory()->count(3))
             ->create();
 
     }

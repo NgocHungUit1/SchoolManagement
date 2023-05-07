@@ -57,6 +57,11 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\Subject', 'created_by', 'id');
     }
 
+    public function exam()
+    {
+        return $this->hasMany('App\Models\Exam', 'created_by', 'id');
+    }
+
     public static function getUserId($id)
     {
         return self::find($id);

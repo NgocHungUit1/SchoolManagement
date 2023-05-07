@@ -14,6 +14,11 @@ class Exam extends Model
         'created_at' => 'date:d-m-Y',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User', 'created_by');
+    }
+
     public static function getRecord()
     {
         $return = self::select('exam.*', 'users.name as created_by_name')

@@ -25,15 +25,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
  */
-function set_active($url)
-{
-    if (is_array($url)) {
-        return in_array(Request::path(), $url) ? 'active' : '';
 
-    }
-    return Request::path() == $url ? 'active' : '';
-
-}
 
 Route::get('/', [AuthController::class, 'login']);
 Route::post('login', [AuthController::class, 'AuthLogin']);
@@ -173,3 +165,12 @@ Route::group(['middleware' => 'student'], function () {
     Route::get('student/my-exam', [ExamController::class, 'myExam']);
     Route::get('student/my-calendar', [CalendarController::class, 'myCalendar']);
 });
+function set_active($url)
+{
+    if (is_array($url)) {
+        return in_array(Request::path(), $url) ? 'active' : '';
+
+    }
+    return Request::path() == $url ? 'active' : '';
+
+}
