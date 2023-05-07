@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\ClassSubjectController;
 use App\Http\Controllers\ClassTeacherController;
@@ -12,7 +13,6 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,6 +44,16 @@ Route::get('reset/{token}', [AuthController::class, 'reset']);
 Route::post('reset/{token}', [AuthController::class, 'changePassword']);
 
 Route::group(['middleware' => 'admin'], function () {
+    Route::get('admin/class/list', [ClassController::class, 'list']);
+    Route::get('admin/class/getData', [ClassController::class, 'getData']);
+    Route::get('admin/class/add', [ClassController::class, 'add']);
+    Route::post('admin/class/add', [ClassController::class, 'insertClass']);
+    Route::get('admin/class/edit/{id}', [ClassController::class, 'edit']);
+    Route::get('admin/class/view/{id}', [ClassController::class, 'view']);
+    Route::post('admin/class/edit/{id}', [ClassController::class, 'editClass']);
+    Route::get('admin/class/delete/{id}', [ClassController::class, 'delete']);
+    Route::get('admin/class/export', [ClassController::class, 'export']);
+
     Route::get('admin/dashboard', [DashboardController::class, 'dashboard']);
     Route::get('admin/admin/list', [AdminController::class, 'list']);
     Route::get('admin/admin/add', [AdminController::class, 'add']);
@@ -106,7 +116,8 @@ Route::group(['middleware' => 'admin'], function () {
     Route::post('admin/exam/edit/{id}', [ExamController::class, 'update']);
     Route::get('admin/exam/delete/{id}', [ExamController::class, 'delete']);
     Route::get('admin/exam/export', [ExamController::class, 'export']);
-    Route::get('admin/exam/score/{class_id}', [ExamController::class, 'examScore']);
+    Route::get('admin/exam_schedule', [ExamController::class, 'examSchedule']);
+    Route::post('admin/exam_schedule/add', [ExamController::class, 'examScheduleInsert']);
 
     //TimeTable
     Route::get('admin/class_timetable/list', [ClassTimeTableController::class, 'list']);
@@ -146,6 +157,8 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::get('teacher/get-student', [TeacherController::class, 'getStudent']);
     Route::get('teacher/get_subject', [ClassTeacherController::class, 'getSubject']);
     Route::get('teacher/get_class', [TeacherController::class, 'getClass']);
+    Route::get('teacher/my_exam', [ExamController::class, 'myExamTeacher']);
+    Route::get('teacher/my-calendar', [CalendarController::class, 'myTeacherCalendar']);
 
 });
 
@@ -157,4 +170,6 @@ Route::group(['middleware' => 'student'], function () {
     Route::get('student/my-timetable', [ClassTimeTableController::class, 'myTimeTable']);
     Route::post('student/profile-edit', [UserController::class, 'updateProfileStudent']);
     Route::post('student/profile', [UserController::class, 'updatePassword']);
+    Route::get('student/my-exam', [ExamController::class, 'myExam']);
+    Route::get('student/my-calendar', [CalendarController::class, 'myCalendar']);
 });

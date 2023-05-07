@@ -27,7 +27,7 @@ class InsertStudentRequest extends FormRequest
             'email' => 'required|email|unique:users',
             'admission_number' => 'required|unique:users',
             'name' => 'required',
-            'mobile_number' => 'required|max:15|min:8',
+            'mobile_number' => 'required',
             'class_id' => 'required',
             'roll_number' => 'required',
             'gender' => 'required',

@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ClassModel>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Subject>
  */
-class ClassModelFactory extends Factory
+class SubjectFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -19,6 +19,7 @@ class ClassModelFactory extends Factory
         return [
             'name' => fake()->name(),
             'status' => fake()->boolean(),
+            'type' => fake()->name(),
             'is_delete' => fake()->boolean(),
         ];
     }

@@ -25,12 +25,7 @@ class ExamRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'subject_id' => 'required',
-            'class_id' => 'required',
-            'start_time' => 'required',
-            'end_time' => 'required',
-            'created_at' => 'required',
-            'status' => 'required',
+            'description' => 'required',
         ];
 
     }

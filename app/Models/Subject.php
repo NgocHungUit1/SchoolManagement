@@ -10,6 +10,12 @@ class Subject extends Model
 {
     use HasFactory;
     protected $table = 'subject';
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User', 'created_by');
+    }
+
     public static function getRecord()
     {
         $return = Subject::select('subject.*', 'users.name as created_by_name')->join('users', 'users.id', 'subject.created_by');

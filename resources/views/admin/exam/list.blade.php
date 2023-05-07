@@ -30,26 +30,7 @@
                                         value="{{ Request::get('exam_name') }}" placeholder="Search by Exam Name ...">
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-6">
-                                <div class="form-group">
-                                    <input type="text" class="form-control class" name="class"
-                                        value="{{ Request::get('class_name') }}" placeholder="Search by Class Name ...">
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6">
-                                <div class="form-group">
-                                    <input type="text" class="form-control subject" name="subject"
-                                        value="{{ Request::get('subject_name') }}" placeholder="Search by Subject Name ...">
-                                </div>
-                            </div>
 
-
-                            {{-- <div class="col-lg-4 col-md-6">
-                                <div class="form-group">
-                                    <input type="date" class="form-control date" name="date"
-                                        value="{{ Request::get('date') }}" placeholder="Search by Date ...">
-                                </div>
-                            </div> --}}
                             <div class="col-lg-2">
                                 <div class="search-student-btn">
                                     <button type="button" onclick="handleSearch()" class="btn btn-primary">Search</button>
@@ -90,13 +71,8 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Exam Name</th>
-                                            <th>Class Name</th>
-                                            <th>Subject Name</th>
-                                            <th>Start Time</th>
-                                            <th>End Time</th>
+                                            <th>Description</th>
                                             <th>Create by User</th>
-                                            <th>Create Date</th>
-                                            <th>Status</th>
                                             <th class="text-end">Action</th>
                                         </tr>
                                     </thead>
@@ -147,25 +123,10 @@
                             data: "name"
                         },
                         {
-                            data: "class_name"
-                        },
-                        {
-                            data: "subject_name"
-                        },
-                        {
-                            data: "start_time"
-                        },
-                        {
-                            data: "end_time"
+                            data: "description"
                         },
                         {
                             data: "created_by_name"
-                        },
-                        {
-                            data: "created_at"
-                        },
-                        {
-                            data: "status"
                         },
                         {
                             data: ""
@@ -177,19 +138,7 @@
                                 return `${full['id']}`;
                             },
                         },
-                        {
-                            targets: 8,
-                            render: function(data, type, full, meta) {
-                                if (full['status'] == 0) {
-                                    return `<button style="width:85px" class="btn btn-success" type="button"><i
-                                                class="fe fe-check-verified"></i>
-                                            Active
-                                        </button>`
-                                } else {
-                                    return `<button class = "btn btn-danger" type="button"> <i class = "fe fe-check-verified"></i>InActive</button>`
-                                }
-                            },
-                        },
+
                         {
                             targets: -1,
                             render: function(data, type, full, meta) {
@@ -203,10 +152,7 @@
                                         class="btn btn-sm bg-danger-light">
                                         <i class="feather-edit"></i>
                                     </a>
-                                    <a href="/admin/exam/score/${full['class_id']}"
-                                        class="btn btn-sm bg-danger-light">
-                                        <i class="feather-edit"></i>
-                                    </a>
+
                                 </div>`;
                             },
                         },

@@ -75,75 +75,13 @@
                                             </div>
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
-                                                    <label>Class <span class="login-danger">*</span></label>
-                                                    <select class="form-control select" name="class_id">
-
-                                                        @foreach ($getClass as $value)
-                                                            <option
-                                                                {{ $getRecord->class_id == $value->id ? 'selected' : '' }}
-                                                                value="{{ $value->id }}">{{ $value->name }}</option>
-                                                        @endforeach
-                                                    </select>
-
-                                                </div>
-                                                <div style="color:red">{{ $errors->first('class_id') }}</div>
-                                            </div>
-
-                                            <div class="col-12 col-sm-4">
-                                                <div class="form-group local-forms">
-                                                    <label>Subject Name <span class="login-danger">*</span></label>
-                                                    <select class="form-control select" name="subject_id">
-
-                                                        @foreach ($getSubject as $value)
-                                                            <option
-                                                                {{ $getRecord->subject_id == $value->id ? 'selected' : '' }}
-                                                                value="{{ $value->id }}">{{ $value->name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                    <div style="color:red">{{ $errors->first('subject_id') }}</div>
+                                                    <label>Description <span class="login-danger">*</span></label>
+                                                    <input class="form-control" type="text" name="description"
+                                                        value="{{ old('description', $getRecord->description) }}"
+                                                        placeholder="Enter Full Name">
+                                                    <div style="color:red">{{ $errors->first('description') }}</div>
                                                 </div>
                                             </div>
-                                            <div class="col-12 col-sm-4">
-                                                <div class="form-group local-forms">
-                                                    <label>Start Time</label>
-                                                    <input type="time" name="start_time"
-                                                        value="{{ old('start_time', $getRecord->start_time) }}"
-                                                        class="form-control">
-                                                    <div style="color:red">{{ $errors->first('start_time') }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-sm-4">
-                                                <div class="form-group local-forms">
-                                                    <label>End Time</label>
-                                                    <input type="time" name="end_time"
-                                                        value="{{ old('end_time', $getRecord->end_time) }}"
-                                                        class="form-control">
-                                                    <div style="color:red">{{ $errors->first('end_time') }}</div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-12 col-sm-4">
-                                                <div class="form-group local-forms calendar-icon">
-                                                    <label>Created Date <span class="login-danger">*</span></label>
-                                                    <input class="form-control datetimepicker" type="text"
-                                                        value="{{ old('created_at', $getRecord->created_at) }}"
-                                                        name="created_at">
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-sm-4">
-                                                <div class="form-group local-forms">
-                                                    <label>Status <span class="login-danger">*</span></label>
-                                                    <select class="form-control select" name="status">
-                                                        <option {{ $getRecord->status == 0 ? 'selected' : '' }}
-                                                            value="0">Active
-                                                        </option>
-                                                        <option {{ $getRecord->status == 1 ? 'selected' : '' }}
-                                                            value="1">InActive
-                                                        </option>
-                                                    </select>
-                                                </div>
-                                            </div>
-
                                             <div class="col-12">
                                                 <div class="student-submit">
                                                     <button type="submit" class="btn btn-primary">Submit</button>

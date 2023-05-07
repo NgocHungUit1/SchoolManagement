@@ -40,43 +40,7 @@
                     </div>
                 </div>
 
-                {{-- <div class="student-group-form">
-                    <form action="" method="get">
-                        <div class="row">
-                            @include('_message')
 
-                            <div class="col-lg-3 col-md-6">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="name"
-                                        value="{{ Request::get('name') }}" placeholder="Search by Name ...">
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6">
-                                <div class="form-group">
-                                    <select class="form-control select" name="type">
-                                        <option value="">Select Type</option>
-                                        <option {{ Request::get('type') == 'Theory' ? 'selected' : '' }} value="Theory">
-                                            Theory</option>
-                                        <option {{ Request::get('type') == 'Practical' ? 'selected' : '' }}
-                                            value="Practical">
-                                            Practical</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-6">
-                                <div class="form-group">
-                                    <input type="date" class="form-control" name="date"
-                                        value="{{ Request::get('date') }}" placeholder="Search by Date ...">
-                                </div>
-                            </div>
-
-                            <div class="col-lg-2">
-                                <div class="search-student-btn">
-                                    <button type="submit" class="btn btn-primary">Search</button>
-                                </div>
-                            </div>
-                    </form>
-                </div> --}}
             </div>
             <div class="row">
                 <div class="col-sm-12">
@@ -88,15 +52,7 @@
                                     <div class="col">
                                         <h3 class="page-title">My Subject</h3>
                                     </div>
-                                    <div class="col-auto text-end float-end ms-auto download-grp">
-                                        <a href="students.html" class="btn btn-outline-gray me-2 active"><i
-                                                class="feather-list"></i></a>
-                                        <a href="students-grid.html" class="btn btn-outline-gray me-2"><i
-                                                class="feather-grid"></i></a>
-                                        <a href="#" class="btn btn-outline-primary me-2"><i
-                                                class="fas fa-download"></i> Download</a>
 
-                                    </div>
                                 </div>
                             </div>
 
@@ -118,7 +74,6 @@
                                                 <td>{{ $value->subject_type }}</td>
                                             </tr>
                                         @endforeach
-
                                     </tbody>
                                 </table>
                             </div>

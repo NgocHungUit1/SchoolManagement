@@ -59,4 +59,33 @@ class ClassTeacher extends Model
             ->get();
     }
 
+    public static function getMyClassSubjectTeacher($teacher_id)
+    {
+        return ClassTeacher::select('teacher_class.*', 'class.name as class_name',
+            'class.id as class_id')
+            ->join('class', 'class.id', '=', 'teacher_class.class_id')
+            ->where('teacher_class.is_delete', '=', 0)
+            ->where('teacher_class.status', '=', 0)
+            ->where('class.is_delete', '=', 0)
+            ->where('class.status', '=', 0)
+            ->where('teacher_class.teacher_id', '=', $teacher_id)
+            ->groupBy('teacher_class.class_id')
+            ->get();
+    }
+
+    public static function getCalendarTeacher($teacher_id)
+    {
+        return ClassTeacher::select('class_subject_timetable.*', 'class.name as class_name', 'subject.name as subject_name',
+            'class.id as class_id', 'day_of_week.name as day_name', 'day_of_week.fullcalendar_day')
+            ->join('class', 'class.id', '=', 'teacher_class.class_id')
+            ->join('class_subject', 'class_subject.class_id', '=', 'class.id')
+            ->join('class_subject_timetable', 'class_subject_timetable.subject_id', '=', 'class_subject.subject_id')
+            ->join('subject', 'subject.id', '=', 'class_subject_timetable.subject_id')
+            ->join('day_of_week', 'day_of_week.id', '=', 'class_subject_timetable.day_id')
+            ->where('teacher_class.is_delete', '=', 0)
+            ->where('teacher_class.status', '=', 0)
+            ->where('teacher_class.teacher_id', '=', $teacher_id)
+            ->get();
+    }
+
 }

@@ -104,11 +104,6 @@
                     <span>Main Menu</span>
                 </li>
                 @if (Auth::user()->user_type == 1)
-                    <li class="submenu ">
-                        <a href="#"><i class="feather-grid"></i> <span> Dashboard</span> <span
-                                class="menu-arrow"></span></a>
-
-                    </li>
                     <li class="submenu">
                         <a href="{{ url('admin/admin/list') }}"><i class="fas fa-user"></i> <span> User</span>
                             <span class="menu-arrow"></span></a>
@@ -144,11 +139,23 @@
                             <i class="fas fa-book-reader"></i> <span>
                                 Subject</span></a>
                     </li>
-                    <li class=" {{ set_active(['admin/exam/list']) }}"><a href="{{ url('admin/exam/list') }}"
-                            class=" {{ set_active(['admin/exam/list']) }}">
-                            <i class="fas fa-clipboard-list"></i> <span>
-                                Exam</span></a>
+
+
+                    <li class="submenu">
+                        <a href="{{ url('admin/admin/list') }}"> <i class="fas fa-clipboard-list"></i> <span>
+                                Exam</span>
+                            <span class="menu-arrow"></span></a>
+                        <ul>
+                            <li class=" {{ set_active(['admin/exam/list']) }}"><a
+                                    href="{{ url('admin/exam/list') }}"
+                                    class=" {{ set_active(['admin/exam/list']) }}">Exam List</a></li>
+
+                            <li class=" {{ set_active(['admin/exam_schedule']) }}"><a
+                                    href="{{ url('admin/exam_schedule') }}"
+                                    class="{{ set_active(['admin/exam_schedule']) }}">Exam Schedule</a></li>
+                        </ul>
                     </li>
+
                     <li class=" {{ set_active(['admin/assign_subject/list']) }}"><a
                             href="{{ url('admin/assign_subject/list') }}"
                             class=" {{ set_active(['admin/assign_subject/list']) }}">
@@ -169,12 +176,14 @@
                                 Class Time Table</span></a>
                     </li>
                 @elseif (Auth::user()->user_type == 2)
-                    <li class="">
-                        <a href="#"><i class="feather-grid"></i> <span> Dashboard</span> <span></span></a>
-
+                    <li class=" {{ set_active(['teacher/my-calendar']) }}"><a
+                            href="{{ url('teacher/my-calendar') }}"
+                            class=" {{ set_active(['teacher/my-calendar']) }}">
+                            <i class="fas fa-clipboard-list"></i> <span>
+                                My Calendar</span></a>
                     </li>
-                    <li class=" {{ set_active(['teacher/exam/list']) }}"><a href="{{ url('teacher/exam/list') }}"
-                            class=" {{ set_active(['teacher/exam/list']) }}">
+                    <li class=" {{ set_active(['teacher/my_exam']) }}"><a href="{{ url('teacher/my_exam') }}"
+                            class=" {{ set_active(['teacher/my_exam']) }}">
                             <i class="fas fa-clipboard-list"></i> <span>
                                 Exam</span></a>
                     </li>
@@ -194,6 +203,17 @@
                     <li class="submenu ">
                         <a href="#"><i></i> <span> Dashboard</span> <span></span></a>
 
+                    </li>
+                    <li class=" {{ set_active(['student/my-calendar']) }}"><a
+                            href="{{ url('student/my-calendar') }}"
+                            class=" {{ set_active(['student/my-calendar']) }}">
+                            <i class="fas fa-book-reader"></i> <span>
+                                My Calendar</span></a>
+                    </li>
+                    <li class=" {{ set_active(['student/my-exam']) }}"><a href="{{ url('student/my-exam') }}"
+                            class=" {{ set_active(['student/my-exam']) }}">
+                            <i class="fas fa-book-reader"></i> <span>
+                                My Exam</span></a>
                     </li>
                     <li class=" {{ set_active(['student/my-subject']) }}"><a href="{{ url('student/my-subject') }}"
                             class=" {{ set_active(['student/my-subject']) }}">

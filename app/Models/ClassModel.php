@@ -14,7 +14,7 @@ class ClassModel extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\Models\User', 'created_by');
+        return $this->belongsTo('App\Models\User', 'class_id', 'id');
     }
 
     public static function getClassId($id)

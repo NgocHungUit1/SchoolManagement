@@ -16,22 +16,23 @@ class Exam extends Model
 
     public static function getRecord()
     {
-        $return = self::select('exam.*', 'class.name as class_name', 'subject.name as subject_name', 'users.name as created_by_name')
-            ->join('subject', 'subject.id', '=', 'exam.subject_id')
-            ->join('class', 'class.id', '=', 'exam.class_id')
+        $return = self::select('exam.*', 'users.name as created_by_name')
             ->join('users', 'users.id', '=', 'exam.created_by')
             ->where('exam.is_delete', '=', 0);
 
-        if (!empty(Request::get('class'))) {
-            $return = $return->where('class.name', 'like', '%' . Request::get('class') . '%');
-        }
-        if (!empty(Request::get('subject'))) {
-            $return = $return->where('subject.name', 'like', '%' . Request::get('subject') . '%');
-        }
         if (!empty(Request::get('exam'))) {
             $return = $return->where('exam.name', 'like', '%' . Request::get('exam') . '%');
         }
         $return = $return->orderBy('exam.id', 'desc')->get();
+        return $return;
+    }
+
+    public static function getExam()
+    {
+        $return = self::select('exam.*', 'users.name as created_by_name')
+            ->join('users', 'users.id', '=', 'exam.created_by')
+            ->where('exam.is_delete', '=', 0)
+            ->orderBy('exam.name', 'desc')->get();
         return $return;
     }
 

@@ -47,6 +47,16 @@ class User extends Authenticatable
         'created_at' => 'date:Y-m-d',
     ];
 
+    public function classModel()
+    {
+        return $this->hasMany('App\Models\ClassModel', 'created_by', 'id');
+    }
+
+    public function subject()
+    {
+        return $this->hasMany('App\Models\Subject', 'created_by', 'id');
+    }
+
     public static function getUserId($id)
     {
         return self::find($id);

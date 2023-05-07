@@ -159,7 +159,7 @@
                             render: function(data, type, full, meta) {
                                 return ` <div class="actions ">
                                      <a id="element${full['id']}" href="javascript:void(0)"
-                                         onclick="deleteTeacher(${full['id']})"
+                                         onclick="deleteClass(${full['id']})"
                                          class="btn btn-sm bg-danger">
                                          <i class="fa fa-trash " aria-hidden="true"></i>
                                      </a>

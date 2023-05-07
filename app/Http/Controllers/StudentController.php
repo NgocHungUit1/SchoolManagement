@@ -49,7 +49,6 @@ class StudentController extends Controller
         $student->roll_number = ($request->roll_number);
         $student->class_id = ($request->class_id);
         $student->gender = ($request->gender);
-        // $student->date_of_birth = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
         $student->date_of_birth = $request->date_of_birth;
         $student->mobile_number = $request->mobile_number;
         $get_image = $request->user_avatar;
