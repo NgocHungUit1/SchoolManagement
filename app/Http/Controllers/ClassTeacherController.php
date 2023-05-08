@@ -3,18 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassModel;
+use App\Models\ClassSubject;
 use App\Models\ClassTeacher;
+use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ClassTeacherController extends Controller
 {
-    function list(Request $request) {
+    function list(Request $request)
+    {
         $data['getRecord'] = ClassTeacher::getRecord();
 
         return view('admin.assign_class_teacher.list', $data);
+    }
 
+   public function getData()
+    {
+        $data['data'] = ClassTeacher::getRecord();
+
+        return $data;
     }
     public function add(Request $request)
     {
@@ -25,27 +34,26 @@ class ClassTeacherController extends Controller
 
     public function assignTeacherClass(Request $request)
     {
-        if (!empty($request->teacher_id)) {
-            foreach ($request->teacher_id as $teacher_id) {
-                $getAlready = ClassTeacher::getAlreadyFirst($request->class_id, $teacher_id);
-                if (!empty($getAlready)) {
-                    $getAlready->status = $request->status;
-                    $getAlready->save();
-                } else {
 
+            $getAlready = ClassTeacher::getAlreadyFirst($request->class_id, $request->teacher_id,$request->subject_id);
+            $getAlreadyTeacher=ClassTeacher::getAlreadyTeacher($request->class_id,$request->subject_id);
+            if (!empty($getAlreadyTeacher  && !empty($getAlready))) {
+                            $getAlready->status = $request->status;
+                            $getAlready->save();
+                            return redirect('admin/assign_class_teacher/list')->with('warning', 'Teacher Assigned already exist');
+                        }
+                        else {
                     $save = new ClassTeacher();
                     $save->class_id = $request->class_id;
-                    $save->teacher_id = $teacher_id;
+                    $save->teacher_id = $request->teacher_id;
+                    $save->subject_id = $request->subject_id;
                     $save->status = $request->status;
                     $save->created_by = Auth::user()->id;
                     $save->save();
                 }
-            }
-            return redirect('admin/assign_class_teacher/list')->with('success', 'Class Assigned Successfully');
-        } else {
 
-            return redirect()->back()->with('error', 'Class Assigned Fail ');
-        }
+            return redirect('admin/assign_class_teacher/list')->with('success', 'Class Assigned Successfully');
+
     }
 
     public function edit($id)
@@ -54,33 +62,33 @@ class ClassTeacherController extends Controller
         $getRecord = ClassTeacher::find($id);
         if (!empty($getRecord)) {
             $data['getRecord'] = $getRecord;
-            $data['getAssignTeacherId'] = ClassTeacher::getAssignTeacherId($getRecord->class_id);
+
             $data['getClass'] = ClassModel::getClass();
             $data['getTeacher'] = User::getTeacher();
         }
         return view('admin.assign_class_teacher.edit', $data);
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
-        ClassTeacher::deleteSubject($request->class_id);
-        if (!empty($request->teacher_id)) {
-            foreach ($request->teacher_id as $teacher_id) {
-                $getAlready = ClassTeacher::getAlreadyFirst($request->class_id, $teacher_id);
+        // ClassTeacher::deleteSubject($request->class_id,$request->subject_id);
+                $getAlready = ClassTeacher::getAlreadyFirst($request->class_id, $request->teacher_id,$request->subject_id);
                 if (!empty($getAlready)) {
                     $getAlready->status = $request->status;
                     $getAlready->save();
+                    return redirect('admin/assign_class_teacher/list')->with('warning', 'Teacher Assigned already exist');
                 } else {
 
-                    $save = new ClassTeacher();
+                    $save = ClassTeacher::find($id);
+                    // if ( $request !== null)
                     $save->class_id = $request->class_id;
-                    $save->teacher_id = $teacher_id;
+                    $save->teacher_id = $request->teacher_id;
+                    $save->subject_id = $request->subject_id;
                     $save->status = $request->status;
                     $save->created_by = Auth::user()->id;
                     $save->save();
                 }
-            }
-        }
+
         return redirect('admin/assign_class_teacher/list')->with('success', 'Assign Class Teacher Updated Successfully');
     }
 
@@ -97,10 +105,15 @@ class ClassTeacherController extends Controller
         return view('teacher.my_subject_class', $data);
     }
 
-    public function getSubject()
+    public function get_Subject(Request $request)
     {
-        $data['getRecord'] = ClassTeacher::getMyClassSubject(Auth::user()->id);
-        return $data;
-    }
 
+        $getSubject = ClassSubject::MySubject($request->class_id);
+        $html = "<option value=''> Select </option>";
+        foreach ($getSubject as $value) {
+            $html .= "<option value='" . $value->subject_id . "'>" . $value->subject_name . " </option>";
+        }
+        $json['html'] = $html;
+        echo json_encode($json);
+    }
 }

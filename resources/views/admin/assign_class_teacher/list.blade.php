@@ -27,25 +27,27 @@
 
                             <div class="col-lg-3 col-md-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="class_name"
+                                    <input type="text" class="form-control class_name " name="class_name"
                                         value="{{ Request::get('class_name') }}" placeholder="Search by Class Name ...">
                                 </div>
                             </div>
                             <div class="col-lg-3 col-md-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="subject_name"
+                                    <input type="text" class="form-control subject_name" name="subject_name"
                                         value="{{ Request::get('subject_name') }}" placeholder="Search by Subject Name ...">
                                 </div>
                             </div>
-                            <div class="col-lg-4 col-md-6">
+                            <div class="col-lg-3 col-md-6">
                                 <div class="form-group">
-                                    <input type="date" class="form-control" name="date"
-                                        value="{{ Request::get('date') }}" placeholder="Search by Date ...">
+                                    <input type="text" class="form-control teacher_name" name="teacher_name"
+                                        value="{{ Request::get('teacher_name') }}" placeholder="Search by Teacher Name ...">
                                 </div>
                             </div>
                             <div class="col-lg-2">
                                 <div class="search-student-btn">
-                                    <button type="submit" class="btn btn-primary">Search</button>
+                                    <button type="button" onclick="handleSearch()" class="btn btn-primary">Search</button>
+                                    <button type="button" onclick="handleReset()" class="btn btn-success"
+                                        style=" padding: 10px;">Reset</button>
                                 </div>
                             </div>
                     </form>
@@ -66,8 +68,6 @@
                                                 class="feather-list"></i></a>
                                         <a href="students-grid.html" class="btn btn-outline-gray me-2"><i
                                                 class="feather-grid"></i></a>
-                                        <a href="#" class="btn btn-outline-primary me-2"><i
-                                                class="fas fa-download"></i> Download</a>
                                         <a href="{{ url('admin/assign_class_teacher/add') }}" class="btn btn-primary"><i
                                                 class="fas fa-plus"></i> </a>
                                     </div>
@@ -76,11 +76,12 @@
 
                             <div class="table-responsive" id="user">
                                 <table
-                                    class="table border-0 star-student table-hover table-center mb-0 datatable table-striped">
+                                    class="table border-0 star-student table-hover table-center mb-0 table-striped assign_subject">
                                     <thead class="student-thread">
                                         <tr>
                                             <th>ID</th>
                                             <th>Class Name</th>
+                                            <th>Subject Name</th>
                                             <th>Teacher Name</th>
                                             <th>Create by User</th>
                                             <th>Create Date</th>
@@ -89,42 +90,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($getRecord as $key => $value)
-                                            <tr id="sid{{ $value->id }}">
-                                                <td>{{ $key + 1 }} </td>
-                                                <td>{{ $value->class_name }}</td>
-                                                <td>{{ $value->teacher_name }}</td>
-                                                <td>{{ $value->created_by_name }} </td>
-                                                <td>{{ date('d-m-Y H:i A', strtotime($value->created_at)) }}</td>
-                                                <td>
-                                                    @if ($value->status == 0)
-                                                        <button style="width:85px" class="btn btn-success" type="button"><i
-                                                                class="fe fe-check-verified"></i>
-                                                            Active
-                                                        </button>
-                                                    @else
-                                                        <button class="btn btn-danger" type="button"><i
-                                                                class="fe fe-check-verified"></i>
-                                                            InActive
-                                                        </button>
-                                                    @endif
 
-                                                </td>
-                                                <td class="text-end">
-                                                    <div class="actions ">
-                                                        <a href="javascript:void(0)"
-                                                            onclick="deleteItem({{ $value->id }})"
-                                                            class="btn btn-sm bg-danger">
-                                                            <i class="fa fa-trash " aria-hidden="true"></i>
-                                                        </a>
-                                                        <a href="{{ url('admin/assign_class_teacher/edit/' . $value->id) }}"
-                                                            class="btn btn-sm bg-danger-light">
-                                                            <i class="feather-edit"></i>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
 
                                     </tbody>
                                 </table>
@@ -152,10 +118,101 @@
                     },
                     success: function(response) {
 
-                        $("#sid" + id).remove();
+                        $("#element" + id).parent().parent().parent().remove();
                     }
                 });
             }
         }
     </script>
+    @push('js')
+        <script>
+            $(document).ready(function() {
+                var assign_subject = $('.assign_subject');
+                var table = assign_subject.DataTable({
+                    ajax: "/admin/assign_class_teacher/getData",
+                    columns: [{
+                            data: "id"
+                        },
+                        {
+                            data: "class_name"
+                        },
+                        {
+                            data: "subject_name"
+                        },
+                        {
+                            data: "teacher_name"
+                        },
+                        {
+                            data: "created_by_name"
+                        },
+                        {
+                            data: "created_at"
+                        },
+                        {
+                            data: "status"
+                        },
+                        {
+                            data: ""
+                        },
+                    ],
+                    columnDefs: [{
+                            targets: 0,
+                            render: function(data, type, full, meta) {
+                                return `${full['id']}`;
+                            },
+                        },
+                        {
+                            targets: 6,
+                            render: function(data, type, full, meta) {
+                                if (full['status'] == 0) {
+                                    return `<button style="width:85px" class="btn btn-success" type="button"><i
+                                             class="fe fe-check-verified"></i>
+                                         Active
+                                     </button>`
+                                } else {
+                                    return `<button class = "btn btn-danger" type="button"> <i class = "fe fe-check-verified"></i>InActive</button>`
+                                }
+                            },
+                        },
+                        {
+                            targets: -1,
+                            render: function(data, type, full, meta) {
+                                return ` <div class="actions ">
+                                 <a id="element${full['id']}" href="javascript:void(0)"
+                                     onclick="deleteItem(${full['id']})"
+                                     class="btn btn-sm bg-danger">
+                                     <i class="fa fa-trash " aria-hidden="true"></i>
+                                 </a>
+                                 <a href="/admin/assign_class_teacher/edit/${full['id']}"
+                                     class="btn btn-sm bg-danger-light">
+                                     <i class="feather-edit"></i>
+                                 </a>
+                             </div>`;
+                            },
+                        },
+                    ]
+                });
+            })
+
+            function handleSearch() {
+                const class_name = $(".class_name").val();
+                const subject_name = $(".subject_name").val();
+                const teacher_name = $(".teacher_name").val();
+                var assign_subject = $('.assign_subject').DataTable();
+                assign_subject.ajax.url(
+                        `/admin/assign_class_teacher/getData?class_name=${class_name}&subject_name=${subject_name}&teacher_name=${teacher_name}`
+                    )
+                    .load();
+                assign_subject.draw();
+            }
+
+            function handleReset() {
+                var assign_subject = $('.assign_subject').DataTable();
+                assign_subject.ajax.url(
+                        `/admin/assign_class_teacher/getData`)
+                    .load();
+                assign_subject.draw();
+            }
+        </script>
+    @endpush
 @endsection

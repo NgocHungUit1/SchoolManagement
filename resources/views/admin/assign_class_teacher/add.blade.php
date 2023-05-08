@@ -18,45 +18,63 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
                                 <form action="" method="post">
                                     @csrf
+                                    <div class="row">
+                                        <div class="col-12 col-sm-6">
+                                            <div class="form-group">
+                                                <select class="form-control getClass" name="class_id">
+                                                    <option value="">Select Class</option>
+                                                    @foreach ($getClass as $class)
+                                                        <option
+                                                            {{ Request::get('class_id') == $class->id ? 'selected' : '' }}
+                                                            value="{{ $class->id }}">{{ $class->name }}</option>
+                                                    @endforeach
 
-                                    <div class="form-group row">
-                                        <label>Class Name <span class="login-danger">*</span></label>
-                                        <select class="form-control select" name="class_id">
-                                            <option value="">Select Class</option>
-                                            @foreach ($getClass as $class)
-                                                <option value="{{ $class->id }}">{{ $class->name }}</option>
-                                            @endforeach
-
-                                        </select>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label>Teacher name <span class="login-danger">*</span></label>
-                                        @foreach ($getTeacher as $value)
-                                            <div>
-                                                <label>
-                                                    <input type="checkbox" value="{{ $value->id }}"
-                                                        name="teacher_id[]">{{ $value->name }}
-                                                </label>
+                                                </select>
                                             </div>
-                                        @endforeach
+                                        </div>
+                                        <div class="col-12 col-sm-6">
+                                            <div class="form-group">
+                                                <select class="form-control getSubject" name="subject_id">
+                                                    <option value="">Select Subject </option>
+                                                    @if (!empty($getSubject))
+                                                        @foreach ($getSubject as $subject)
+                                                            <option
+                                                                {{ Request::get('subject_id') == $subject->subject_id ? 'selected' : '' }}
+                                                                value="{{ $subject->subject_id }}">
+                                                                {{ $subject->subject_name }}
+                                                            </option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label>Teacher name <span class="login-danger">*</span></label>
+                                            <select class="form-control select" name="teacher_id">
+                                                <option value="">Please Select Teacher </option>
+                                                @foreach ($getTeacher as $value)
+                                                    <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                                @endforeach
+                                            </select>
 
-                                    </div>
-                                    <div class="form-group row">
-                                        <label>Status <span class="login-danger">*</span></label>
-                                        <select class="form-control select" name="status">
-                                            <option value="0">Active</option>
-                                            <option value="1">InActive</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-form-label col-md-2"></label>
-                                        <div class="col-md-10">
-                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label>Status <span class="login-danger">*</span></label>
+                                            <select class="form-control select" name="status">
+                                                <option value="0">Active</option>
+                                                <option value="1">InActive</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-form-label col-md-2"></label>
+                                            <div class="col-md-10">
+                                                <button type="submit" class="btn btn-primary">Submit</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </form>
@@ -69,4 +87,24 @@
         </div>
 
     </div>
+    @push('js')
+        <script type="text/javascript">
+            $('.getClass').change(function() {
+                var class_id = $(this).val();
+
+                $.ajax({
+                    url: " {{ url('admin/assign_class_teacher/get_subject') }}",
+                    type: "POST",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        class_id: class_id,
+                    },
+                    dataType: "json",
+                    success: function(response) {
+                        $('.getSubject').html(response.html);
+                    },
+                });
+            });
+        </script>
+    @endpush
 @endsection

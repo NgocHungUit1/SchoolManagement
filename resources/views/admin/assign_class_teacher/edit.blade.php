@@ -25,35 +25,43 @@
                                     @csrf
                                     <div class="form-group row">
                                         <label>Class Name <span class="login-danger">*</span></label>
-                                        <select class="form-control select" name="class_id">
+
+                                        <select class="form-control getClass" name="class_id">
                                             <option value="">Select Class</option>
                                             @foreach ($getClass as $class)
                                                 <option {{ $getRecord->class_id == $class->id ? 'selected' : '' }}
+                                                    {{ Request::get('class_id') == $class->id ? 'selected' : '' }}
                                                     value="{{ $class->id }}">{{ $class->name }}</option>
                                             @endforeach
 
                                         </select>
                                     </div>
                                     <div class="form-group row">
+                                        <label>Subject Name <span class="login-danger">*</span></label>
+                                        <select class="form-control getSubject" name="subject_id">
+                                            <option value="">Select Subject </option>
+                                            @if (!empty($getSubject))
+                                                @foreach ($getSubject as $subject)
+                                                    <option
+                                                        {{ Request::get('subject_id') == $subject->subject_id ? 'selected' : '' }}
+                                                        value="{{ $subject->subject_id }}">
+                                                        {{ $subject->subject_name }}
+                                                    </option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+
+                                    </div>
+                                    <div class="form-group row">
                                         <label>Teacher Name <span class="login-danger">*</span></label>
-                                        @foreach ($getTeacher as $teacher)
-                                            @php
-                                                $checked = '';
-                                            @endphp
-                                            @foreach ($getAssignTeacherId as $value)
-                                                @if ($value->teacher_id == $teacher->id)
-                                                    @php
-                                                        $checked = 'checked';
-                                                    @endphp
-                                                @endif
+                                        <select class="form-control select" name="teacher_id">
+                                            <option value="">Select Teacher</option>
+                                            @foreach ($getTeacher as $teacher)
+                                                <option {{ $getRecord->teacher_id == $teacher->id ? 'selected' : '' }}
+                                                    value="{{ $teacher->id }}">{{ $teacher->name }}
                                             @endforeach
-                                            <div>
-                                                <label>
-                                                    <input {{ $checked }} type="checkbox" value="{{ $teacher->id }}"
-                                                        name="teacher_id[]">{{ $teacher->name }}
-                                                </label>
-                                            </div>
-                                        @endforeach
+
+                                        </select>
 
                                     </div>
                                     <div class="form-group row">
@@ -81,4 +89,24 @@
         </div>
 
     </div>
+    @push('js')
+        <script type="text/javascript">
+            $('.getClass').change(function() {
+                var class_id = $(this).val();
+
+                $.ajax({
+                    url: " {{ url('admin/assign_class_teacher/get_subject') }}",
+                    type: "POST",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        class_id: class_id,
+                    },
+                    dataType: "json",
+                    success: function(response) {
+                        $('.getSubject').html(response.html);
+                    },
+                });
+            });
+        </script>
+    @endpush
 @endsection

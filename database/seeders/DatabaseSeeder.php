@@ -30,5 +30,7 @@ class DatabaseSeeder extends Seeder
             ->has(Exam::factory()->count(3))
             ->create();
 
+
+
     }
 }

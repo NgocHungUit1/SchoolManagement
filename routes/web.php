@@ -113,7 +113,6 @@ Route::group(['middleware' => 'admin'], function () {
 
     //TimeTable
     Route::get('admin/class_timetable/list', [ClassTimeTableController::class, 'list']);
-    Route::get('admin/class_timetable/test', [ClassTimeTableController::class, 'invoke']);
     Route::post('admin/class_timetable/get_subject', [ClassTimeTableController::class, 'get_Subject']);
     Route::post('admin/class_timetable/add', [ClassTimeTableController::class, 'add']);
 
@@ -129,8 +128,10 @@ Route::group(['middleware' => 'admin'], function () {
 
     //Assign Class Teacher
     Route::get('admin/assign_class_teacher/list', [ClassTeacherController::class, 'list']);
+    Route::get('admin/assign_class_teacher/getData', [ClassTeacherController::class, 'getData']);
     Route::get('admin/assign_class_teacher/add', [ClassTeacherController::class, 'add']);
     Route::post('admin/assign_class_teacher/add', [ClassTeacherController::class, 'assignTeacherClass']);
+    Route::post('admin/assign_class_teacher/get_subject', [ClassTeacherController::class, 'get_Subject']);
     Route::get('admin/assign_class_teacher/edit/{id}', [ClassTeacherController::class, 'edit']);
     Route::post('admin/assign_class_teacher/edit/{id}', [ClassTeacherController::class, 'update']);
     Route::get('admin/assign_class_teacher/delete/{id}', [ClassTeacherController::class, 'delete']);
