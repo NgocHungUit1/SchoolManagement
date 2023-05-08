@@ -11,18 +11,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
-class CLassSubjectController extends Controller
+class ClassSubjectController extends Controller
 {
     function list() {
         $data['getRecord'] = ClassSubject::getRecord();
         return view('admin.assign_subject.list', $data);
-
     }
 
     public function getData()
     {
         $data['data'] = ClassSubject::getRecord();
-
         return $data;
     }
 
