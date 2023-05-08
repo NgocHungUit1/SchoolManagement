@@ -70,11 +70,12 @@ class ClassTeacher extends Model
             ->get();
     }
 
-    public static function getMyClassSubjectTeacher($teacher_id)
+    public static function getMyClassTeacher($teacher_id)
     {
         return ClassTeacher::select('teacher_class.*', 'class.name as class_name',
-            'class.id as class_id')
+            'class.id as class_id', 'subject.id as subject_id')
             ->join('class', 'class.id', '=', 'teacher_class.class_id')
+            ->join('subject', 'subject.id', '=', 'teacher_class.subject_id')
             ->where('teacher_class.is_delete', '=', 0)
             ->where('teacher_class.status', '=', 0)
             ->where('class.is_delete', '=', 0)

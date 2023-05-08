@@ -171,16 +171,16 @@ class ExamController extends Controller
     public function myExamTeacher(Request $request)
     {
         $result = array();
-        $getClass = ClassTeacher::getMyClassSubjectTeacher(Auth::user()->id);
+        $getClass = ClassTeacher::getMyClassTeacher(Auth::user()->id);
         foreach ($getClass as $class) {
             $dataC = array();
             $dataC['class_name'] = $class->class_name;
-            $getExam = ExamSchedule::getExam($class->class_id);
+            $getExam = ExamSchedule::getExamTeacher($class->class_id,$class->subject_id);
             $examArray = array();
             foreach ($getExam as $exam) {
                 $dataE = array();
                 $dataE['name'] = $exam->exam_name;
-                $getExamTimeTable = ExamSchedule::getExamTimeTable($exam->exam_id, $class->class_id);
+                $getExamTimeTable = ExamSchedule::getExamTimeTableTeacher($exam->exam_id, $class->class_id,$class->subject_id);
                 $subjectArray = array();
                 foreach ($getExamTimeTable as $valueS) {
                     $dataS = array();

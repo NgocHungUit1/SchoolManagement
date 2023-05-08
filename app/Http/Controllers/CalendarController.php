@@ -82,7 +82,7 @@ class CalendarController extends Controller
     {
         $teacher_id = Auth::user()->id;
         $data['getCalendarTeacher'] = ClassTeacher::getCalendarTeacher($teacher_id);
-
         return view('teacher.my_calendar', $data)->with('success', 'My Time Table Teacher ');
     }
+
 }

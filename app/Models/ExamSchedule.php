@@ -29,6 +29,16 @@ class ExamSchedule extends Model
             ->get();
     }
 
+    public static function getExamTimeTableTeacher($exam_id, $class_id,$subject_id)
+    {
+        return ExamSchedule::select('exam_schedule.*', 'subject.name as subject_name', 'subject.type as subject_type')
+            ->join('subject', 'subject.id', '=', 'exam_schedule.subject_id')
+            ->where('exam_schedule.exam_id', '=', $exam_id)
+            ->where('exam_schedule.class_id', '=', $class_id)
+            ->where('exam_schedule.subject_id', '=', $subject_id)
+            ->get();
+    }
+
     public static function getExam($class_id)
     {
         return ExamSchedule::select('exam_schedule.*', 'exam.name as exam_name')
@@ -37,4 +47,26 @@ class ExamSchedule extends Model
             ->groupBy('exam_schedule.exam_id')
             ->get();
     }
+
+    public static function getExamTeacher($class_id,$subject_id)
+    {
+        return ExamSchedule::select('exam_schedule.*', 'exam.name as exam_name')
+            ->join('exam', 'exam.id', '=', 'exam_schedule.exam_id')
+            ->where('exam_schedule.class_id', '=', $class_id)
+            ->where('exam_schedule.subject_id', '=', $subject_id)
+            ->groupBy('exam_schedule.exam_id')
+            ->get();
+    }
+    public static function  getExamCalendarTeacher($teacher_id)
+    {
+        return ExamSchedule::select('exam_schedule.*', 'exam.name as exam_name', 'class.name as class_name', 'subject.name as subject_name')
+            ->join('teacher_class', 'teacher_class.class_id', '=', 'exam_schedule.class_id')
+            ->join('class', 'class.id', '=', 'teacher_class.class_id')
+            ->join('subject', 'subject.id', '=', 'teacher_class.subject_id')
+            ->join('exam', 'exam.id', '=', 'exam_schedule.exam_id')
+            ->where('teacher_class.teacher_id', '=', $teacher_id)
+            ->get();
+    }
+
+
 }
