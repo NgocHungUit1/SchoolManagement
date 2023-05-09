@@ -14,7 +14,7 @@ class SubjectTest extends TestCase
      *
      * @return void
      */
-    use DatabaseTransactions;
+    // use DatabaseTransactions;
 
     public function testCreateSubjectWithUserTypeOne()
     {
@@ -24,9 +24,9 @@ class SubjectTest extends TestCase
         // Đăng nhập với user vừa tạo
         $this->actingAs($user);
 
-        // Tạo một request gửi lên route hoặc controller xử lý tạo Class
+        // Tạo một request gửi lên route hoặc controller xử lý tạo Subject
         $response = $this->withoutMiddleware()->post('/admin/subject/add', [
-            'name' => 'Class A',
+            'name' => 'Subject A',
             'type' => 'THeory',
             'status' => '0',
             'is_delete' => '0',
@@ -39,7 +39,7 @@ class SubjectTest extends TestCase
 
     public function test_edit_subject_with_valid_input()
     {
-        //create class to edit
+        //create Subject to edit
         $subject = Subject::factory()->create();
 
         // Tạo một user với user_type = 1
@@ -48,7 +48,7 @@ class SubjectTest extends TestCase
         // Đăng nhập với user vừa tạo
         $this->actingAs($user);
 
-        //make a request to edit the class with valid input data
+        //make a request to edit the Subject with valid input data
         $response = $this->withoutMiddleware()->post('/admin/subject/edit/' . $subject->id, [
             'name' => 'New Subject Name',
             'status' => '0',
@@ -60,16 +60,14 @@ class SubjectTest extends TestCase
         //assert that the response status code is a redirect (302)
         $response->assertRedirect('admin/subject/list');
 
-        //assert that the edited class's name and status have been updated in the database
 
-        //assert that the edited class's name and status have been updated in the database
         $editedSubject = Subject::find($subject->id);
         $this->assertEquals('New Subject Name', $editedSubject->name);
     }
 
-    public function test_edit_class_with_missing_required_input()
+    public function test_edit_subject_with_missing_required_input()
     {
-        //create class to edit
+        //create Subject to edit
         $subject = Subject::factory()->create();
 
         // Tạo một user với user_type = 1
@@ -78,7 +76,7 @@ class SubjectTest extends TestCase
         // Đăng nhập với user vừa tạo
         $this->actingAs($user);
 
-        //make a request to edit the class with missing required input data
+        //make a request to edit the subject with missing required input data
         $response = $this->withoutMiddleware()->post('/admin/subject/edit/' . $subject->id, []);
 
         //assert that the response status code is a redirect (302)

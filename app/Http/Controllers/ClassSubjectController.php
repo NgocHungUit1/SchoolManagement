@@ -52,7 +52,6 @@ class ClassSubjectController extends Controller
                     $getAlready->status = $request->status;
                     $getAlready->save();
                 } else {
-
                     $save = new ClassSubject();
                     $save->class_id = $request->class_id;
                     $save->subject_id = $subject_id;
@@ -60,7 +59,6 @@ class ClassSubjectController extends Controller
                     $save->created_by = Auth::user()->id;
                     $save->save();
                 }
-
             }
             return redirect('admin/assign_subject/list')->with('success', 'subject assign class successfully c ');
         } else {
@@ -79,7 +77,6 @@ class ClassSubjectController extends Controller
                     $getAlready->status = $request->status;
                     $getAlready->save();
                 } else {
-
                     $save = new ClassSubject();
                     $save->class_id = $request->class_id;
                     $save->subject_id = $subject_id;

@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class UserControllerTest extends TestCase
@@ -70,20 +71,84 @@ class UserControllerTest extends TestCase
 
 
     public function testUserCanLogout()
-{
-    $user = User::factory()->create();
-    $this->actingAs($user);
-    // Kiểm tra xem user đã đăng nhập thành công hay chưa
-    $this->assertAuthenticatedAs($user);
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        // Kiểm tra xem user đã đăng nhập thành công hay chưa
+        $this->assertAuthenticatedAs($user);
 
-    // Gửi yêu cầu đến trang logout
-    $response = $this->get('/logout');
+        // Gửi yêu cầu đến trang logout
+        $response = $this->get('/logout');
 
-    // Kiểm tra xem user đã được đăng xuất hay chưa
-    $this->assertFalse(Auth::check());
+        // Kiểm tra xem user đã được đăng xuất hay chưa
+        $this->assertFalse(Auth::check());
 
-    // Kiểm tra xem yêu cầu đã được chuyển hướng đến trang đăng nhập hay không
-    $response->assertRedirect('/');
-}
+        // Kiểm tra xem yêu cầu đã được chuyển hướng đến trang đăng nhập hay không
+        $response->assertRedirect('/');
+    }
 
+    public function testCreateAdminWithUserTypeOne()
+    {
+        // Tạo một user với user_type = 1
+        $user = User::factory()->create(['user_type' => 1]);
+
+        // Đăng nhập với user vừa tạo
+        $this->actingAs($user);
+
+        // Tạo một request gửi lên route hoặc controller xử lý tạo Class
+        $response = $this->withoutMiddleware()->post('/admin/admin/add', [
+            'name' => 'Class A',
+            'email' => 'Admin@gmail.com',
+            'user_type' => '1',
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect('admin/admin/list');
+    }
+
+    public function testEditAdminWithUserTypeOne()
+    {
+        // Tạo một user với user_type = 1
+        $user = User::factory()->create(['user_type' => 1]);
+        //create class to edit
+        $admin = User::factory()->create(['user_type' => 1]);
+
+        // Đăng nhập với user vừa tạo
+        $this->actingAs($user);
+
+        //make a request to edit the class with valid input data
+        $response = $this->withoutMiddleware()->post('/admin/admin/edit/' . $admin->id, [
+            'name' => 'Class A',
+            'email' => 'Admin@gmail.com',
+            'user_type' => '1',
+            'password' => 'password',
+        ]);
+
+        //assert that the response status code is a redirect (302)
+        $response->assertRedirect('admin/admin/list');
+
+        $updatedAdmin = User::find($admin->id);
+        $this->assertEquals('Class A', $updatedAdmin->name);
+        $this->assertEquals('Admin@gmail.com', $updatedAdmin->email);
+        $this->assertEquals('1', $updatedAdmin->user_type);
+        $this->assertTrue(Hash::check('password', $updatedAdmin->password));
+    }
+
+    public function testDeleteAdminWithUserTypeOne()
+    {
+        // Tạo một user với user_type = 1
+        $user = User::factory()->create(['user_type' => 1]);
+        //create class to edit
+        $admin = User::factory()->create(['user_type' => 1]);
+
+        // Đăng nhập với user vừa tạo
+        $this->actingAs($user);
+        $response = $this->get("/admin/admin/delete/{$admin->id}");
+
+        $response->assertRedirect('/admin/admin/list');
+        $this->assertDatabaseHas('users', [
+            'id' => $admin->id,
+            'is_delete' => 1,
+        ]);
+    }
 }

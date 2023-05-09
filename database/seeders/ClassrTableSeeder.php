@@ -12,8 +12,8 @@ class ClassrTableSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
-    {
-        ClassModel::factory()->count(20)->create();
-    }
+    // public function run()
+    // {
+    //     ClassModel::factory()->count(20)->create();
+    // }
 }

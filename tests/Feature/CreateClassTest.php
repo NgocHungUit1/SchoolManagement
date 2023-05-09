@@ -59,8 +59,6 @@ class CreateClassTest extends TestCase
         $response->assertRedirect('admin/class/list');
 
         //assert that the edited class's name and status have been updated in the database
-
-        //assert that the edited class's name and status have been updated in the database
         $editedClass = ClassModel::find($class->id);
         $this->assertEquals('New Class Name', $editedClass->name);
     }

@@ -58,7 +58,6 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get('admin/admin/profile-edit', [UserController::class, 'profileEdit']);
     Route::post('admin/admin/profile-edit', [UserController::class, 'updateProfileAdmin']);
     Route::post('admin/admin/profile', [UserController::class, 'updatePassword']);
-    Route::get('admin/users/export', [UserController::class, 'export']);
 
     //Student
     Route::get('admin/student/list', [StudentController::class, 'list']);
@@ -166,12 +165,12 @@ Route::group(['middleware' => 'student'], function () {
     Route::get('student/my-exam', [ExamController::class, 'myExam']);
     Route::get('student/my-calendar', [CalendarController::class, 'myCalendar']);
 });
-function set_active($url)
-{
-    if (is_array($url)) {
-        return in_array(Request::path(), $url) ? 'active' : '';
+// function set_active($url)
+// {
+//     if (is_array($url)) {
+//         return in_array(Request::path(), $url) ? 'active' : '';
 
-    }
-    return Request::path() == $url ? 'active' : '';
+//     }
+//     return Request::path() == $url ? 'active' : '';
 
-}
+// }

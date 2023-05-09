@@ -29,6 +29,10 @@ class UpdateTeacherRequest extends FormRequest
             'address' => 'required',
             'gender' => 'required',
             'date_of_birth' => 'required',
+            'joining_date' => 'required',
+            'password' => 'required',
+            'qualification' => 'required',
+            'experience' => 'required',
         ];
     }
 }

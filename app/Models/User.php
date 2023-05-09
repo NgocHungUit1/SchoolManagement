@@ -121,8 +121,8 @@ class User extends Authenticatable
         if (!empty(Request::get('name'))) {
             $return = $return->where('users.name', 'like', '%' . Request::get('name') . '%');
         }
-        if (!empty(Request::get('gender'))) {
-            $return = $return->where('users.gender', 'like', '%' . Request::get('gender') . '%');
+        if (!empty(Request::get('address'))) {
+            $return = $return->where('users.address', 'like', '%' . Request::get('address') . '%');
         }
         $return = $return->orderBy('users.id', 'desc')->get();
         return $return;

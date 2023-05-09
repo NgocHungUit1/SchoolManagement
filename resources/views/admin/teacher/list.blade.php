@@ -31,8 +31,9 @@
                             </div>
                             <div class="col-lg-3 col-md-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control gender_search" name="gender"
-                                        value="{{ Request::get('gender') }}" placeholder="Search by Gender...">
+                                    <input type="text" class="form-control address_search" name="address"
+                                        value="{{ Request::get('address') }}" placeholder="Search by Address...">
+
                                 </div>
                             </div>
                             <div class="col-lg-3 col-md-6">
@@ -223,11 +224,11 @@
 
             function handleSearch() {
                 const name = $(".name_search").val();
-                const gender_search = $(".gender_search").val();
+                const address_search = $(".address_search").val();
                 const mobile_number_search = $(".mobile_number_search").val();
                 var teacher_table = $('.teacher_table').DataTable();
                 teacher_table.ajax.url(
-                        `/admin/teacher/getData?name=${name}&class=${gender_search}&mobile_number=${mobile_number_search}`)
+                        `/admin/teacher/getData?name=${name}&address=${address_search}&mobile_number=${mobile_number_search}`)
                     .load();
                 teacher_table.draw();
             }

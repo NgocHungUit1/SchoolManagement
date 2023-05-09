@@ -10,6 +10,13 @@ class ClassSubject extends Model
 {
     use HasFactory;
     protected $table = 'class_subject';
+    protected $fillable = [
+       'class_id',
+       'subject_id',
+       'status',
+       'is_delete',
+       'created_by'
+    ];
 
     protected $casts = [
         'created_at' => 'date:Y-m-d',
@@ -35,13 +42,13 @@ class ClassSubject extends Model
     {
         return self::where('class_id', '=', $class_id)->where('subject_id', '=', $subject_id)->first();
     }
-    public static function getAssignSubjectId($class_id)
-    {
-        return self::where('class_id', '=', $class_id)->where('is_delete', '=', 0)->get();
-    }
     public static function deleteSubject($class_id)
     {
         return self::where('class_id', '=', $class_id)->delete();
+    }
+    public static function getAssignSubjectId($class_id)
+    {
+        return self::where('class_id', '=', $class_id)->where('is_delete', '=', 0)->get();
     }
 
     public static function MySubject($class_id)
