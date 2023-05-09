@@ -68,9 +68,6 @@
                                                 class="feather-list"></i></a>
                                         <a href="students-grid.html" class="btn btn-outline-gray me-2"><i
                                                 class="feather-grid"></i></a>
-                                        <a href="{{ url('admin/assign_subject/export') }}"
-                                            class="btn btn-outline-primary me-2"><i class="fas fa-download"></i>
-                                            Download</a>
                                         <a href="{{ url('admin/assign_subject/add') }}" class="btn btn-primary"><i
                                                 class="fas fa-plus"></i> </a>
                                     </div>

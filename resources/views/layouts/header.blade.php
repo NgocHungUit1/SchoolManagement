@@ -15,16 +15,10 @@
             </a>
         @endif
     </div>
-    <div class="menu-toggle">
-        <a href="javascript:void(0);" id="toggle_btn">
-            <i class="fas fa-bars"></i>
-        </a>
-    </div>
 
 
-    <a class="mobile_btn" id="mobile_btn">
-        <i class="fas fa-bars"></i>
-    </a>
+
+
 
     <ul class="nav user-menu">
         <li class="nav-item dropdown has-arrow new-user-menus">
@@ -104,13 +98,10 @@
                     <span>Main Menu</span>
                 </li>
                 @if (Auth::user()->user_type == 1)
-                    <li class="submenu">
-                        <a href="{{ url('admin/admin/list') }}"><i class="fas fa-user"></i> <span> User</span>
-                            <span class="menu-arrow"></span></a>
-                        <ul>
-                            <li><a href="{{ url('admin/admin/list') }}">User List</a></li>
-                            <li><a href="{{ url('admin/admin/add') }}">User Add</a></li>
-                        </ul>
+                    <li class=" {{ set_active(['admin/admin/list']) }}"><a href="{{ url('admin/admin/list') }}"
+                            class=" {{ set_active(['admin/admin/list']) }}">
+                            <i class="fas fa-user"></i><span>
+                                Users</span></a>
                     </li>
 
 
@@ -146,8 +137,7 @@
                                 Exam</span>
                             <span class="menu-arrow"></span></a>
                         <ul>
-                            <li class=" {{ set_active(['admin/exam/list']) }}"><a
-                                    href="{{ url('admin/exam/list') }}"
+                            <li class=" {{ set_active(['admin/exam/list']) }}"><a href="{{ url('admin/exam/list') }}"
                                     class=" {{ set_active(['admin/exam/list']) }}">Exam List</a></li>
 
                             <li class=" {{ set_active(['admin/exam_schedule']) }}"><a
@@ -166,7 +156,7 @@
                             href="{{ url('admin/assign_class_teacher/list') }}"
                             class=" {{ set_active(['admin/assign_class_teacher/list']) }}">
                             <i class="fas fa-book-reader"></i> <span>
-                                Assign Class Teacher</span></a>
+                                Assign Teacher</span></a>
                     </li>
 
                     <li class=" {{ set_active(['admin/class_timetable/list']) }}"><a
@@ -200,10 +190,6 @@
                                 My Class</span></a>
                     </li>
                 @elseif (Auth::user()->user_type == 3)
-                    <li class="submenu ">
-                        <a href="#"><i></i> <span> Dashboard</span> <span></span></a>
-
-                    </li>
                     <li class=" {{ set_active(['student/my-calendar']) }}"><a
                             href="{{ url('student/my-calendar') }}"
                             class=" {{ set_active(['student/my-calendar']) }}">

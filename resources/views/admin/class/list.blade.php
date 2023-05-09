@@ -36,7 +36,8 @@
                             <div class="col-lg-2">
                                 <div class="search-student-btn">
                                     <button type="button" onclick="handleSearch()" class="btn btn-primary">Search</button>
-                                    <button type="button" onclick="handleReset()" class="btn btn-success">Reset</button>
+                                    <button type="button" onclick="handleReset()" class="btn btn-success"
+                                        style=" padding: 10px;">Reset</button>
                                 </div>
                             </div>
                     </form>
@@ -57,8 +58,6 @@
                                                 class="feather-list"></i></a>
                                         <a href="students-grid.html" class="btn btn-outline-gray me-2"><i
                                                 class="feather-grid"></i></a>
-                                        <a href="{{ url('admin/class/export') }}" class="btn btn-outline-primary me-2"><i
-                                                class="fas fa-download"></i> Download</a>
                                         <a href="{{ url('admin/class/add') }}" class="btn btn-primary"><i
                                                 class="fas fa-plus"></i> </a>
                                     </div>
