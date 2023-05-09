@@ -1,0 +1,35 @@
+name: Laravel CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  DB_CONNECTION: mysql
+  DB_DATABASE: school_sms_testing
+  DB_USERNAME: root
+  DB_PASSWORD:
+
+jobs:
+  test:
+    name: PHPUnit
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        php: [8.0]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Copy .env.testing
+      run: cp .env.testing .env.testing.example
+    - name: Install Dependencies
+      run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts --no-suggest
+    - name: Generate key
+      run: php artisan key:generate --ansi
+    - name: Execute unit tests
+      run: vendor/bin/phpunit
