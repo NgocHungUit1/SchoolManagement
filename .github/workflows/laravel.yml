@@ -26,13 +26,13 @@ jobs:
       run: chmod -R 777 storage bootstrap/cache
     - name: Create Database
       run: |
-           mysql -e 'CREATE DATABASE IF NOT EXISTS school_sms_testing;'
+           mysql -e 'CREATE DATABASE IF NOT EXISTS school_sms;'
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       env:
         DB_CONNECTION: mysql
         DB_HOST: 127.0.0.1
         DB_PORT: 3306
-        DB_DATABASE: school_sms_testing
+        DB_DATABASE: school_sms
         DB_USERNAME: root
         DB_PASSWORD:
       run: vendor/bin/phpunit
