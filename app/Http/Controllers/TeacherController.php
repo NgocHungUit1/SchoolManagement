@@ -33,11 +33,6 @@ class TeacherController extends Controller
     {
 
         $data['getRecord'] = User::find($id);
-        // if (!empty($data['getRecord'])) {
-        //     $data['getClass'] = ClassModel::getClass();
-        // } else {
-        //     abort(404);
-        // }
         return view('admin.teacher.edit', $data);
     }
 
@@ -46,7 +41,7 @@ class TeacherController extends Controller
         $teacher = new User();
         $teacher->name = ($request->name);
         $teacher->teacher_id = ($request->teacher_id);
-        $teacher->joining_date = ($request->joining_date);
+        $teacher->joining_date = Carbon::createFromFormat('d-m-Y', $request->joining_date)->toDateTimeString();
         $teacher->qualification = ($request->qualification);
         $teacher->experience = ($request->experience);
         $teacher->address = ($request->address);
@@ -76,7 +71,7 @@ class TeacherController extends Controller
     {
         $teacher = User::getUserId($id);
         $teacher->name = ($request->name);
-        $teacher->joining_date = ($request->joining_date);
+        $teacher->joining_date = Carbon::createFromFormat('d-m-Y', $request->joining_date)->toDateTimeString();
         $teacher->qualification = ($request->qualification);
         $teacher->experience = ($request->experience);
         $teacher->address = ($request->address);

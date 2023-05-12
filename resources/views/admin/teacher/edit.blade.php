@@ -160,7 +160,9 @@
                                                 <div class="form-group local-forms">
                                                     <label>Password <span class="login-danger">*</span></label>
                                                     <input type="password" name="password" class="form-control"
-                                                        placeholder="Enter Password">
+                                                        value="{{ old('password', bcrypt($getRecord->password)) }}"
+                                                        placeholder="Enter
+                                                        Password">
                                                     <div style="color:red">{{ $errors->first('password') }}</div>
                                                 </div>
                                             </div>

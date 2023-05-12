@@ -64,6 +64,7 @@
                                             <th>ID</th>
                                             <th>Subject Name</th>
                                             <th>Subject Type</th>
+                                            <th>Teacher</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -72,6 +73,7 @@
                                                 <td>{{ $value->id }}</td>
                                                 <td>{{ $value->subject_name }}</td>
                                                 <td>{{ $value->subject_type }}</td>
+                                                <td>{{ $value->teacher_name }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>

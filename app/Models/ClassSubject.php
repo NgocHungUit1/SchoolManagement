@@ -63,4 +63,19 @@ class ClassSubject extends Model
             ->orderBy('class_subject.id', 'desc')
             ->get();
     }
+
+    public static function getMySubjectTeacher($class_id)
+    {
+        return ClassTeacher::select('teacher_class.*', 'class.name as class_name','subject.name as subject_name','subject.type as subject_type','teacher.name as teacher_name'
+          )
+            ->join('users as teacher', 'teacher.id', '=', 'teacher_class.teacher_id')
+            ->join('class', 'class.id', '=', 'teacher_class.class_id')
+            ->join('subject', 'subject.id', '=', 'teacher_class.subject_id')
+            ->where('teacher_class.is_delete', '=', 0)
+            ->where('teacher_class.status', '=', 0)
+            ->where('class.is_delete', '=', 0)
+            ->where('class.status', '=', 0)
+            ->where('teacher_class.class_id', '=', $class_id)
+            ->get();
+    }
 }

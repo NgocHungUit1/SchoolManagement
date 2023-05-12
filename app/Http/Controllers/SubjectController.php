@@ -67,12 +67,9 @@ class SubjectController extends Controller
 
     public function mySubject()
     {
-        $data['getRecord'] = ClassSubject::MySubject(Auth::user()->class_id);
+        $data['getRecord'] = ClassSubject::getMySubjectTeacher(Auth::user()->class_id);
+
         return view('student.my_subject', $data);
     }
 
-    public function export()
-    {
-        return Excel::download(new SubjectExport, 'subject.xlsx');
-    }
 }

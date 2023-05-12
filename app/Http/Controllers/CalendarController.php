@@ -51,9 +51,10 @@ class CalendarController extends Controller
     public function getTimeTable($class_id)
     {
         $result = array();
-        $getRecord = ClassSubject::MySubject($class_id);
+        $getRecord = ClassSubject::getMySubjectTeacher($class_id);
         foreach ($getRecord as $value) {
             $dataS['name'] = $value->subject_name;
+            $dataS['teacher_name'] = $value->teacher_name;
             $getDay = Week::getRecord();
             $day = array();
             foreach ($getDay as $valueDay) {

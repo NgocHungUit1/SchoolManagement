@@ -142,6 +142,14 @@
                                                     </select>
                                                 </div>
                                             </div>
+                                            <div class="col-12 col-sm-4">
+                                                <div class="form-group local-forms">
+                                                    <label>Address <span class="login-danger">*</span></label>
+                                                    <input type="text" name="address" class="form-control"
+                                                        placeholder="Enter address">
+                                                    <div style="color:red">{{ $errors->first('address') }}</div>
+                                                </div>
+                                            </div>
 
                                             <div class="col-12 col-sm-4">
 
@@ -156,8 +164,9 @@
 
                                             </div>
                                             <div class="col-12 col-sm-4">
-                                                <label>Password <span class="login-danger">*</span></label>
                                                 <div class="form-group local-forms">
+                                                    <label>Password <span class="login-danger">*</span></label>
+
                                                     <input type="password" class="form-control" name="password">
                                                     <div style="color:red">{{ $errors->first('password') }}</div>
                                                 </div>

@@ -51,10 +51,7 @@
                                         <h3 class="page-title">Exam</h3>
                                     </div>
                                     <div class="col-auto text-end float-end ms-auto download-grp">
-                                        <a href="students.html" class="btn btn-outline-gray me-2 active"><i
-                                                class="feather-list"></i></a>
-                                        <a href="students-grid.html" class="btn btn-outline-gray me-2"><i
-                                                class="feather-grid"></i></a>
+
                                         <a href="{{ url('admin/exam/add') }}" class="btn btn-primary"><i
                                                 class="fas fa-plus"></i> </a>
                                     </div>

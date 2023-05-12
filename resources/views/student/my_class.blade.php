@@ -14,7 +14,7 @@
                                 <h3 class="page-title">Class {{ $getClass->name }}</h3>
                                 <ul class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="{{ url('teacher/dashboard') }}">Home</a></li>
-                                    <li class="breadcrumb-item active">My Student</li>
+                                    <li class="breadcrumb-item active">Student :</li>
                                 </ul>
                             </div>
                         </div>
@@ -26,19 +26,6 @@
                     <div class="card card-table comman-shadow">
                         <div class="card-body">
                             @include('_message')
-                            <div class="page-header">
-                                <div class="row align-items-center">
-                                    <div class="col">
-                                        <h3 class="page-title">Student</h3>
-                                    </div>
-                                    <div class="col-auto text-end float-end ms-auto download-grp">
-
-
-
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="table-responsive" id="user">
                                 <table
                                     class="table border-0 star-student table-hover table-center mb-0  datatable table-striped ">
@@ -53,7 +40,6 @@
                                             <th>Moblie Number</th>
                                             <th>Email</th>
                                             <th>Create by Day</th>
-                                            <th class="text-end">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -70,20 +56,6 @@
                                                 <td>{{ $value->mobile_number }} </td>
                                                 <td>{{ $value->email }}</td>
                                                 <td>{{ date('d-m-Y ', strtotime($value->created_at)) }}</td>
-                                                <td>
-                                                    @if ($value->status == 0)
-                                                        <button style="width:85px" class="btn btn-success" type="button"><i
-                                                                class="fe fe-check-verified"></i>
-                                                            Active
-                                                        </button>
-                                                    @else
-                                                        <button class="btn btn-danger" type="button"><i
-                                                                class="fe fe-check-verified"></i>
-                                                            InActive
-                                                        </button>
-                                                    @endif
-                                                </td>
-
                                             </tr>
                                         @endforeach
 

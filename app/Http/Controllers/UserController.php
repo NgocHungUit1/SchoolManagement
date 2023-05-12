@@ -16,8 +16,8 @@ class UserController extends Controller
 {
     public function Profile()
     {
-        $data['getClass'] = ClassModel::getClass();
-        $data['getRecord'] = User::getUserId(Auth::user()->id);
+        $data['getClass'] = ClassModel::find(Auth::user()->class_id);
+        $data['getRecord'] = User::find(Auth::user()->id);
         if (Auth::user()->user_type == 1) {
             return view('admin.admin.profile', $data);
         }

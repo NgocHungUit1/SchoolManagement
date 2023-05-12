@@ -162,14 +162,16 @@
                     <li class=" {{ set_active(['admin/class_timetable/list']) }}"><a
                             href="{{ url('admin/class_timetable/list') }}"
                             class=" {{ set_active(['admin/class_timetable/list']) }}">
-                            <i class="fas fa-book-reader"></i> <span>
+                            <i class="far fa-calendar"></i>
+                            <span>
                                 Class Time Table</span></a>
                     </li>
                 @elseif (Auth::user()->user_type == 2)
                     <li class=" {{ set_active(['teacher/my-calendar']) }}"><a
                             href="{{ url('teacher/my-calendar') }}"
                             class=" {{ set_active(['teacher/my-calendar']) }}">
-                            <i class="fas fa-clipboard-list"></i> <span>
+                            <i class="far fa-calendar"></i>
+                            <span>
                                 My Calendar</span></a>
                     </li>
                     <li class=" {{ set_active(['teacher/my_exam']) }}"><a href="{{ url('teacher/my_exam') }}"
@@ -186,24 +188,34 @@
                     </li>
                     <li class=" {{ set_active(['teacher/my-student']) }}"><a href="{{ url('teacher/my-student') }}"
                             class=" {{ set_active(['teacher/my-student']) }}">
-                            <i class="fas fa-book-reader"></i> <span>
+                            <i class="fas fa-chalkboard"></i>
+                            <span>
                                 My Class</span></a>
                     </li>
                 @elseif (Auth::user()->user_type == 3)
                     <li class=" {{ set_active(['student/my-calendar']) }}"><a
                             href="{{ url('student/my-calendar') }}"
                             class=" {{ set_active(['student/my-calendar']) }}">
-                            <i class="fas fa-book-reader"></i> <span>
+                            <i class="far fa-calendar"></i>
+                            </i> <span>
                                 My Calendar</span></a>
+                    </li>
+                    <li class=" {{ set_active(['student/my-class']) }}"><a href="{{ url('student/my-class') }}"
+                            class=" {{ set_active(['student/my-class']) }}">
+                            <i class="fas fa-chalkboard"></i>
+                            </i> <span>
+                                My Class</span></a>
                     </li>
                     <li class=" {{ set_active(['student/my-exam']) }}"><a href="{{ url('student/my-exam') }}"
                             class=" {{ set_active(['student/my-exam']) }}">
-                            <i class="fas fa-book-reader"></i> <span>
+                            <i class="far fa-file-alt"></i>
+                            </i> <span>
                                 My Exam</span></a>
                     </li>
                     <li class=" {{ set_active(['student/my-subject']) }}"><a href="{{ url('student/my-subject') }}"
                             class=" {{ set_active(['student/my-subject']) }}">
-                            <i class="fas fa-book-reader"></i> <span>
+                            <i class="fas fa-book"></i>
+                            </i> <span>
                                 Subject List</span></a>
                     </li>
                     <li class=" {{ set_active(['student/my-timetable']) }}"><a

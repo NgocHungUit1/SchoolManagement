@@ -49,7 +49,8 @@ class StudentController extends Controller
         $student->roll_number = ($request->roll_number);
         $student->class_id = ($request->class_id);
         $student->gender = ($request->gender);
-        $student->date_of_birth = $request->date_of_birth;
+        $student->address = ($request->address);
+        $student->date_of_birth = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
         $student->mobile_number = $request->mobile_number;
         $get_image = $request->user_avatar;
         if ($get_image) {
@@ -72,11 +73,12 @@ class StudentController extends Controller
 
     public function editStudent(UpdateStudentRequest $request, $id)
     {
-        $student = User::getUserId($id);
+        $student = User::find($id);
         $student->name = ($request->name);
         $student->roll_number = ($request->roll_number);
         $student->class_id = ($request->class_id);
         $student->gender = ($request->gender);
+        $student->address = ($request->address);
         $student->date_of_birth = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
         $student->mobile_number = $request->mobile_number;
         $get_image = $request->user_avatar;

@@ -130,6 +130,7 @@ class ExamController extends Controller
                 $save->created_by = Auth::user()->id;
                 $save->save();
             }
+            return redirect()->back()->with('error', 'Please fill in all the information');
         }
 
         return redirect()->back()->with('success', 'Exam Schedule successfully created ');

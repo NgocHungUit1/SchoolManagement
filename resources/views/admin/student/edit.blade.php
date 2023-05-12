@@ -162,6 +162,16 @@
                                             </div>
 
                                             <div class="col-12 col-sm-4">
+                                                <div class="form-group local-forms">
+                                                    <label>Address <span class="login-danger">*</span></label>
+                                                    <input type="text" name="address" class="form-control"
+                                                        value="{{ old('address', $getRecord->address) }}"
+                                                        placeholder="Enter address">
+                                                    <div style="color:red">{{ $errors->first('address') }}</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 col-sm-4">
 
                                                 <div class="form-group local-forms">
                                                     <label>E-Mail <span class="login-danger">*</span></label>

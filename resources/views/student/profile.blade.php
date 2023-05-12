@@ -103,7 +103,7 @@
                                                     <div class="row">
                                                         <p class="col-sm-3 text-muted text-sm-end mb-0 mb-sm-3">Class Name
                                                         </p>
-                                                        <p class="col-sm-9">{{ $getRecord->class_id }}</p>
+                                                        <p class="col-sm-9">{{ $getClass->name }}</p>
 
                                                     </div>
                                                     <div class="row">

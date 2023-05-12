@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AssignTeacherRequest;
 use App\Models\ClassModel;
 use App\Models\ClassSubject;
 use App\Models\ClassSubjectTimeTable;
@@ -13,7 +14,8 @@ use Illuminate\Support\Facades\Auth;
 class ClassTimeTableController extends Controller
 {
 
-    function list(Request $request) {
+    function list(Request $request)
+    {
         $data['getClass'] = ClassModel::getClass();
         if (!empty($request->class_id)) {
             $data['getSubject'] = ClassSubject::MySubject($request->class_id);
@@ -30,22 +32,20 @@ class ClassTimeTableController extends Controller
                     $dataDay['start_time'] = $ClassSubject->start_time;
                     $dataDay['end_time'] = $ClassSubject->end_time;
                     $dataDay['room_number'] = $ClassSubject->room_number;
-                } else { $dataDay['start_time'] = '';
+                } else {
+                    $dataDay['start_time'] = '';
                     $dataDay['end_time'] = '';
                     $dataDay['room_number'] = '';
-
                 }
             } else {
                 $dataDay['start_time'] = '';
                 $dataDay['end_time'] = '';
                 $dataDay['room_number'] = '';
-
             }
             $day[] = $dataDay;
         }
         $data['day'] = $day;
         return view('admin.class_timetable.list', $data);
-
     }
     public function get_Subject(Request $request)
     {
@@ -61,11 +61,26 @@ class ClassTimeTableController extends Controller
 
     public function add(Request $request)
     {
-
-        ClassSubjectTimeTable::where('class_id', '=', $request->class_id)->where('subject_id', '=', $request->subject_id)->delete();
+        ClassSubjectTimeTable::where('class_id', '=', $request->class_id)
+            ->where('subject_id', '=', $request->subject_id)
+            ->delete();
 
         foreach ($request->timetable as $timetable) {
-            if (!empty($timetable['day_id']) && !empty($timetable['start_time']) && !empty($timetable['end_time']) && !empty($timetable['room_number'])) {
+            if (!empty($timetable['day_id']) && !empty($timetable['start_time']) && !empty($timetable['end_time']) && !empty($timetable['room_number']))
+             {
+                // Check for overlapping time slots
+                $overlapping = ClassSubjectTimeTable::where([
+                    ['class_id', '=', $request->class_id],
+                    ['day_id', '=', $timetable['day_id']]
+                ])->where(function ($query) use ($timetable) {
+                    $query->whereBetween('start_time', [$timetable['start_time'], $timetable['end_time']])
+                        ->orWhereBetween('end_time', [$timetable['start_time'], $timetable['end_time']]);
+                })->count();
+
+                if ($overlapping > 0) {
+                    return redirect()->back()->with('error', 'Time slot overlap detected');
+                }
+
                 $save = new ClassSubjectTimeTable;
                 $save->class_id = $request->class_id;
                 $save->subject_id = $request->subject_id;
@@ -75,10 +90,10 @@ class ClassTimeTableController extends Controller
                 $save->room_number = $timetable['room_number'];
                 $save->save();
             }
+            return redirect()->back()->with('success', 'Class Time table successfully created ');
         }
-        return redirect()->back()->with('success', 'Class Time table successfully created ');
-
     }
+
 
     public function myTimeTable()
     {
@@ -96,16 +111,15 @@ class ClassTimeTableController extends Controller
                     $dataDay['start_time'] = $ClassSubject->start_time;
                     $dataDay['end_time'] = $ClassSubject->end_time;
                     $dataDay['room_number'] = $ClassSubject->room_number;
-                } else { $dataDay['start_time'] = '';
+                } else {
+                    $dataDay['start_time'] = '';
                     $dataDay['end_time'] = '';
                     $dataDay['room_number'] = '';
-
                 }
                 $day[] = $dataDay;
             }
             $dataS['day'] = $day;
             $result[] = $dataS;
-
         }
         $data['getRecord'] = $result;
 
@@ -127,10 +141,10 @@ class ClassTimeTableController extends Controller
                 $dataDay['start_time'] = $ClassSubject->start_time;
                 $dataDay['end_time'] = $ClassSubject->end_time;
                 $dataDay['room_number'] = $ClassSubject->room_number;
-            } else { $dataDay['start_time'] = '';
+            } else {
+                $dataDay['start_time'] = '';
                 $dataDay['end_time'] = '';
                 $dataDay['room_number'] = '';
-
             }
             $result[] = $dataDay;
         }
@@ -138,5 +152,4 @@ class ClassTimeTableController extends Controller
         $data['getRecord'] = $result;
         return view('teacher.my_timetable', $data)->with('success', 'My Time Table Teacher ');
     }
-
 }

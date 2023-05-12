@@ -163,14 +163,15 @@ Route::group(['middleware' => 'student'], function () {
     Route::post('student/profile-edit', [UserController::class, 'updateProfileStudent']);
     Route::post('student/profile', [UserController::class, 'updatePassword']);
     Route::get('student/my-exam', [ExamController::class, 'myExam']);
+    Route::get('student/my-class', [ClassController::class, 'myClass']);
     Route::get('student/my-calendar', [CalendarController::class, 'myCalendar']);
 });
-// function set_active($url)
-// {
-//     if (is_array($url)) {
-//         return in_array(Request::path(), $url) ? 'active' : '';
+function set_active($url)
+{
+    if (is_array($url)) {
+        return in_array(Request::path(), $url) ? 'active' : '';
 
-//     }
-//     return Request::path() == $url ? 'active' : '';
+    }
+    return Request::path() == $url ? 'active' : '';
 
-// }
+}

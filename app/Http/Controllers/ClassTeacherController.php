@@ -34,27 +34,33 @@ class ClassTeacherController extends Controller
 
     public function assignTeacherClass(Request $request)
     {
+        $teacher_id = $request->teacher_id;
+        $getAlreadyTeacher=ClassTeacher::getAlreadyTeacher($request->class_id,$request->subject_id);
 
-            $getAlready = ClassTeacher::getAlreadyFirst($request->class_id, $request->teacher_id,$request->subject_id);
-            $getAlreadyTeacher=ClassTeacher::getAlreadyTeacher($request->class_id,$request->subject_id);
-            if (!empty($getAlreadyTeacher  && !empty($getAlready))) {
-                            $getAlready->status = $request->status;
-                            $getAlready->save();
-                            return redirect('admin/assign_class_teacher/list')->with('warning', 'Teacher Assigned already exist');
-                        }
-                        else {
-                    $save = new ClassTeacher();
-                    $save->class_id = $request->class_id;
-                    $save->teacher_id = $request->teacher_id;
-                    $save->subject_id = $request->subject_id;
-                    $save->status = $request->status;
-                    $save->created_by = Auth::user()->id;
-                    $save->save();
-                }
+        if (!empty($getAlreadyTeacher)) {
+            // Nếu đã có giáo viên dạy môn học cho lớp học đó rồi thì return với thông báo
+            if ($getAlreadyTeacher->teacher_id == $teacher_id) {
+                // Trường hợp giáo viên đã được phân công dạy môn học cho lớp học đó rồi
+                return redirect('admin/assign_class_teacher/list')->with('warning', 'Teacher Assigned already exist');
+            } else {
+                // Trường hợp môn học và lớp học đã được phân công cho một giáo viên khác
+                return redirect('admin/assign_class_teacher/list')->with('warning', 'Subject and Class already assigned to another teacher');
+            }
+        } else {
+            // Nếu chưa có giáo viên dạy môn học cho lớp học đó thì tiến hành phân công
+            $save = new ClassTeacher();
+            $save->class_id = $request->class_id;
+            $save->teacher_id = $request->teacher_id;
+            $save->subject_id = $request->subject_id;
+            $save->status = $request->status;
+            $save->created_by = Auth::user()->id;
+            $save->save();
 
             return redirect('admin/assign_class_teacher/list')->with('success', 'Class Assigned Successfully');
-
+        }
     }
+
+
 
     public function edit($id)
     {
@@ -71,7 +77,7 @@ class ClassTeacherController extends Controller
 
     public function update(Request $request, $id)
     {
-        // ClassTeacher::deleteSubject($request->class_id,$request->subject_id);
+
                 $getAlready = ClassTeacher::getAlreadyFirst($request->class_id, $request->teacher_id,$request->subject_id);
                 if (!empty($getAlready)) {
                     $getAlready->status = $request->status;
@@ -80,7 +86,6 @@ class ClassTeacherController extends Controller
                 } else {
 
                     $save = ClassTeacher::find($id);
-                    // if ( $request !== null)
                     $save->class_id = $request->class_id;
                     $save->teacher_id = $request->teacher_id;
                     $save->subject_id = $request->subject_id;

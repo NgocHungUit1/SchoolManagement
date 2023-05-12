@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ClassExport;
+use App\Http\Requests\ClassRequest;
 use App\Models\ClassModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,8 +12,6 @@ use Maatwebsite\Excel\Facades\Excel;
 class ClassController extends Controller
 {
     function list() {
-        // $data['getStudent'] = ClassModel::getStudent();
-        // dd($data);
         $data['getRecord'] = ClassModel::getRecord();
         return view('admin.class.list', $data);
     }
@@ -20,7 +19,6 @@ class ClassController extends Controller
     public function getData()
     {
         $data['data'] = ClassModel::getRecord();
-
         return $data;
     }
 
@@ -29,11 +27,8 @@ class ClassController extends Controller
         return view('admin.class.add');
     }
 
-    public function insertClass(Request $request)
+    public function insertClass(ClassRequest $request)
     {
-        request()->validate([
-            'name' => 'required',
-        ]);
         $class = new ClassModel();
         $class->name = $request->name;
         $class->status = $request->status;
@@ -57,11 +52,16 @@ class ClassController extends Controller
         return view('admin.class.view', $data);
     }
 
-    public function editClass(Request $request, $id)
+    public function myClass()
     {
-        request()->validate([
-            'name' => 'required',
-        ]);
+        $data['getRecord'] = ClassModel::getStudent(Auth::user()->class_id);
+        $data['getClass'] = ClassModel::find(Auth::user()->class_id);
+        return view('student.my_class', $data);
+    }
+
+    public function editClass(ClassRequest $request, $id)
+    {
+
         $class = ClassModel::getClassId($id);
         $class->name = $request->name;
         $class->status = $request->status;
@@ -72,7 +72,7 @@ class ClassController extends Controller
 
     public function delete($id)
     {
-        $class = ClassModel::getClassId($id);
+        $class = ClassModel::find($id);
         $class->is_delete = 1;
         $class->save();
         return redirect('admin/admin/list')->with('success', 'Class successfully deleted ');
