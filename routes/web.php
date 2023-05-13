@@ -106,8 +106,10 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get('admin/exam/edit/{id}', [ExamController::class, 'edit']);
     Route::post('admin/exam/edit/{id}', [ExamController::class, 'update']);
     Route::get('admin/exam/delete/{id}', [ExamController::class, 'delete']);
-    Route::get('admin/exam/export', [ExamController::class, 'export']);
     Route::get('admin/exam_schedule', [ExamController::class, 'examSchedule']);
+    Route::get('admin/exam/score', [ExamController::class, 'examScore']);
+    Route::post('admin/exam/score', [ExamController::class, 'insertScore']);
+    Route::post('admin/exam/exam_score', [ExamController::class, 'addScore']);
     Route::post('admin/exam_schedule/add', [ExamController::class, 'examScheduleInsert']);
 
     //TimeTable
@@ -144,6 +146,9 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::post('teacher/profile', [UserController::class, 'updatePassword']);
     Route::get('teacher/my-subject-class', [ClassTeacherController::class, 'mySubjectClass']);
     Route::get('teacher/my-subject-class/timetable/{class_id}/{subject_id}', [ClassTimeTableController::class, 'myTimeTableTeacher']);
+    Route::post('teacher/exam/get_subject', [ExamController::class, 'get_Subject_Teacher']);
+    Route::post('teacher/exam/exam_score', [ExamController::class, 'addScore']);
+    Route::get('teacher/exam_score', [ExamController::class, 'examScoreTeacher']);
     Route::get('teacher/my-student', [TeacherController::class, 'myStudent']);
     Route::get('teacher/my-student/view/{id}', [ClassController::class, 'view']);
     Route::get('teacher/get-student', [TeacherController::class, 'getStudent']);

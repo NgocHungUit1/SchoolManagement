@@ -143,6 +143,9 @@
                             <li class=" {{ set_active(['admin/exam_schedule']) }}"><a
                                     href="{{ url('admin/exam_schedule') }}"
                                     class="{{ set_active(['admin/exam_schedule']) }}">Exam Schedule</a></li>
+                            <li class=" {{ set_active(['admin/exam/score']) }}"><a
+                                    href="{{ url('admin/exam/score') }}"
+                                    class=" {{ set_active(['admin/exam/score']) }}">Exam Score</a></li>
                         </ul>
                     </li>
 
@@ -190,7 +193,13 @@
                             class=" {{ set_active(['teacher/my-student']) }}">
                             <i class="fas fa-chalkboard"></i>
                             <span>
-                                My Class</span></a>
+                                My Class & Student</span></a>
+                    </li>
+                    <li class=" {{ set_active(['teacher/exam_score']) }}"><a href="{{ url('teacher/exam_score') }}"
+                            class=" {{ set_active(['teacher/exam_score']) }}">
+                            <i class="fas fa-chalkboard"></i>
+                            <span>
+                                Exam score</span></a>
                     </li>
                 @elseif (Auth::user()->user_type == 3)
                     <li class=" {{ set_active(['student/my-calendar']) }}"><a

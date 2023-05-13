@@ -70,6 +70,23 @@ class ClassTeacher extends Model
             ->get();
     }
 
+    public static function getSubjectExam($class_id)
+    {
+        return ClassTeacher::select('teacher_class.*',  'subject.name as subject_name', 'subject.type as subject_type',
+            'class.id as class_id', 'subject.id as subject_id')
+            ->join('class', 'class.id', '=', 'teacher_class.class_id')
+            ->join('subject', 'subject.id', '=', 'teacher_class.subject_id')
+            ->where('teacher_class.is_delete', '=', 0)
+            ->where('teacher_class.status', '=', 0)
+            ->where('subject.is_delete', '=', 0)
+            ->where('subject.status', '=', 0)
+            ->where('class.is_delete', '=', 0)
+            ->where('class.status', '=', 0)
+            ->where('teacher_class.class_id', '=', $class_id)
+            ->get();
+    }
+
+
     public static function getMyClassTeacher($teacher_id)
     {
         return ClassTeacher::select('teacher_class.*', 'class.name as class_name',
@@ -83,6 +100,23 @@ class ClassTeacher extends Model
             ->where('teacher_class.teacher_id', '=', $teacher_id)
             ->groupBy('teacher_class.class_id')
             ->get();
+    }
+
+    public static function getMyClassTeacherExamScore($class_id,$teacher_id)
+    {
+        return ClassTeacher::select('teacher_class.*', 'class.name as class_name', 'subject.name as subject_name', 'subject.type as subject_type',
+        'class.id as class_id', 'subject.id as subject_id')
+        ->join('class', 'class.id', '=', 'teacher_class.class_id')
+        ->join('subject', 'subject.id', '=', 'teacher_class.subject_id')
+        ->where('teacher_class.is_delete', '=', 0)
+        ->where('teacher_class.status', '=', 0)
+        ->where('subject.is_delete', '=', 0)
+        ->where('subject.status', '=', 0)
+        ->where('class.is_delete', '=', 0)
+        ->where('class.status', '=', 0)
+        ->where('teacher_class.class_id', '=', $class_id)
+        ->where('teacher_class.teacher_id', '=', $teacher_id)
+        ->get();
     }
 
     public static function getCalendarTeacher($teacher_id)

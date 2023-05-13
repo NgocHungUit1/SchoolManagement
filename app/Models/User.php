@@ -156,4 +156,14 @@ class User extends Authenticatable
         return $return;
     }
 
+    public static function getStudentClassExam($class_id)
+    {
+        return self::select('users.id','users.name')
+            ->where('users.user_type', '=', 3)
+            ->where('users.is_delete', '=', 0)
+            ->where('users.class_id', '=', $class_id)
+            ->orderBy('users.id', 'desc')
+            ->get();
+    }
+
 }

@@ -62,8 +62,13 @@
                                                 <td>{{ $value->subject_type }}</td>
                                                 <td>{{ date('d-m-Y H:i A', strtotime($value->created_at)) }}</td>
                                                 <td>
-                                                    <a href="{{ url('teacher/my-subject-class/timetable/' . $value->class_id . '/' . $value->subject_id) }}"
+                                                    <a style="color:white"
+                                                        href="{{ url('teacher/my-subject-class/timetable/' . $value->class_id . '/' . $value->subject_id) }}"
                                                         class="btn btn-success"> My Class Time Table</a>
+                                                    <a style="color:white"
+                                                        href="{{ url('teacher/exam/score') }}?class_id={{ $value->class_id }}&subject_id={{ $value->subject_id }}"
+                                                        class="btn btn-primary">Exam Score</a>
+
                                                 </td>
                                             </tr>
                                         @endforeach

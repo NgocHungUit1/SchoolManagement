@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AssignTeacherRequest;
 use App\Models\ClassModel;
 use App\Models\ClassSubject;
 use App\Models\ClassTeacher;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ClassTeacherController extends Controller
 {
-    function list(Request $request)
+    function list()
     {
         $data['getRecord'] = ClassTeacher::getRecord();
 
@@ -25,14 +26,14 @@ class ClassTeacherController extends Controller
 
         return $data;
     }
-    public function add(Request $request)
+    public function add()
     {
         $data['getClass'] = ClassModel::getClass();
         $data['getTeacher'] = User::getTeacher();
         return view('admin.assign_class_teacher.add', $data);
     }
 
-    public function assignTeacherClass(Request $request)
+    public function assignTeacherClass(AssignTeacherRequest $request)
     {
         $teacher_id = $request->teacher_id;
         $getAlreadyTeacher=ClassTeacher::getAlreadyTeacher($request->class_id,$request->subject_id);

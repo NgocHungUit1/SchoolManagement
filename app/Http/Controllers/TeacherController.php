@@ -129,7 +129,7 @@ class TeacherController extends Controller
     public function getClass()
     {
         $data['getRecord'] = ClassModel::getTeacherClass(Auth::user()->id);
-        dd($data);
+
         return view('teacher.my_student_class', $data);
 
     }
@@ -142,5 +142,7 @@ class TeacherController extends Controller
         return $data;
 
     }
+
+
 
 }

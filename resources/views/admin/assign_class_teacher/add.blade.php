@@ -35,6 +35,8 @@
                                                     @endforeach
 
                                                 </select>
+                                                <div style="color:red">{{ $errors->first('class_id') }}
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-12 col-sm-6">
@@ -51,6 +53,8 @@
                                                         @endforeach
                                                     @endif
                                                 </select>
+                                                <div style="color:red">{{ $errors->first('subject_id') }}
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -61,7 +65,8 @@
                                                     <option value="{{ $value->id }}">{{ $value->name }}</option>
                                                 @endforeach
                                             </select>
-
+                                            <div style="color:red">{{ $errors->first('teacher_id') }}
+                                            </div>
                                         </div>
                                         <div class="form-group row">
                                             <label>Status <span class="login-danger">*</span></label>

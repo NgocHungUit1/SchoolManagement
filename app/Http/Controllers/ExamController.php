@@ -9,14 +9,43 @@ use App\Models\ClassSubject;
 use App\Models\ClassTeacher;
 use App\Models\Exam;
 use App\Models\ExamSchedule;
+use App\Models\ExamScore;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
+
 class ExamController extends Controller
 {
-    function list(Request $request) {
+
+    public function insertScore(Request $request){
+
+
+            $examScores = $request->input('exam_score');
+
+            foreach ($examScores as $studentId => $scores) {
+                foreach ($scores as $scoreData) {
+                    // dd($scoreData['score']);
+
+                    $examScore = new ExamScore;
+                    $examScore->exam_id = $scoreData['exam_id'];
+                    $examScore->class_id = $request->input('class_id');
+                    $examScore->subject_id = $request->input('subject_id');
+                    $examScore->student_id = $studentId;
+                    $examScore->score = $scoreData['score'];
+                    $examScore->created_by = Auth::user()->id;
+                    $examScore->save();
+                }
+            }
+
+            return redirect()->back()->with('success', 'Exam scores have been saved.');
+
+
+    }
+
+    function list(Request $request)
+    {
         $data['getRecord'] = Exam::getRecord();
         return view('admin.exam.list', $data);
     }
@@ -70,9 +99,47 @@ class ExamController extends Controller
         return redirect('admin/exam/list')->with('success', 'Exam successfully deleted ');
     }
 
-    public function export()
+    public function examScore(Request $request)
     {
-        return Excel::download(new ExamExport, 'exam.xlsx');
+        $data['getClass'] = ClassModel::getClass();
+        if (!empty($request->class_id)) {
+            $data['getSubject'] = ClassSubject::MySubject($request->class_id);
+        }
+
+        if (!empty($request->subject_id) && !empty($request->class_id)) {
+            $data['getExam'] = ExamSchedule::getExam($request->class_id);
+            $data['getStudent'] = User::getStudentClassExam($request->class_id);
+        }
+
+
+        return view('admin.exam.score', $data);
+    }
+
+    public function addScore(Request $request)
+    {
+
+        $data['getClass'] = ClassModel::getClass();
+        if (!empty($request->exam_score)) {
+            foreach ($request->exam_score as $exam_score) {
+                $score = !empty($exam_score['score']) ? $exam_score['score'] : 0;
+                $getScore = ExamScore::CheckAlready($request->class_id, $request->student_id, $exam_score['exam_id'], $request->subject_id);
+
+                if (!empty($getScore)) {
+                    $save = $getScore;
+                } else {
+                    $save = new ExamScore();
+                    $save->created_by = Auth::user()->id;
+                }
+                $save->subject_id = $request->subject_id;
+                $save->class_id = $request->class_id;
+                $save->student_id = $request->student_id;
+                $save->exam_id = $exam_score['exam_id'];
+                $save->score =  $score;
+                $save->save();
+            }
+        }
+        $json['message']="Exam score successfully saved";
+        echo json_encode($json);
     }
 
     public function examSchedule(Request $request)
@@ -130,7 +197,6 @@ class ExamController extends Controller
                 $save->created_by = Auth::user()->id;
                 $save->save();
             }
-            return redirect()->back()->with('error', 'Please fill in all the information');
         }
 
         return redirect()->back()->with('success', 'Exam Schedule successfully created ');
@@ -176,12 +242,12 @@ class ExamController extends Controller
         foreach ($getClass as $class) {
             $dataC = array();
             $dataC['class_name'] = $class->class_name;
-            $getExam = ExamSchedule::getExamTeacher($class->class_id,$class->subject_id);
+            $getExam = ExamSchedule::getExamTeacher($class->class_id, $class->subject_id);
             $examArray = array();
             foreach ($getExam as $exam) {
                 $dataE = array();
                 $dataE['name'] = $exam->exam_name;
-                $getExamTimeTable = ExamSchedule::getExamTimeTableTeacher($exam->exam_id, $class->class_id,$class->subject_id);
+                $getExamTimeTable = ExamSchedule::getExamTimeTableTeacher($exam->exam_id, $class->class_id, $class->subject_id);
                 $subjectArray = array();
                 foreach ($getExamTimeTable as $valueS) {
                     $dataS = array();
@@ -199,10 +265,74 @@ class ExamController extends Controller
             }
             $dataC['exam'] = $examArray;
             $result[] = $dataC;
-
         }
         $data['getRecord'] = $result;
 
         return view('teacher.my_exam', $data);
+    }
+
+    public function examScoreTeacher(Request $request)
+    {
+        $data['getClass'] = ClassModel::getStudentTeacher(Auth::user()->id);
+        if (!empty($request->class_id)) {
+            $data['getSubject'] = ClassSubject::MySubject($request->class_id);
+        }
+
+        if (!empty($request->subject_id) && !empty($request->class_id)) {
+            $data['getExam'] = ExamSchedule::getExam($request->class_id);
+            $data['getStudent'] = User::getStudentClassExam($request->class_id);
+        }
+
+
+        return view('teacher.exam_score', $data);
+    }
+
+    public function addScoreByTeacher(Request $request)
+    {
+
+        $data['getClass'] = ClassModel::getClass();
+        if (!empty($request->exam_score)) {
+            foreach ($request->exam_score as $exam_score) {
+                $score = !empty($exam_score['score']) ? $exam_score['score'] : 0;
+                $getScore = ExamScore::CheckAlready($request->class_id, $request->student_id, $exam_score['exam_id'], $request->subject_id);
+
+                if (!empty($getScore)) {
+                    $save = $getScore;
+                } else {
+                    $save = new ExamScore();
+                    $save->created_by = Auth::user()->id;
+                }
+                $save->subject_id = $request->subject_id;
+                $save->class_id = $request->class_id;
+                $save->student_id = $request->student_id;
+                $save->exam_id = $exam_score['exam_id'];
+                $save->score =  $score;
+                $save->save();
+            }
+        }
+        $json['message']="Exam score successfully saved";
+        echo json_encode($json);
+    }
+
+    public function get_Subject(Request $request)
+    {
+        $getSubject = ClassSubject::MySubject($request->class_id);
+        $html = "<option value=''> Select </option>";
+        foreach ($getSubject as $value) {
+            $html .= "<option value='" . $value->subject_id . "'>" . $value->subject_name . " </option>";
+        }
+        $json['html'] = $html;
+        echo json_encode($json);
+    }
+
+    public function get_Subject_Teacher(Request $request)
+    {
+        $getSubject = ClassTeacher::getSubjectExam($request->class_id);
+        $html = "<option value=''> Select </option>";
+        foreach ($getSubject as $value) {
+            $html .= "<option value='" . $value->subject_id . "'>" . $value->subject_name . " </option>";
+        }
+        $json['html'] = $html;
+        echo json_encode($json);
     }
 }
