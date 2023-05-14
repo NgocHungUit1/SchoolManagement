@@ -75,7 +75,7 @@
                                             </div>
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
-                                                    <label>Description <span class="login-danger">*</span></label>
+                                                    <label>Percent <span class="login-danger">*</span></label>
                                                     <input class="form-control" type="text" name="description"
                                                         value="{{ old('description', $getRecord->description) }}"
                                                         placeholder="Enter Full Name">
