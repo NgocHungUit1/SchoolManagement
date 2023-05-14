@@ -103,15 +103,13 @@
                                             <th>
                                                 <input type="hidden" name="timetable[{{ $i }}][day_id]"
                                                     value="{{ $value['day_id'] }}">{{ $value['day_name'] }}
-
                                             </th>
-
                                             <td><input type="time" name="timetable[{{ $i }}][start_time]"
-                                                    value="{{ $value['start_time'] }}" class="form_control"></td>
+                                                    value="{{ $value['start_time'] }}" class="form-control"></td>
                                             <td><input type="time" name="timetable[{{ $i }}][end_time]"
-                                                    value="{{ $value['end_time'] }}" class="form_control"></td>
+                                                    value="{{ $value['end_time'] }}" class="form-control"></td>
                                             <td><input type="text" name="timetable[{{ $i }}][room_number]"
-                                                    value="{{ $value['room_number'] }}" class="form_control"></td>
+                                                    value="{{ $value['room_number'] }}" class="form-control"></td>
                                         </tr>
                                         @php
                                             $i++;

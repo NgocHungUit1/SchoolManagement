@@ -147,7 +147,7 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::get('teacher/my-subject-class', [ClassTeacherController::class, 'mySubjectClass']);
     Route::get('teacher/my-subject-class/timetable/{class_id}/{subject_id}', [ClassTimeTableController::class, 'myTimeTableTeacher']);
     Route::post('teacher/exam/get_subject', [ExamController::class, 'get_Subject_Teacher']);
-    Route::post('teacher/exam/exam_score', [ExamController::class, 'addScore']);
+    Route::post('teacher/exam_score', [ExamController::class, 'addScoreByTeacher']);
     Route::get('teacher/exam_score', [ExamController::class, 'examScoreTeacher']);
     Route::get('teacher/my-student', [TeacherController::class, 'myStudent']);
     Route::get('teacher/my-student/view/{id}', [ClassController::class, 'view']);
@@ -168,6 +168,7 @@ Route::group(['middleware' => 'student'], function () {
     Route::post('student/profile-edit', [UserController::class, 'updateProfileStudent']);
     Route::post('student/profile', [UserController::class, 'updatePassword']);
     Route::get('student/my-exam', [ExamController::class, 'myExam']);
+    Route::get('student/my-score', [ExamController::class, 'scoreStudent']);
     Route::get('student/my-class', [ClassController::class, 'myClass']);
     Route::get('student/my-calendar', [CalendarController::class, 'myCalendar']);
 });

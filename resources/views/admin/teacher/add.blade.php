@@ -108,7 +108,7 @@
                                                 <div class="form-group">
                                                     <label>Qualification <span class="login-danger">*</span></label>
                                                     <input class="form-control" type="text" name="qualification"
-                                                        placeholder="Enter Joining Date">
+                                                        placeholder="Enter Qualification">
                                                     <div style="color:red">{{ $errors->first('qualification') }}</div>
                                                 </div>
                                             </div>

@@ -61,9 +61,8 @@ class ClassTimeTableController extends Controller
 
     public function add(Request $request)
     {
-        ClassSubjectTimeTable::where('class_id', '=', $request->class_id)
-            ->where('subject_id', '=', $request->subject_id)
-            ->delete();
+
+        ClassSubjectTimeTable::where('class_id', '=', $request->class_id)->where('subject_id', '=', $request->subject_id)->delete();
 
         foreach ($request->timetable as $timetable) {
             if (!empty($timetable['day_id']) && !empty($timetable['start_time']) && !empty($timetable['end_time']) && !empty($timetable['room_number']))
@@ -90,11 +89,12 @@ class ClassTimeTableController extends Controller
                 $save->room_number = $timetable['room_number'];
                 $save->save();
             }
-            return redirect()->back()->with('success', 'Class Time table successfully created ');
+
         }
+        return redirect()->back()->with('success', 'Class Time table successfully created ');
     }
 
-
+//student
     public function myTimeTable()
     {
         $result = array();

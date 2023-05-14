@@ -38,11 +38,12 @@
                                             </select>
                                         </div>
                                         <div class="form-group row">
-                                            <label class="col-form-label col-md-2"></label>
+
                                             <div class="col-md-10">
                                                 <button type="submit" class="btn btn-primary">Submit</button>
                                             </div>
                                         </div>
+                                    </div>
                                 </form>
                             </div>
                         </div>

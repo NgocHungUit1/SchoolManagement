@@ -157,91 +157,26 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="text-nowrap">
-                                                <div>PRE2209</div>
-                                            </td>
-                                            <td class="text-nowrap">
-                                                <a href="profile.html">
-                                                    <img class="rounded-circle" src="/./assets/img/profiles/avatar-02.jpg"
-                                                        width="25" alt="Star Students">
-                                                    John Smith
-                                                </a>
-                                            </td>
-                                            <td class="text-center">1185</td>
-                                            <td class="text-center">98%</td>
-                                            <td class="text-end">
-                                                <div>2019</div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-nowrap">
-                                                <div>PRE1245</div>
-                                            </td>
-                                            <td class="text-nowrap">
-                                                <a href="profile.html">
-                                                    <img class="rounded-circle" src="/./assets/img/profiles/avatar-01.jpg"
-                                                        width="25" alt="Star Students">
-                                                    Jolie Hoskins
-                                                </a>
-                                            </td>
-                                            <td class="text-center">1195</td>
-                                            <td class="text-center">99.5%</td>
-                                            <td class="text-end">
-                                                <div>2018</div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-nowrap">
-                                                <div>PRE1625</div>
-                                            </td>
-                                            <td class="text-nowrap">
-                                                <a href="profile.html">
-                                                    <img class="rounded-circle" src="/./assets/img/profiles/avatar-03.jpg"
-                                                        width="25" alt="Star Students">
-                                                    Pennington Joy
-                                                </a>
-                                            </td>
-                                            <td class="text-center">1196</td>
-                                            <td class="text-center">99.6%</td>
-                                            <td class="text-end">
-                                                <div>2017</div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-nowrap">
-                                                <div>PRE2516</div>
-                                            </td>
-                                            <td class="text-nowrap">
-                                                <a href="profile.html">
-                                                    <img class="rounded-circle" src="/./assets/img/profiles/avatar-04.jpg"
-                                                        width="25" alt="Star Students">
-                                                    Millie Marsden
-                                                </a>
-                                            </td>
-                                            <td class="text-center">1187</td>
-                                            <td class="text-center">98.2%</td>
-                                            <td class="text-end">
-                                                <div>2016</div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-nowrap">
-                                                <div>PRE2209</div>
-                                            </td>
-                                            <td class="text-nowrap">
-                                                <a href="profile.html">
-                                                    <img class="rounded-circle" src="/./assets/img/profiles/avatar-05.jpg"
-                                                        width="25" alt="Star Students">
-                                                    John Smith
-                                                </a>
-                                            </td>
-                                            <td class="text-center">1185</td>
-                                            <td class="text-center">98%</td>
-                                            <td class="text-end">
-                                                <div>2015</div>
-                                            </td>
-                                        </tr>
+                                        @foreach ($getStudentStar as $key => $student)
+                                            <tr>
+                                                <td class="text-nowrap">
+                                                    <div>{{ $key++ }}</div>
+                                                </td>
+                                                <td class="text-nowrap">
+                                                    <a href="profile.html">
+                                                        <img class="rounded-circle"
+                                                            src="{{ URL::to('/public/uploads/profile/' . $student->user_avatar) }}"
+                                                            width="25">
+                                                        {{ $student->name }}
+                                                    </a>
+                                                </td>
+                                                <td class="text-center">1185</td>
+                                                <td class="text-center">98%</td>
+                                                <td class="text-end">
+                                                    <div>2019</div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -328,18 +263,12 @@
                     element: 'donut',
                     resize: true,
                     colors: [
-                        '#E0F7FA',
-                        '#B2EBF2',
-                        '#80DEEA',
-                        '#4DD0E1',
-                        '#26C6DA',
-                        '#00BCD4',
-                        '#00ACC1',
-                        '#0097A7',
-                        '#00838F',
-                        '#006064'
+                        '#4287f5',
+                        '#f54242',
+                        '#cb42f5',
+                        '#f542b9',
                     ],
-                    //labelColor:"#cccccc", // text color
+                    //labelColor:"# cccccc ", // text color
                     //backgroundColor: '#333333', // border color
                     data: [{
                             label: "Student",

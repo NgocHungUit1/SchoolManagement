@@ -34,7 +34,7 @@
                                     </div>
                                     <div class="col-12 col-sm-6">
                                         <div class="form-group">
-                                            <label>Description</label>
+                                            <label>Percent</label>
                                             <input type="text" name="description" class="form-control">
                                         </div>
                                         <div style="color:red">{{ $errors->first('description') }}</div>

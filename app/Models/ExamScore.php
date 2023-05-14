@@ -18,5 +18,13 @@ class ExamScore extends Model
         return self::where('class_id', '=', $class_id)->where('student_id', '=', $student_id)->where('exam_id', '=', $exam_id)->where('subject_id', '=', $subject_id)->first();
     }
 
+    public static function getRecordStudent($class_id,$student_id){
+        return ExamScore::select('exam_score.*', 'subject.name as subject_name', 'exam.name as exam_name')
+        ->leftJoin('exam', 'exam.id', '=', 'exam_score.exam_id')
+        ->leftJoin('subject', 'subject.id', '=', 'exam_score.subject_id')
+        ->where('exam_score.student_id', '=', $student_id)
+        ->where('exam_score.class_id', '=', $class_id)
+        ->get();
+    }
 
 }

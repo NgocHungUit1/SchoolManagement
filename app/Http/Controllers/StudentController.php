@@ -111,4 +111,6 @@ class StudentController extends Controller
         return redirect('admin/student/list')->with('success', 'Student successfully deleted ');
     }
 
+    //
+
 }

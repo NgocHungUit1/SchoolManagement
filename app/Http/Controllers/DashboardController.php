@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassModel;
+use App\Models\ExamScore;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,8 @@ class DashboardController extends Controller
 {
     public function dashboard()
     {
+
+        $data['getStudentStar'] = User::getStudentStar();
         $data['getStudent'] = User::getStudent();
         $data['getTeacher'] = User::getTeacher();
         $data['getClass'] = ClassModel::getRecord();

@@ -24,6 +24,8 @@ class ExamSchedule extends Model
     {
         return ExamSchedule::select('exam_schedule.*', 'subject.name as subject_name', 'subject.type as subject_type')
             ->join('subject', 'subject.id', '=', 'exam_schedule.subject_id')
+            ->where('subject.is_delete', '=', 0)
+            ->where('subject.status', '=', 0)
             ->where('exam_schedule.exam_id', '=', $exam_id)
             ->where('exam_schedule.class_id', '=', $class_id)
             ->get();

@@ -65,7 +65,7 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Exam Name</th>
-                                            <th>Description</th>
+                                            <th>Percent</th>
                                             <th>Create by User</th>
                                             <th class="text-end">Action</th>
                                         </tr>

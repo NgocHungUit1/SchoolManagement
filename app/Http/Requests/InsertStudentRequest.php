@@ -33,6 +33,7 @@ class InsertStudentRequest extends FormRequest
             'gender' => 'required',
             'date_of_birth' => 'required',
             'password' => 'required',
+            'address' => 'required',
         ];
 
     }

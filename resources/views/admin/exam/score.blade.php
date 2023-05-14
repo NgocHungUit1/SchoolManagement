@@ -60,11 +60,17 @@
                 @if (!empty($getExam) && !empty($getExam->count()))
                     <div class="table-responsive" id="user">
                         <h3 class="page-title">Mark Register</h3>
+
                         <form action="" method="post">
+
                             @csrf
+
                             <input type="hidden" name="class_id" value="{{ Request::get('class_id') }}">
                             <input type="hidden" name="subject_id" value="{{ Request::get('subject_id') }}">
                             <table class="table border-0 star-student  table-striped">
+                                <div class="col-md-12 text-right">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
                                 <thead class="student-thread">
                                     <tr>
                                         <th>Student Name</th>
@@ -72,7 +78,6 @@
                                             <th>{{ $exam->exam_name }}</th>
                                         @endforeach
                                         <th>Average Score</th>
-                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -106,21 +111,20 @@
                                                     @endphp
                                                 @endforeach
                                                 @if ($total < 5)
-                                                    <td style="color:crimson">{{ $total }}</td>
+                                                    <td style="color:crimson">
+                                                        {{ $total }}
+                                                    </td>
                                                 @else
-                                                    <td>{{ $total }}</td>
+                                                    <td> {{ $total }}</td>
                                                 @endif
-                                                <td>
-                                                    <button type="submit" class="btn btn-primary" data-toggle="modal"
-                                                        data-target="#myModal">Submit</button>
-                                                </td>
+
                                             </tr>
                                         @endforeach
                                     @endif
                                 </tbody>
                             </table>
 
-                            <button type="submit" class="btn btn-primary">Submit</button>
+
                         </form>
                     </div>
                 @endif

@@ -60,28 +60,29 @@
                 @if (!empty($getExam) && !empty($getExam->count()))
                     <div class="table-responsive" id="user">
                         <h3 class="page-title">Mark Register</h3>
-                        <table class="table border-0 star-student  table-striped">
-                            <thead class="student-thread">
-                                <tr>
-                                    <th>Student Name</th>
-                                    @foreach ($getExam as $exam)
-                                        <th>
-                                            {{ $exam->exam_name }}
-                                        </th>
-                                    @endforeach
-                                    <th>Average Score</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (!empty($getStudent) && !empty($getStudent->count()))
-                                    @foreach ($getStudent as $student)
-                                        <form class="submitForm" method="post">
-                                            @csrf
-                                            <input type="hidden" name="student_id" value="{{ $student->id }}">
-                                            <input type="hidden" name="class_id" value="{{ Request::get('class_id') }}">
-                                            <input type="hidden" name="subject_id"
-                                                value="{{ Request::get('subject_id') }}">
+
+                        <form action="" method="post">
+
+                            @csrf
+
+                            <input type="hidden" name="class_id" value="{{ Request::get('class_id') }}">
+                            <input type="hidden" name="subject_id" value="{{ Request::get('subject_id') }}">
+                            <table class="table border-0 star-student  table-striped">
+                                <div class="col-md-12 text-right">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                                <thead class="student-thread">
+                                    <tr>
+                                        <th>Student Name</th>
+                                        @foreach ($getExam as $exam)
+                                            <th>{{ $exam->exam_name }}</th>
+                                        @endforeach
+                                        <th>Average Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (!empty($getStudent) && !empty($getStudent->count()))
+                                        @foreach ($getStudent as $student)
                                             <tr>
                                                 <td>{{ $student->name }}</td>
                                                 @php
@@ -98,9 +99,10 @@
                                                     @endphp
                                                     <td>
                                                         <input type="hidden"
-                                                            name="exam_score[{{ $i }}][exam_id]"
+                                                            name="exam_score[{{ $student->id }}][{{ $exam->exam_id }}][exam_id]"
                                                             value="{{ $exam->exam_id }}">
-                                                        <input type="text" name="exam_score[{{ $i }}][score]"
+                                                        <input type="text"
+                                                            name="exam_score[{{ $student->id }}][{{ $exam->exam_id }}][score]"
                                                             value="{{ !empty($getScore->score) ? $getScore->score : '' }}"
                                                             placeholder="Score" class="form-control">
                                                     </td>
@@ -109,22 +111,21 @@
                                                     @endphp
                                                 @endforeach
                                                 @if ($total < 5)
-                                                    <td style="color:crimson">{{ $total }}</td>
+                                                    <td style="color:crimson">
+                                                        {{ $total }}
+                                                    </td>
                                                 @else
-                                                    <td>{{ $total }}</td>
+                                                    <td> {{ $total }}</td>
                                                 @endif
-                                                <td>
-                                                    <button type="submit" class="btn btn-primary" data-toggle="modal"
-                                                        data-target="#myModal">Submit</button>
-                                                </td>
+
                                             </tr>
-                                        </form>
-                                    @endforeach
-                                @endif
+                                        @endforeach
+                                    @endif
+                                </tbody>
+                            </table>
 
-                            </tbody>
-                        </table>
 
+                        </form>
                     </div>
                 @endif
             </div>

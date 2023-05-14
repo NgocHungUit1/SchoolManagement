@@ -182,6 +182,12 @@
                             <i class="fas fa-clipboard-list"></i> <span>
                                 Exam</span></a>
                     </li>
+                    <li class=" {{ set_active(['teacher/exam_score']) }}"><a href="{{ url('teacher/exam_score') }}"
+                            class=" {{ set_active(['teacher/exam_score']) }}">
+                            <i class="fas fa-chalkboard"></i>
+                            <span>
+                                Academic Record</span></a>
+                    </li>
 
                     <li class=" {{ set_active(['teacher/my-subject-class']) }}"><a
                             href="{{ url('teacher/my-subject-class') }}"
@@ -194,12 +200,6 @@
                             <i class="fas fa-chalkboard"></i>
                             <span>
                                 My Class & Student</span></a>
-                    </li>
-                    <li class=" {{ set_active(['teacher/exam_score']) }}"><a href="{{ url('teacher/exam_score') }}"
-                            class=" {{ set_active(['teacher/exam_score']) }}">
-                            <i class="fas fa-chalkboard"></i>
-                            <span>
-                                Exam score</span></a>
                     </li>
                 @elseif (Auth::user()->user_type == 3)
                     <li class=" {{ set_active(['student/my-calendar']) }}"><a
@@ -226,6 +226,11 @@
                             <i class="fas fa-book"></i>
                             </i> <span>
                                 Subject List</span></a>
+                    </li>
+                    <li class=" {{ set_active(['student/my-score']) }}"><a href="{{ url('student/my-score') }}"
+                            class=" {{ set_active(['student/my-score']) }}">
+                            <i class="fas fa-book-reader"></i> <span>
+                                Academic Record</span></a>
                     </li>
                     <li class=" {{ set_active(['student/my-timetable']) }}"><a
                             href="{{ url('student/my-timetable') }}"
