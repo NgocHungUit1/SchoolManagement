@@ -345,7 +345,7 @@ class ExamController extends Controller
 
     public function get_Subject_Teacher(Request $request)
     {
-        $getSubject = ClassTeacher::getSubjectExam($request->class_id);
+        $getSubject = ClassTeacher::getSubjectExam($request->class_id, Auth::user()->id);
         $html = "<option value=''> Select </option>";
         foreach ($getSubject as $value) {
             $html .= "<option value='" . $value->subject_id . "'>" . $value->subject_name . " </option>";

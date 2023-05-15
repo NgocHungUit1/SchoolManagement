@@ -70,7 +70,7 @@ class ClassTeacher extends Model
             ->get();
     }
 
-    public static function getSubjectExam($class_id)
+    public static function getSubjectExam($class_id,$teacher_id)
     {
         return ClassTeacher::select('teacher_class.*',  'subject.name as subject_name', 'subject.type as subject_type',
             'class.id as class_id', 'subject.id as subject_id')
@@ -83,6 +83,7 @@ class ClassTeacher extends Model
             ->where('class.is_delete', '=', 0)
             ->where('class.status', '=', 0)
             ->where('teacher_class.class_id', '=', $class_id)
+            ->where('teacher_class.teacher_id', '=', $teacher_id)
             ->get();
     }
 
