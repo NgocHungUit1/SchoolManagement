@@ -139,7 +139,6 @@
                         <ul>
                             <li class=" {{ set_active(['admin/exam/list']) }}"><a href="{{ url('admin/exam/list') }}"
                                     class=" {{ set_active(['admin/exam/list']) }}">Exam List</a></li>
-
                             <li class=" {{ set_active(['admin/exam_schedule']) }}"><a
                                     href="{{ url('admin/exam_schedule') }}"
                                     class="{{ set_active(['admin/exam_schedule']) }}">Exam Schedule</a></li>

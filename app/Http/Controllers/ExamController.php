@@ -185,17 +185,32 @@ class ExamController extends Controller
         foreach ($request->schedule as $schedule) {
             if (!empty($schedule['subject_id']) && !empty($schedule['exam_date']) && !empty($schedule['start_time']) && !empty($schedule['end_time']) && !empty($schedule['room_number']) && !empty($schedule['full_mark']) && !empty($schedule['passing_mark'])) {
                 // Check for overlapping time slots
-                $overlapping = ExamSchedule::where([
-                    ['class_id', '=', $request->class_id],
-                    ['exam_date', '=', $schedule['exam_date']],
-                ])->where(function ($query) use ($schedule) {
-                    $query->whereBetween('start_time', [$schedule['start_time'], $schedule['end_time']])
-                        ->orWhereBetween('end_time', [$schedule['start_time'], $schedule['end_time']]);
+                $overlapping = ExamSchedule::where('class_id', $request->class_id)
+                ->where(function ($query) use ($schedule) {
+                    $query->where(function ($q) use ($schedule) {
+                        $q->where('exam_date', '=', $schedule['exam_date'])
+                            ->whereBetween('start_time', [$schedule['start_time'], $schedule['end_time']]);
+                    })
+                    ->orWhere(function ($q) use ($schedule) {
+                        $q->where('exam_date', '=', $schedule['exam_date'])
+                            ->whereBetween('end_time', [$schedule['start_time'], $schedule['end_time']]);
+                    })
+                    ->orWhere(function ($q) use ($schedule) {
+                        $q->where('exam_date', '=', $schedule['exam_date'])
+                            ->where('start_time', '<', $schedule['start_time'])
+                            ->where('end_time', '>', $schedule['start_time']);
+                    })
+                    ->orWhere(function ($q) use ($schedule) {
+                        $q->where('exam_date', '=', $schedule['exam_date'])
+                            ->where('start_time', '<', $schedule['end_time'])
+                            ->where('end_time', '>', $schedule['end_time']);
+                    });
                 })->count();
 
-                if ($overlapping > 0) {
-                    return redirect()->back()->with('error', 'Time slot overlap detected');
-                }
+            if ($overlapping > 0) {
+                return redirect()->back()->with('error', 'Time slot overlap detected');
+            }
+
                 $save = new ExamSchedule;
                 $save->exam_id = $request->exam_id;
                 $save->class_id = $request->class_id;

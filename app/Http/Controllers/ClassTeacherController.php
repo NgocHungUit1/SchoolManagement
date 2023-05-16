@@ -69,7 +69,6 @@ class ClassTeacherController extends Controller
         $getRecord = ClassTeacher::find($id);
         if (!empty($getRecord)) {
             $data['getRecord'] = $getRecord;
-
             $data['getClass'] = ClassModel::getClass();
             $data['getTeacher'] = User::getTeacher();
         }

@@ -61,8 +61,9 @@ class ClassTimeTableController extends Controller
 
     public function add(Request $request)
     {
-
-        ClassSubjectTimeTable::where('class_id', '=', $request->class_id)->where('subject_id', '=', $request->subject_id)->delete();
+        ClassSubjectTimeTable::where('class_id', '=', $request->class_id)
+        ->where('subject_id', '=', $request->subject_id)
+        ->delete();
 
         foreach ($request->timetable as $timetable) {
             if (!empty($timetable['day_id']) && !empty($timetable['start_time']) && !empty($timetable['end_time']) && !empty($timetable['room_number']))
@@ -72,13 +73,23 @@ class ClassTimeTableController extends Controller
                     ['class_id', '=', $request->class_id],
                     ['day_id', '=', $timetable['day_id']]
                 ])->where(function ($query) use ($timetable) {
-                    $query->whereBetween('start_time', [$timetable['start_time'], $timetable['end_time']])
-                        ->orWhereBetween('end_time', [$timetable['start_time'], $timetable['end_time']]);
+                    $query->where(function ($q) use ($timetable) {
+                        $q->whereBetween('start_time', [$timetable['start_time'], $timetable['end_time']]);
+                    })
+                    ->orWhere(function ($q) use ($timetable) {
+                        $q->whereBetween('end_time', [$timetable['start_time'], $timetable['end_time']]);
+                    })
+                    ->orWhere(function ($q) use ($timetable) {
+                        $q->where('start_time', '<=', $timetable['start_time'])
+                            ->where('end_time', '>=', $timetable['end_time']);
+                    });
                 })->count();
 
                 if ($overlapping > 0) {
                     return redirect()->back()->with('error', 'Time slot overlap detected');
                 }
+
+
 
                 $save = new ClassSubjectTimeTable;
                 $save->class_id = $request->class_id;
