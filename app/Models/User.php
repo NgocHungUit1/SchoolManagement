@@ -132,7 +132,7 @@ class User extends Authenticatable
 
     public static function getTeacher()
     {
-        $return = User::selectRaw('users.*, class.name as class_name')->leftJoin('class', 'class.id', '=', 'users.class_id')->where('users.user_type', '=', 2)->where('users.is_delete', '=', 0);
+        $return = User::selectRaw('users.*, subject.name as subject_name')->leftJoin('subject', 'subject.id', '=', 'users.subject_id')->where('users.user_type', '=', 2)->where('users.is_delete', '=', 0);
 
         if (!empty(Request::get('mobile_number'))) {
             $return = $return->where('users.mobile_number', 'like', '%' . Request::get('mobile_number') . '%');
@@ -183,6 +183,18 @@ class User extends Authenticatable
             ->where('users.class_id', '=', $class_id)
             ->orderBy('users.id', 'desc')
             ->get();
+    }
+
+    public static function SubjectTeacher($subject_id)
+    {
+        $return = User::select('users.*', 'users.name as teacher_name')
+            ->join('subject', 'subject.id', '=', 'users.subject_id')
+            ->where('users.subject_id', '=', $subject_id)
+            ->where('users.is_delete', '=', 0)
+            ->where('users.status', '=', 0)
+            ->orderBy('users.id', 'desc')
+            ->get();
+         return $return;
     }
 
 }

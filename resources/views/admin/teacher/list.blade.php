@@ -90,15 +90,13 @@
                                             <th>Moblie Number</th>
                                             <th>Address</th>
                                             <th>Email</th>
-                                            <th>Create by Day</th>
+                                            <th>Expertise</th>
                                             <th>Status</th>
                                             <th class="text-end">Action</th>
                                         </tr>
 
                                     </thead>
                                     <tbody>
-
-
                                     </tbody>
                                 </table>
                             </div>
@@ -164,7 +162,7 @@
                             data: "email"
                         },
                         {
-                            data: "created_at"
+                            data: "subject_name"
                         },
                         {
                             data: "status"

@@ -45,9 +45,7 @@
                                                     <option value="">Select Subject </option>
                                                     @if (!empty($getSubject))
                                                         @foreach ($getSubject as $subject)
-                                                            <option
-                                                                {{ Request::get('subject_id') == $subject->subject_id ? 'selected' : '' }}
-                                                                value="{{ $subject->subject_id }}">
+                                                            <option value="{{ $subject->subject_id }}">
                                                                 {{ $subject->subject_name }}
                                                             </option>
                                                         @endforeach
@@ -59,11 +57,13 @@
                                         </div>
                                         <div class="form-group row">
                                             <label>Teacher name <span class="login-danger">*</span></label>
-                                            <select class="form-control select" name="teacher_id">
+                                            <select class="form-control getTeacher" name="teacher_id">
                                                 <option value="">Please Select Teacher </option>
-                                                @foreach ($getTeacher as $value)
-                                                    <option value="{{ $value->id }}">{{ $value->name }}</option>
-                                                @endforeach
+                                                @if (!empty($get_Teacher))
+                                                    @foreach ($get_Teacher as $value)
+                                                        <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                                    @endforeach
+                                                @endif
                                             </select>
                                             <div style="color:red">{{ $errors->first('teacher_id') }}
                                             </div>
@@ -107,6 +107,23 @@
                     dataType: "json",
                     success: function(response) {
                         $('.getSubject').html(response.html);
+                    },
+                });
+            });
+
+            $('.getSubject').change(function() {
+                var subject_id = $(this).val();
+
+                $.ajax({
+                    url: " {{ url('admin/assign_class_teacher/get_teacher') }}",
+                    type: "POST",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        subject_id: subject_id,
+                    },
+                    dataType: "json",
+                    success: function(response) {
+                        $('.getTeacher').html(response.html);
                     },
                 });
             });

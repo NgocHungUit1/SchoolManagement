@@ -14,4 +14,12 @@ class ClassSubjectTimeTable extends Model
     {
         return self::where('class_id', '=', $class_id)->where('subject_id', '=', $subject_id)->where('day_id', '=', $day_id)->first();
     }
+
+    public static function getDate($class_id, $subject_id)
+    {
+        return self::select('start_date', 'end_date')
+        ->where('class_id', '=', $class_id)
+        ->where('subject_id', '=', $subject_id)
+        ->first();
+    }
 }

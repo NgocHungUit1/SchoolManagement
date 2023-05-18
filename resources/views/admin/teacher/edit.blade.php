@@ -180,7 +180,22 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-12 col-sm-5">
+                                            <div class="col-12 col-sm-4">
+                                                <div class="form-group local-forms">
+                                                    <label>Teacher's expertise <span class="login-danger">*</span></label>
+                                                    <select class="form-control select" required name="subject_id">
+                                                        <option>Please Select Subject </option>
+                                                        @foreach ($getSubject as $value)
+                                                            <option
+                                                                {{ $getRecord->subject_id == $value->id ? 'selected' : '' }}
+                                                                value="{{ $value->id }}">{{ $value->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <div style="color:red">{{ $errors->first('subject_id') }}</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="">
                                                 <div class="form-group students-up-files">
                                                     <h5 class="form-title"><span>Upload teacher avatar</span></h5>
                                                     <div class="upload">

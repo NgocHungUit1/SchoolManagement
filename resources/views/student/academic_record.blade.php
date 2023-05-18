@@ -80,6 +80,7 @@
                                                 @php
                                                     $i = 1;
                                                     $total = 0;
+                                                    $total_weight = 0;
                                                 @endphp
 
                                                 @foreach ($getExam as $exam)
@@ -90,17 +91,25 @@
                                                                 ->where('exam_id', $exam->exam_id)
                                                                 ->first()->score ?? '';
                                                         if (!empty($score)) {
-                                                            $subtotal = ($score * $exam->percent) / 100;
+                                                            $subtotal = $score * $exam->percent;
                                                             $total += $subtotal;
-                                                            $total_score += $subtotal;
+                                                            $total_weight += $exam->percent;
                                                         }
                                                     @endphp
                                                     <td>{{ $score }}</td>
                                                 @endforeach
-                                                @if ($total < 5)
-                                                    <td style="color:crimson">{{ $total }}</td>
-                                                @else
-                                                    <td>{{ $total }}</td>
+                                                @if ($total_weight > 0)
+                                                    @php
+                                                        $average = $total / $total_weight;
+                                                        $total_score += $average;
+                                                    @endphp
+                                                    @if ($average < 5)
+                                                        <td style="color:crimson">
+                                                            {{ $average }}
+                                                        </td>
+                                                    @else
+                                                        <td> {{ $average }}</td>
+                                                    @endif
                                                 @endif
                                             </tr>
                                         @endforeach

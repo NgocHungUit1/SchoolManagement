@@ -36,6 +36,9 @@ class Subject extends Model
     {
         return self::find($id);
     }
+
+
+
     public static function getSubject()
     {
         $return = Subject::select('subject.*')

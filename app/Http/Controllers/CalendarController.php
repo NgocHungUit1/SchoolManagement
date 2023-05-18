@@ -16,7 +16,6 @@ class CalendarController extends Controller
     {
         $data['getTimeTable'] = $this->getTimeTable(Auth::user()->class_id);
         $data['getExamTimeTable'] = $this->getExamTimeTable(Auth::user()->class_id);
-
         return view('student.my_calendar', $data)->with('success', 'My Time Table Student ');
     }
 
@@ -66,6 +65,8 @@ class CalendarController extends Controller
                     $dataDay['start_time'] = $ClassSubject->start_time;
                     $dataDay['end_time'] = $ClassSubject->end_time;
                     $dataDay['room_number'] = $ClassSubject->room_number;
+                    $dataDay['start_date'] = $ClassSubject->start_date;
+                    $dataDay['end_date'] = $ClassSubject->end_date;
                     $day[] = $dataDay;
                 }
 
@@ -83,6 +84,7 @@ class CalendarController extends Controller
     {
         $teacher_id = Auth::user()->id;
         $data['getCalendarTeacher'] = ClassTeacher::getCalendarTeacher($teacher_id);
+        // dd($data);
         return view('teacher.my_calendar', $data)->with('success', 'My Time Table Teacher ');
     }
 

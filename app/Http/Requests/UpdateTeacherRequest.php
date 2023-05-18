@@ -33,6 +33,7 @@ class UpdateTeacherRequest extends FormRequest
             'password' => 'required',
             'qualification' => 'required',
             'experience' => 'required',
+            'subject_id' => 'required',
         ];
     }
 }

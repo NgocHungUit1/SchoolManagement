@@ -6,10 +6,12 @@ use App\Exports\ExamExport;
 use App\Http\Requests\ExamRequest;
 use App\Models\ClassModel;
 use App\Models\ClassSubject;
+use App\Models\ClassSubjectTimeTable;
 use App\Models\ClassTeacher;
 use App\Models\Exam;
 use App\Models\ExamSchedule;
 use App\Models\ExamScore;
+use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -144,6 +146,7 @@ class ExamController extends Controller
     public function examSchedule(Request $request)
     {
         $data['getClass'] = ClassModel::getClass();
+        $data['getClassS'] = ClassModel::find($request->class_id);
         $data['getExam'] = Exam::getExam();
         $result = array();
         if (!empty($request->exam_id) && !empty($request->class_id)) {
@@ -172,9 +175,12 @@ class ExamController extends Controller
                     $dataS['passing_mark'] = '';
                 }
                 $result[] = $dataS;
+
             }
         }
+
         $data['getRecord'] = $result;
+
         return view('admin.exam.schedule', $data)->with('success', 'My Time Table Teacher ');
     }
 

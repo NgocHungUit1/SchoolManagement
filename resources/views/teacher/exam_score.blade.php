@@ -88,13 +88,15 @@
                                                 @php
                                                     $i = 1;
                                                     $total = 0;
+                                                    $total_weight = 0;
                                                 @endphp
                                                 @foreach ($getExam as $exam)
                                                     @php
                                                         $getScore = $exam->getScore(Request::get('class_id'), $student->id, $exam->exam_id, Request::get('subject_id'));
                                                         if (!empty($getScore)) {
-                                                            $subtotal = ($getScore->score * $exam->percent) / 100;
+                                                            $subtotal = $getScore->score * $exam->percent;
                                                             $total += $subtotal;
+                                                            $total_weight += $exam->percent;
                                                         }
                                                     @endphp
                                                     <td>
@@ -110,12 +112,17 @@
                                                         $i++;
                                                     @endphp
                                                 @endforeach
-                                                @if ($total < 5)
-                                                    <td style="color:crimson">
-                                                        {{ $total }}
-                                                    </td>
-                                                @else
-                                                    <td> {{ $total }}</td>
+                                                @if ($total_weight > 0)
+                                                    @php
+                                                        $average = $total / $total_weight;
+                                                    @endphp
+                                                    @if ($average < 5)
+                                                        <td style="color:crimson">
+                                                            {{ $average }}
+                                                        </td>
+                                                    @else
+                                                        <td> {{ $average }}</td>
+                                                    @endif
                                                 @endif
 
                                             </tr>

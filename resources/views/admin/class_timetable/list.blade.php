@@ -83,6 +83,17 @@
                         @csrf
                         <input type="hidden" name="class_id" value="{{ Request::get('class_id') }}">
                         <input type="hidden" name="subject_id" value="{{ Request::get('subject_id') }}">
+
+
+
+                        <label for="start_date">Start Date:</label>
+                        <input type="date" class="form-control" name="start_date"
+                            value="{{ isset($ClassSubjectDate->start_date) ? $ClassSubjectDate->start_date : '' }}">
+
+                        <label for="end_date">End Date:</label>
+                        <input type="date" class="form-control" name="end_date"
+                            value="{{ isset($ClassSubjectDate->end_date) ? $ClassSubjectDate->end_date : '' }}">
+
                         <div class="table-responsive" id="user">
                             <h3 class="page-title">Class Time Table</h3>
                             <table class="table border-0 star-student  table-striped">

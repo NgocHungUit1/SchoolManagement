@@ -20,6 +20,7 @@ class ClassTimeTableController extends Controller
         if (!empty($request->class_id)) {
             $data['getSubject'] = ClassSubject::MySubject($request->class_id);
         }
+        $data['ClassSubjectDate'] = ClassSubjectTimeTable::getDate($request->class_id, $request->subject_id);
         $getDay = Week::getRecord();
         $day = array();
         foreach ($getDay as $value) {
@@ -41,6 +42,7 @@ class ClassTimeTableController extends Controller
                 $dataDay['start_time'] = '';
                 $dataDay['end_time'] = '';
                 $dataDay['room_number'] = '';
+
             }
             $day[] = $dataDay;
         }
@@ -61,13 +63,13 @@ class ClassTimeTableController extends Controller
 
     public function add(Request $request)
     {
+        // dd($request->all());
         ClassSubjectTimeTable::where('class_id', '=', $request->class_id)
-        ->where('subject_id', '=', $request->subject_id)
-        ->delete();
+            ->where('subject_id', '=', $request->subject_id)
+            ->delete();
 
         foreach ($request->timetable as $timetable) {
-            if (!empty($timetable['day_id']) && !empty($timetable['start_time']) && !empty($timetable['end_time']) && !empty($timetable['room_number']))
-             {
+            if (!empty($timetable['day_id']) && !empty($timetable['start_time']) && !empty($timetable['end_time']) && !empty($timetable['room_number'])) {
                 // Check for overlapping time slots
                 $overlapping = ClassSubjectTimeTable::where([
                     ['class_id', '=', $request->class_id],
@@ -76,13 +78,13 @@ class ClassTimeTableController extends Controller
                     $query->where(function ($q) use ($timetable) {
                         $q->whereBetween('start_time', [$timetable['start_time'], $timetable['end_time']]);
                     })
-                    ->orWhere(function ($q) use ($timetable) {
-                        $q->whereBetween('end_time', [$timetable['start_time'], $timetable['end_time']]);
-                    })
-                    ->orWhere(function ($q) use ($timetable) {
-                        $q->where('start_time', '<=', $timetable['start_time'])
-                            ->where('end_time', '>=', $timetable['end_time']);
-                    });
+                        ->orWhere(function ($q) use ($timetable) {
+                            $q->whereBetween('end_time', [$timetable['start_time'], $timetable['end_time']]);
+                        })
+                        ->orWhere(function ($q) use ($timetable) {
+                            $q->where('start_time', '<=', $timetable['start_time'])
+                                ->where('end_time', '>=', $timetable['end_time']);
+                        });
                 })->count();
 
                 if ($overlapping > 0) {
@@ -98,14 +100,15 @@ class ClassTimeTableController extends Controller
                 $save->start_time = $timetable['start_time'];
                 $save->end_time = $timetable['end_time'];
                 $save->room_number = $timetable['room_number'];
+                $save->start_date = $request->start_date;
+                $save->end_date = $request->end_date;
                 $save->save();
             }
-
         }
         return redirect()->back()->with('success', 'Class Time table successfully created ');
     }
 
-//student
+    //student
     public function myTimeTable()
     {
         $result = array();
@@ -137,30 +140,39 @@ class ClassTimeTableController extends Controller
         return view('student.my_timetable', $data)->with('success', 'My Time Table Student ');
     }
 
-    public function myTimeTableTeacher($class_id, $subject_id)
+    public function myTimeTableTeacher($class_id, $subject_id,Request $request)
     {
 
         $data['getClass'] = ClassModel::find($class_id);
         $data['getSubject'] = Subject::find($subject_id);
+        $data['ClassSubjectDate'] = ClassSubjectTimeTable::getDate($request->class_id, $request->subject_id);
         $getDay = Week::getRecord();
         $day = array();
         foreach ($getDay as $valueDay) {
             $dataDay = array();
             $dataDay['day_name'] = $valueDay->name;
+            $dataDay['day_id'] = $valueDay->id;
             $ClassSubject = ClassSubjectTimeTable::getRecord($class_id, $subject_id, $valueDay->id);
+            // dd($ClassSubject);
             if (!empty($ClassSubject)) {
                 $dataDay['start_time'] = $ClassSubject->start_time;
                 $dataDay['end_time'] = $ClassSubject->end_time;
                 $dataDay['room_number'] = $ClassSubject->room_number;
+                $dataDay['start_date'] = $ClassSubject->start_date;
+                $dataDay['end_date'] = $ClassSubject->end_date;
             } else {
                 $dataDay['start_time'] = '';
                 $dataDay['end_time'] = '';
                 $dataDay['room_number'] = '';
+                $dataDay['start_date'] = '';
+                $dataDay['end_date'] = '';
             }
-            $result[] = $dataDay;
-        }
 
-        $data['getRecord'] = $result;
-        return view('teacher.my_timetable', $data)->with('success', 'My Time Table Teacher ');
+            $result[] = $dataDay;
+
+        }
+         return response()->json($result);
+
+
     }
 }

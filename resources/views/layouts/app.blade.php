@@ -16,6 +16,13 @@
     <link rel="stylesheet" href="/./assets/css/style.css">
     <link rel="stylesheet" href="/./assets/plugins/datatables/datatables.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+    <style>
+        .highlighted {
+            background-color: yellow;
+        }
+    </style>
+
+
 
 </head>
 

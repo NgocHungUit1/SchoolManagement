@@ -121,4 +121,16 @@ class ClassTeacherController extends Controller
         $json['html'] = $html;
         echo json_encode($json);
     }
+
+    public function get_Teacher(Request $request)
+    {
+
+        $get_Teacher = User::SubjectTeacher($request->subject_id);
+        $html = "<option value=''> Select </option>";
+        foreach ($get_Teacher as $value) {
+            $html .= "<option value='" . $value->id . "'>" . $value->teacher_name . " </option>";
+        }
+        $json['html'] = $html;
+        echo json_encode($json);
+    }
 }

@@ -26,6 +26,7 @@ class TeacherRequest extends FormRequest
         return [
             'email' => 'required|email|unique:users',
             'teacher_id' => 'required|unique:users',
+            'subject_id' => 'required',
             'name' => 'required',
             'joining_date' => 'required',
             'qualification' => 'required',

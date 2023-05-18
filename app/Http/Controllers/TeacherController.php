@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TeacherRequest;
 use App\Http\Requests\UpdateTeacherRequest;
 use App\Models\ClassModel;
+use App\Models\Subject;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -26,13 +27,21 @@ class TeacherController extends Controller
 
     public function add()
     {
-        $data['getClass'] = ClassModel::getClass();
+
+        $data['getSubject'] = Subject::getSubject();
+        // dd($data);
         return view('admin.teacher.add', $data);
     }
     public function edit($id)
     {
 
         $data['getRecord'] = User::find($id);
+        if (!empty($data['getRecord'])) {
+            $data['getSubject'] = Subject::getSubject();
+        } else {
+            abort(404);
+        }
+
         return view('admin.teacher.edit', $data);
     }
 
@@ -41,6 +50,7 @@ class TeacherController extends Controller
         $teacher = new User();
         $teacher->name = ($request->name);
         $teacher->teacher_id = ($request->teacher_id);
+        $teacher->subject_id = ($request->subject_id);
         $teacher->joining_date = Carbon::createFromFormat('d-m-Y', $request->joining_date)->toDateTimeString();
         $teacher->qualification = ($request->qualification);
         $teacher->experience = ($request->experience);
@@ -57,7 +67,6 @@ class TeacherController extends Controller
             $get_image->move($path, $new_image);
             $teacher->user_avatar = $new_image;
         }
-
         $teacher->status = ($request->status);
         $teacher->password = Hash::make($request->password);
         $teacher->email = ($request->email);
@@ -68,7 +77,8 @@ class TeacherController extends Controller
 
     public function editTeacher(UpdateTeacherRequest $request, $id)
     {
-        $teacher = User::getUserId($id);
+        $teacher = User::find($id);
+        $teacher->subject_id = ($request->subject_id);
         $teacher->name = ($request->name);
         $teacher->joining_date = Carbon::createFromFormat('d-m-Y', $request->joining_date)->toDateTimeString();
         $teacher->qualification = ($request->qualification);
@@ -135,9 +145,7 @@ class TeacherController extends Controller
 
     public function getStudent()
     {
-
         $data['getRecord'] = User::getStudentTeacher(Auth::user()->id);
-
         return $data;
 
     }

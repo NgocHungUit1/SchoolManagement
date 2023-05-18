@@ -24,6 +24,13 @@
                 <div class="table-responsive" id="user">
                     <h2 class="page-title">Class Name : {{ $getClass->name }}</h2>
                     <h2 class="page-title">Subject Name : {{ $getSubject->name }}</h2>
+                    <br>
+                    <label for="start_date" style="font-weight: bold;">Start Date:</label>
+                    <input type="date" class="form-control" name="start_date"
+                        value="{{ isset($ClassSubjectDate->first()->start_date) ? $ClassSubjectDate->first()->start_date : '' }}">
+                    <label for="end_date" style="font-weight: bold;">End Date:</label>
+                    <input type="date" class="form-control" name="end_date"
+                        value="{{ isset($ClassSubjectDate->first()->end_date) ? $ClassSubjectDate->first()->end_date : '' }}">
                     <table class="table border-0 star-student  table-striped">
                         <thead class="student-thread">
                             <tr>

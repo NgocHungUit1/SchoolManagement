@@ -199,9 +199,7 @@
                                                     <label>Upload Student Photo</label>
                                                     <div class="upload">
                                                         <label class="file-upload image-upbtn mb-0">
-
                                                             Choose File <input type="file" name="user_avatar">
-
                                                         </label>
 
                                                     </div>

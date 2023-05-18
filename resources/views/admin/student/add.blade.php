@@ -92,7 +92,6 @@
                                                     <input class="form-control datetimepicker" type="text"
                                                         name="date_of_birth">
                                                     <div style="color:red">{{ $errors->first('date_of_birth') }}</div>
-
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-4">
