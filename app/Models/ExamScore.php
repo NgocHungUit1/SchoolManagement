@@ -13,6 +13,15 @@ class ExamScore extends Model
         'created_at' => 'date:d-m-Y',
     ];
 
+    protected $fillable = [
+        'exam_id',
+        'subject_id',
+        'class_id',
+        'student_id',
+        'score',
+        'created_by'
+    ];
+
     public static function CheckAlready($class_id, $student_id,$exam_id,$subject_id)
     {
         return self::where('class_id', '=', $class_id)->where('student_id', '=', $student_id)->where('exam_id', '=', $exam_id)->where('subject_id', '=', $subject_id)->first();

@@ -48,22 +48,19 @@ class ClassSubjectController extends Controller
         if (!empty($request->subject_id)) {
             foreach ($request->subject_id as $subject_id) {
                 $getAlready = ClassSubject::getAlreadyFirst($request->class_id, $subject_id);
-                if (!empty($getAlready)) {
-                    $getAlready->status = $request->status;
-                    $getAlready->save();
-                } else {
-                    $save = new ClassSubject();
-                    $save->class_id = $request->class_id;
-                    $save->subject_id = $subject_id;
-                    $save->status = $request->status;
-                    $save->created_by = Auth::user()->id;
-                    $save->save();
-                }
-            }
-            return redirect('admin/assign_subject/list')->with('success', 'subject assign class successfully c ');
-        } else {
+                $status = $request->status;
 
-            return redirect()->back()->with('error', 'Password and confirm password not match ');
+                $getAlready ? $getAlready->update(compact('status')) : ClassSubject::create([
+                    'class_id' => $request->class_id,
+                    'subject_id' => $subject_id,
+                    'status' => $status,
+                    'created_by' => Auth::user()->id,
+                ]);
+            }
+
+            return redirect('admin/assign_subject/list')->with('success', 'subject assign class created successfully  ');
+        } else {
+            return redirect()->back()->with('error', 'Please select at least one subject.');
         }
     }
 
@@ -73,18 +70,14 @@ class ClassSubjectController extends Controller
         if (!empty($request->subject_id)) {
             foreach ($request->subject_id as $subject_id) {
                 $getAlready = ClassSubject::getAlreadyFirst($request->class_id, $subject_id);
-                if (!empty($getAlready)) {
-                    $getAlready->status = $request->status;
-                    $getAlready->save();
-                } else {
-                    $save = new ClassSubject();
-                    $save->class_id = $request->class_id;
-                    $save->subject_id = $subject_id;
-                    $save->status = $request->status;
-                    $save->created_by = Auth::user()->id;
-                    $save->save();
-                }
+                $status = $request->status;
 
+                $getAlready ? $getAlready->update(compact('status')) : ClassSubject::create([
+                    'class_id' => $request->class_id,
+                    'subject_id' => $subject_id,
+                    'status' => $status,
+                    'created_by' => Auth::user()->id,
+                ]);
             }
 
         }

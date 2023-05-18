@@ -13,6 +13,16 @@ class ClassTeacher extends Model
     protected $casts = [
         'created_at' => 'date:Y-m-d',
     ];
+
+    protected $fillable = [
+        'class_id',
+        'subject_id',
+        'teacher_id',
+        'status',
+        'is_delete',
+        'created_by'
+    ];
+
     public static function getRecord()
     {
         $return = self::select('teacher_class.*', 'class.name as class_name', 'subject.name as subject_name', 'teacher.name as teacher_name', 'users.name as created_by_name')
@@ -42,7 +52,7 @@ class ClassTeacher extends Model
 
     public static function getAlreadyTeacher($class_id,$subject_id)
     {
-        return self::where('class_id', '=', $class_id)->where('subject_id', '=', $subject_id)->first();
+        return self::where('class_id', '=', $class_id)->where('subject_id', '=', $subject_id)->where('teacher_class.is_delete', '=', 0)->first();
     }
 
     // public static function getAssignTeacherId($class_id)

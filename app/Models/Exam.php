@@ -14,6 +14,14 @@ class Exam extends Model
         'created_at' => 'date:d-m-Y',
     ];
 
+    protected $fillable = [
+        'name',
+        'description',
+        'created_by',
+        'is_delete',
+    ];
+
+
     public function user()
     {
         return $this->belongsTo('App\Models\User', 'created_by');

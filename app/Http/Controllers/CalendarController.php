@@ -69,7 +69,6 @@ class CalendarController extends Controller
                     $dataDay['end_date'] = $ClassSubject->end_date;
                     $day[] = $dataDay;
                 }
-
             }
             $dataS['day'] = $day;
             $result[] = $dataS;

@@ -30,14 +30,14 @@ class SubjectController extends Controller
 
     public function insertSubject(SubjectRequest $request)
     {
-        $subject = new Subject();
-        $subject->name = ($request->name);
-        $subject->status = ($request->status);
-        $subject->type = ($request->type);
-        $subject->created_by = Auth::user()->id;
-        $subject->save();
-        return redirect('admin/subject/list')->with('success', 'Subject successfully created ');
+        $data = $request->validated();
+        $data['created_by'] = Auth::user()->id;
+
+        Subject::create($data);
+
+        return redirect('admin/subject/list')->with('success', 'Subject successfully created');
     }
+
 
     public function delete($id)
     {
@@ -56,11 +56,9 @@ class SubjectController extends Controller
 
     public function editSubject(SubjectRequest $request, $id)
     {
-        $subject = Subject::getSubjectId($id);
-        $subject->name = $request->name;
-        $subject->status = $request->status;
-        $subject->type = $request->type;
-        $subject->save();
+        $subject = Subject::findOrFail($id);
+        $data = $request->validated();
+        $subject->update($data);
         return redirect('admin/subject/list')->with('success', 'Class successfully updated ');
 
     }

@@ -30,14 +30,14 @@ class ExamController extends Controller
         foreach ($examScores as $studentId => $scores) {
             foreach ($scores as $scoreData) {
                 if (!empty($studentId) && !empty($scoreData['exam_id']) && !empty($scoreData['score'])) {
-                    $examScore = new ExamScore;
-                    $examScore->exam_id = $scoreData['exam_id'];
-                    $examScore->class_id = $request->input('class_id');
-                    $examScore->subject_id = $request->input('subject_id');
-                    $examScore->student_id = $studentId;
-                    $examScore->score = $scoreData['score'];
-                    $examScore->created_by = Auth::user()->id;
-                    $examScore->save();
+                    ExamScore::create([
+                        'exam_id' => $scoreData['exam_id'],
+                        'class_id' => $request->input('class_id'),
+                        'subject_id' => $request->input('subject_id'),
+                        'student_id' => $studentId,
+                        'score' => $scoreData['score'],
+                        'created_by' => Auth::user()->id,
+                    ]);
                 }
             }
         }
@@ -74,21 +74,17 @@ class ExamController extends Controller
 
     public function addExam(ExamRequest $request)
     {
-        $exam = new Exam();
-        $exam->name = ($request->name);
-        $exam->description = ($request->description);
-        $exam->created_by = Auth::user()->id;
-        $exam->save();
+        $data = $request->validated();
+        $data['created_by'] = Auth::user()->id;
+        Exam::create($data);
         return redirect('admin/exam/list')->with('success', 'Exam Successfully Created ');
     }
 
     public function update(ExamRequest $request, $id)
     {
-        $save = Exam::find($id);
-        $save->name = $request->name;
-        $save->description = ($request->description);
-        $save->created_by = Auth::user()->id;
-        $save->save();
+        $save = Exam::findOrFail($id);
+        $data = $request->validated();
+        $save->update($data);
         return redirect('admin/exam/list')->with('success', 'Exam  updated successfully  ');
     }
 
@@ -118,30 +114,26 @@ class ExamController extends Controller
 
     public function addScore(Request $request)
     {
-
-        $data['getClass'] = ClassModel::getClass();
         if (!empty($request->exam_score)) {
-            foreach ($request->exam_score as $exam_score) {
-                $score = !empty($exam_score['score']) ? $exam_score['score'] : 0;
-                $getScore = ExamScore::CheckAlready($request->class_id, $request->student_id, $exam_score['exam_id'], $request->subject_id);
+            collect($request->exam_score)->each(function ($examScore) use ($request) {
+                $score = $examScore['score'] ?? 0;
+                $existingExamScore = ExamScore::CheckAlready($request->class_id, $request->student_id, $examScore['exam_id'], $request->subject_id);
 
-                if (!empty($getScore)) {
-                    $save = $getScore;
-                } else {
-                    $save = new ExamScore();
-                    $save->created_by = Auth::user()->id;
-                }
-                $save->subject_id = $request->subject_id;
-                $save->class_id = $request->class_id;
-                $save->student_id = $request->student_id;
-                $save->exam_id = $exam_score['exam_id'];
-                $save->score =  $score;
-                $save->save();
-            }
+                $newExamScore = $existingExamScore ?: new ExamScore();
+                $newExamScore->fill([
+                    'created_by' => Auth::user()->id,
+                    'subject_id' => $request->subject_id,
+                    'class_id' => $request->class_id,
+                    'student_id' => $request->student_id,
+                    'exam_id' => $examScore['exam_id'],
+                    'score' => $score,
+                ]);
+                $newExamScore->save();
+            });
         }
-        $json['message'] = "Exam score successfully saved";
-        echo json_encode($json);
+        return response()->json(['message' => 'Exam score successfully saved']);
     }
+
 
     public function examSchedule(Request $request)
     {
@@ -175,7 +167,6 @@ class ExamController extends Controller
                     $dataS['passing_mark'] = '';
                 }
                 $result[] = $dataS;
-
             }
         }
 
@@ -192,42 +183,43 @@ class ExamController extends Controller
             if (!empty($schedule['subject_id']) && !empty($schedule['exam_date']) && !empty($schedule['start_time']) && !empty($schedule['end_time']) && !empty($schedule['room_number']) && !empty($schedule['full_mark']) && !empty($schedule['passing_mark'])) {
                 // Check for overlapping time slots
                 $overlapping = ExamSchedule::where('class_id', $request->class_id)
-                ->where(function ($query) use ($schedule) {
-                    $query->where(function ($q) use ($schedule) {
-                        $q->where('exam_date', '=', $schedule['exam_date'])
-                            ->whereBetween('start_time', [$schedule['start_time'], $schedule['end_time']]);
-                    })
-                    ->orWhere(function ($q) use ($schedule) {
-                        $q->where('exam_date', '=', $schedule['exam_date'])
-                            ->whereBetween('end_time', [$schedule['start_time'], $schedule['end_time']]);
-                    })
-                    ->orWhere(function ($q) use ($schedule) {
-                        $q->where('exam_date', '=', $schedule['exam_date'])
-                            ->where('start_time', '<', $schedule['start_time'])
-                            ->where('end_time', '>', $schedule['start_time']);
-                    })
-                    ->orWhere(function ($q) use ($schedule) {
-                        $q->where('exam_date', '=', $schedule['exam_date'])
-                            ->where('start_time', '<', $schedule['end_time'])
-                            ->where('end_time', '>', $schedule['end_time']);
-                    });
-                })->count();
+                    ->where(function ($query) use ($schedule) {
+                        $query->where(function ($q) use ($schedule) {
+                            $q->where('exam_date', '=', $schedule['exam_date'])
+                                ->whereBetween('start_time', [$schedule['start_time'], $schedule['end_time']]);
+                        })
+                            ->orWhere(function ($q) use ($schedule) {
+                                $q->where('exam_date', '=', $schedule['exam_date'])
+                                    ->whereBetween('end_time', [$schedule['start_time'], $schedule['end_time']]);
+                            })
+                            ->orWhere(function ($q) use ($schedule) {
+                                $q->where('exam_date', '=', $schedule['exam_date'])
+                                    ->where('start_time', '<', $schedule['start_time'])
+                                    ->where('end_time', '>', $schedule['start_time']);
+                            })
+                            ->orWhere(function ($q) use ($schedule) {
+                                $q->where('exam_date', '=', $schedule['exam_date'])
+                                    ->where('start_time', '<', $schedule['end_time'])
+                                    ->where('end_time', '>', $schedule['end_time']);
+                            });
+                    })->count();
 
-            if ($overlapping > 0) {
-                return redirect()->back()->with('error', 'Time slot overlap detected');
-            }
+                if ($overlapping > 0) {
+                    return redirect()->back()->with('error', 'Time slot overlap detected');
+                }
 
-                $save = new ExamSchedule;
-                $save->exam_id = $request->exam_id;
-                $save->class_id = $request->class_id;
-                $save->subject_id = $schedule['subject_id'];
-                $save->exam_date = $schedule['exam_date'];
-                $save->start_time = $schedule['start_time'];
-                $save->end_time = $schedule['end_time'];
-                $save->room_number = $schedule['room_number'];
-                $save->full_mark = $schedule['full_mark'];
-                $save->passing_mark = $schedule['passing_mark'];
-                $save->created_by = Auth::user()->id;
+                $save = new ExamSchedule([
+                    'exam_id' => $request->exam_id,
+                    'class_id' => $request->class_id,
+                    'subject_id' => $schedule['subject_id'],
+                    'exam_date' => $schedule['exam_date'],
+                    'start_time' => $schedule['start_time'],
+                    'end_time' => $schedule['end_time'],
+                    'room_number' => $schedule['room_number'],
+                    'full_mark' => $schedule['full_mark'],
+                    'passing_mark' => $schedule['passing_mark'],
+                    'created_by' => Auth::user()->id,
+                ]);
                 $save->save();
             }
         }
@@ -338,14 +330,15 @@ class ExamController extends Controller
         foreach ($examScores as $studentId => $scores) {
             foreach ($scores as $scoreData) {
                 if (!empty($studentId) && !empty($scoreData['exam_id']) && !empty($scoreData['score'])) {
-                    $examScore = new ExamScore;
-                    $examScore->exam_id = $scoreData['exam_id'];
-                    $examScore->class_id = $request->input('class_id');
-                    $examScore->subject_id = $request->input('subject_id');
-                    $examScore->student_id = $studentId;
-                    $examScore->score = $scoreData['score'];
-                    $examScore->created_by = Auth::user()->id;
-                    $examScore->save();
+
+                    ExamScore::create([
+                        'exam_id' => $scoreData['exam_id'],
+                        'class_id' => $request->input('class_id'),
+                        'subject_id' => $request->input('subject_id'),
+                        'student_id' => $studentId,
+                        'score' => $scoreData['score'],
+                        'created_by' => Auth::user()->id,
+                    ]);
                 }
             }
         }

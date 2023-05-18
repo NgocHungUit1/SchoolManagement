@@ -8,6 +8,7 @@ use App\Models\ClassModel;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class StudentController extends Controller
 {
@@ -43,64 +44,56 @@ class StudentController extends Controller
 
     public function addStudent(InsertStudentRequest $request)
     {
-        $student = new User();
-        $student->name = ($request->name);
-        $student->admission_number = ($request->admission_number);
-        $student->roll_number = ($request->roll_number);
-        $student->class_id = ($request->class_id);
-        $student->gender = ($request->gender);
-        $student->address = ($request->address);
-        $student->date_of_birth = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
-        $student->mobile_number = $request->mobile_number;
-        $get_image = $request->user_avatar;
-        if ($get_image) {
+        $data = $request->validated();
+        $data['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
+        $data['password'] = Hash::make($request->password);
+        $data['user_type'] = 3;
+
+        if ($request->hasFile('user_avatar')) {
             $path = 'public/uploads/profile/';
-            $get_name_image = $get_image->getClientOriginalName();
-            $name_image = current(explode('.', $get_name_image));
+            $get_image = $request->file('user_avatar');
+            $name_image = pathinfo($get_image->getClientOriginalName(), PATHINFO_FILENAME);
             $new_image = $name_image . rand(0, 99) . '.' . $get_image->getClientOriginalExtension();
             $get_image->move($path, $new_image);
 
-            $student->user_avatar = $new_image;
+            $data['user_avatar'] = $new_image;
         }
 
-        $student->status = ($request->status);
-        $student->password = Hash::make($request->password);
-        $student->email = ($request->email);
-        $student->user_type = 3;
-        $student->save();
+        User::create($data);
+
         return redirect('admin/student/list')->with('success', 'Student successfully created ');
     }
 
+
+
     public function editStudent(UpdateStudentRequest $request, $id)
     {
-        $student = User::find($id);
-        $student->name = ($request->name);
-        $student->roll_number = ($request->roll_number);
-        $student->class_id = ($request->class_id);
-        $student->gender = ($request->gender);
-        $student->address = ($request->address);
-        $student->date_of_birth = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
-        $student->mobile_number = $request->mobile_number;
-        $get_image = $request->user_avatar;
-        if ($get_image) {
-            $path = 'public/uploads/profile/' . $student->user_avatar;
-            if (file_exists($path)) {
-                unlink($path);
-            }
+        $student = User::findOrFail($id);
+        $data = $request->validated();
+        $data['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
+
+        if ($request->hasFile('user_avatar')) {
             $path = 'public/uploads/profile/';
-            $get_name_image = $get_image->getClientOriginalName();
-            $name_image = current(explode('.', $get_name_image));
+            $get_image = $request->file('user_avatar');
+            $name_image = pathinfo($get_image->getClientOriginalName(), PATHINFO_FILENAME);
             $new_image = $name_image . rand(0, 99) . '.' . $get_image->getClientOriginalExtension();
             $get_image->move($path, $new_image);
 
-            $student->user_avatar = $new_image;
+            $oldImage = $student->user_avatar;
+            if ($oldImage && Storage::exists("public/uploads/profile/$oldImage")) {
+                Storage::delete("public/uploads/profile/$oldImage");
+            }
+
+            $data['user_avatar'] = $new_image;
         }
-        $student->status = ($request->status);
+
         if (!empty($request->password)) {
-            $student->password = Hash::make($request->password);
+            $data['password'] = Hash::make($request->password);
         }
-        $student->save();
-        return redirect('admin/student/list')->with('success', 'Student successfully updated ');
+
+        $student->update($data);
+
+        return redirect('admin/student/list')->with('success', 'Student successfully updated');
     }
 
     public function delete($id)

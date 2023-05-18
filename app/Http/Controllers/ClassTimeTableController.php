@@ -63,7 +63,7 @@ class ClassTimeTableController extends Controller
 
     public function add(Request $request)
     {
-        // dd($request->all());
+
         ClassSubjectTimeTable::where('class_id', '=', $request->class_id)
             ->where('subject_id', '=', $request->subject_id)
             ->delete();
@@ -92,16 +92,16 @@ class ClassTimeTableController extends Controller
                 }
 
 
-
-                $save = new ClassSubjectTimeTable;
-                $save->class_id = $request->class_id;
-                $save->subject_id = $request->subject_id;
-                $save->day_id = $timetable['day_id'];
-                $save->start_time = $timetable['start_time'];
-                $save->end_time = $timetable['end_time'];
-                $save->room_number = $timetable['room_number'];
-                $save->start_date = $request->start_date;
-                $save->end_date = $request->end_date;
+                $save = new ClassSubjectTimeTable([
+                    'class_id' => $request->class_id,
+                    'subject_id' => $request->subject_id,
+                    'day_id' => $timetable['day_id'],
+                    'start_time' => $timetable['start_time'],
+                    'end_time' => $timetable['end_time'],
+                    'room_number' => $timetable['room_number'],
+                    'start_date' => $request->start_date,
+                    'end_date' => $request->end_date,
+                ]);
                 $save->save();
             }
         }

@@ -30,7 +30,6 @@
                                             <option value="">Select Class</option>
                                             @foreach ($getClass as $class)
                                                 <option {{ $getRecord->class_id == $class->id ? 'selected' : '' }}
-                                                    {{ Request::get('class_id') == $class->id ? 'selected' : '' }}
                                                     value="{{ $class->id }}">{{ $class->name }}</option>
                                             @endforeach
 
@@ -42,27 +41,29 @@
                                             <option value="">Select Subject </option>
                                             @if (!empty($getSubject))
                                                 @foreach ($getSubject as $subject)
-                                                    <option
-                                                        {{ Request::get('subject_id') == $subject->subject_id ? 'selected' : '' }}
-                                                        value="{{ $subject->subject_id }}">
-                                                        {{ $subject->subject_name }}
-                                                    </option>
+                                                    <option {{ $getRecord->subject_id == $subject->id ? 'selected' : '' }}
+                                                        value="{{ $subject->id }}">
+                                                        {{ $subject->name }}</option>
                                                 @endforeach
                                             @endif
                                         </select>
 
                                     </div>
+
                                     <div class="form-group row">
-                                        <label>Teacher Name <span class="login-danger">*</span></label>
-                                        <select class="form-control select" name="teacher_id">
-                                            <option value="">Select Teacher</option>
-                                            @foreach ($getTeacher as $teacher)
-                                                <option {{ $getRecord->teacher_id == $teacher->id ? 'selected' : '' }}
-                                                    value="{{ $teacher->id }}">{{ $teacher->name }}
-                                            @endforeach
-
+                                        <label>Teacher name <span class="login-danger">*</span></label>
+                                        <select class="form-control getTeacher" name="teacher_id">
+                                            <option value="">Please Select Teacher </option>
+                                            @if (!empty($getTeacher))
+                                                @foreach ($getTeacher as $value)
+                                                    <option {{ $getRecord->teacher_id == $value->id ? 'selected' : '' }}
+                                                        value="{{ $value->id }}">
+                                                        {{ $value->name }}</option>
+                                                @endforeach
+                                            @endif
                                         </select>
-
+                                        <div style="color:red">{{ $errors->first('teacher_id') }}
+                                        </div>
                                     </div>
                                     <div class="form-group row">
                                         <label>Status <span class="login-danger">*</span></label>
@@ -104,6 +105,23 @@
                     dataType: "json",
                     success: function(response) {
                         $('.getSubject').html(response.html);
+                    },
+                });
+            });
+
+            $('.getSubject').change(function() {
+                var subject_id = $(this).val();
+
+                $.ajax({
+                    url: " {{ url('admin/assign_class_teacher/get_teacher') }}",
+                    type: "POST",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        subject_id: subject_id,
+                    },
+                    dataType: "json",
+                    success: function(response) {
+                        $('.getTeacher').html(response.html);
                     },
                 });
             });

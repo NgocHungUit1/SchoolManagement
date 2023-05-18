@@ -10,6 +10,19 @@ class ExamSchedule extends Model
     use HasFactory;
     protected $table = 'exam_schedule';
 
+    protected $fillable = [
+        'exam_id',
+        'class_id',
+        'subject_id',
+        'exam_date',
+        'start_time',
+        'end_time',
+        'room_number',
+        'full_mark',
+        'passing_mark',
+        'created_by',
+    ];
+
     public static function deleteRecord($exam_id, $class_id)
     {
         ExamSchedule::where('exam_id', '=', $exam_id)->where('class_id', '=', $class_id)->delete();
@@ -31,7 +44,7 @@ class ExamSchedule extends Model
             ->get();
     }
 
-    public static function getExamTimeTableTeacher($exam_id, $class_id,$subject_id)
+    public static function getExamTimeTableTeacher($exam_id, $class_id, $subject_id)
     {
         return ExamSchedule::select('exam_schedule.*', 'subject.name as subject_name', 'subject.type as subject_type')
             ->join('subject', 'subject.id', '=', 'exam_schedule.subject_id')
@@ -43,7 +56,7 @@ class ExamSchedule extends Model
 
     public static function getExam($class_id)
     {
-        return ExamSchedule::select('exam_schedule.*', 'exam.name as exam_name','exam.description as percent')
+        return ExamSchedule::select('exam_schedule.*', 'exam.name as exam_name', 'exam.description as percent')
             ->join('exam', 'exam.id', '=', 'exam_schedule.exam_id')
             ->where('exam_schedule.class_id', '=', $class_id)
             ->groupBy('exam_schedule.exam_id')
@@ -58,7 +71,7 @@ class ExamSchedule extends Model
     //         ->where('exam_schedule.class_id', '=', $class_id)
     //         ->get();
     // }
-    public static function getExamTeacher($class_id,$subject_id)
+    public static function getExamTeacher($class_id, $subject_id)
     {
         return ExamSchedule::select('exam_schedule.*', 'exam.name as exam_name')
             ->join('exam', 'exam.id', '=', 'exam_schedule.exam_id')
@@ -77,12 +90,8 @@ class ExamSchedule extends Model
             ->where('teacher_class.teacher_id', '=', $teacher_id)
             ->get();
     }
-    public static function getScore($class_id, $student_id,$subject_id,$exam_id)
+    public static function getScore($class_id, $student_id, $subject_id, $exam_id)
     {
-        return ExamScore::CheckAlready($class_id, $student_id,$subject_id,$exam_id);
+        return ExamScore::CheckAlready($class_id, $student_id, $subject_id, $exam_id);
     }
-
-
-
-
 }

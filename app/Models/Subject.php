@@ -11,6 +11,14 @@ class Subject extends Model
     use HasFactory;
     protected $table = 'subject';
 
+    protected $fillable = [
+        'name',
+        'status',
+        'type',
+        'created_by',
+        'is_delete',
+    ];
+
     public function user()
     {
         return $this->belongsTo('App\Models\User', 'created_by');
@@ -47,7 +55,6 @@ class Subject extends Model
             ->where('subject.status', '=', 0)
             ->orderBy('subject.name', 'asc')->get();
         return $return;
-
     }
     protected $casts = [
         'created_at' => 'date:Y-m-d',

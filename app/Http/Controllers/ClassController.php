@@ -29,11 +29,9 @@ class ClassController extends Controller
 
     public function insertClass(ClassRequest $request)
     {
-        $class = new ClassModel();
-        $class->name = $request->name;
-        $class->status = $request->status;
-        $class->created_by = Auth::user()->id;
-        $class->save();
+        $data = $request->validated();
+        $data['created_by'] = Auth::user()->id;
+        ClassModel::create($data);
         return redirect('admin/class/list')->with('success', 'Class successfully created ');
     }
 
@@ -61,11 +59,9 @@ class ClassController extends Controller
 
     public function editClass(ClassRequest $request, $id)
     {
-
-        $class = ClassModel::getClassId($id);
-        $class->name = $request->name;
-        $class->status = $request->status;
-        $class->save();
+        $class = ClassModel::findOrFail($id);
+        $data = $request->validated();
+        $class->update($data);
         return redirect('admin/class/list')->with('success', 'Class successfully updated ');
 
     }
@@ -76,10 +72,6 @@ class ClassController extends Controller
         $class->is_delete = 1;
         $class->save();
         return redirect('admin/admin/list')->with('success', 'Class successfully deleted ');
-    }
-    public function export()
-    {
-        return Excel::download(new ClassExport, 'class.xlsx');
     }
 
 }

@@ -12,6 +12,13 @@ class ClassModel extends Model
     use HasFactory;
     protected $table = 'class';
 
+    protected $fillable = [
+        'name',
+        'status',
+        'created_by',
+        'is_delete',
+    ];
+
     public function user()
     {
         return $this->belongsTo('App\Models\User', 'class_id', 'id');

@@ -10,6 +10,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class TeacherController extends Controller
 {
@@ -47,67 +48,52 @@ class TeacherController extends Controller
 
     public function addTeacher(TeacherRequest $request)
     {
-        $teacher = new User();
-        $teacher->name = ($request->name);
-        $teacher->teacher_id = ($request->teacher_id);
-        $teacher->subject_id = ($request->subject_id);
-        $teacher->joining_date = Carbon::createFromFormat('d-m-Y', $request->joining_date)->toDateTimeString();
-        $teacher->qualification = ($request->qualification);
-        $teacher->experience = ($request->experience);
-        $teacher->address = ($request->address);
-        $teacher->gender = ($request->gender);
-        $teacher->date_of_birth = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
-        $teacher->mobile_number = $request->mobile_number;
-        $get_image = $request->user_avatar;
-        if ($get_image) {
+        $data = $request->validated();
+        $data['joining_date'] = Carbon::createFromFormat('d-m-Y', $request->joining_date);
+        $data['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $request->date_of_birth);
+        $data['password'] = Hash::make($request->password);
+        $data['user_type'] = 2;
+
+        if ($request->hasFile('user_avatar')) {
             $path = 'public/uploads/profile/';
-            $get_name_image = $get_image->getClientOriginalName();
-            $name_image = current(explode('.', $get_name_image));
-            $new_image = $name_image . rand(0, 99) . '.' . $get_image->getClientOriginalExtension();
-            $get_image->move($path, $new_image);
-            $teacher->user_avatar = $new_image;
+            $new_image = pathinfo($request->file('user_avatar')->getClientOriginalName(), PATHINFO_FILENAME) . rand(0, 99) . '.' . $request->file('user_avatar')->getClientOriginalExtension();
+            $request->file('user_avatar')->move($path, $new_image);
+            $data['user_avatar'] = $new_image;
         }
-        $teacher->status = ($request->status);
-        $teacher->password = Hash::make($request->password);
-        $teacher->email = ($request->email);
-        $teacher->user_type = 2;
-        $teacher->save();
-        return redirect('admin/teacher/list')->with('success', 'Teacher successfully created ');
+
+        User::create($data);
+
+        return redirect('admin/teacher/list')->with('success', 'Teacher successfully created');
     }
+
 
     public function editTeacher(UpdateTeacherRequest $request, $id)
     {
-        $teacher = User::find($id);
-        $teacher->subject_id = ($request->subject_id);
-        $teacher->name = ($request->name);
-        $teacher->joining_date = Carbon::createFromFormat('d-m-Y', $request->joining_date)->toDateTimeString();
-        $teacher->qualification = ($request->qualification);
-        $teacher->experience = ($request->experience);
-        $teacher->address = ($request->address);
-        $teacher->gender = ($request->gender);
-        $teacher->date_of_birth = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
-        $teacher->mobile_number = $request->mobile_number;
-        $get_image = $request->user_avatar;
-        if ($get_image) {
-            $path = 'public/uploads/profile/' . $teacher->user_avatar;
-            if (file_exists($path)) {
-                unlink($path);
-            }
-            $path = 'public/uploads/profile/';
-            $get_name_image = $get_image->getClientOriginalName();
-            $name_image = current(explode('.', $get_name_image));
-            $new_image = $name_image . rand(0, 99) . '.' . $get_image->getClientOriginalExtension();
-            $get_image->move($path, $new_image);
+        $teacher = User::findOrFail($id);
+        $data = $request->validated();
+        $data['joining_date'] = Carbon::createFromFormat('d-m-Y', $request->joining_date);
+        $data['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $request->date_of_birth);
 
-            $teacher->user_avatar = $new_image;
+        if ($request->hasFile('user_avatar')) {
+            $path = 'public/uploads/profile/';
+            $new_image = pathinfo($request->file('user_avatar')->getClientOriginalName(), PATHINFO_FILENAME) . rand(0, 99) . '.' . $request->file('user_avatar')->getClientOriginalExtension();
+            $request->file('user_avatar')->move($path, $new_image);
+            $oldImage = $teacher->user_avatar;
+            if ($oldImage && Storage::exists("public/uploads/profile/$oldImage")) {
+                Storage::delete("public/uploads/profile/$oldImage");
+            }
+            $data['user_avatar'] = $new_image;
         }
-        $teacher->status = ($request->status);
+
         if (!empty($request->password)) {
-            $teacher->password = Hash::make($request->password);
+            $data['password'] = Hash::make($request->password);
         }
-        $teacher->save();
-        return redirect('admin/teacher/list')->with('success', 'teacher successfully updated ');
+
+        $teacher->update($data);
+
+        return redirect('admin/teacher/list')->with('success', 'Teacher successfully updated');
     }
+
 
     public function delete($id)
     {
