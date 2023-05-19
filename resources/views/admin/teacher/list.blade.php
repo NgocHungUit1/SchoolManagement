@@ -120,7 +120,7 @@
                     },
                     success: function(response) {
 
-                        $("#id" + id).remove();
+                        $("#element" + id).parent().parent().parent().remove();
                     }
                 });
             }
@@ -201,11 +201,11 @@
                             targets: -1,
                             render: function(data, type, full, meta) {
                                 return ` <div class="actions ">
-                                        <a href="javascript:void(0)"
-                                            onclick="deleteTeacher(${full['id']})"
-                                            class="btn btn-sm bg-danger">
-                                            <i class="fa fa-trash " aria-hidden="true"></i>
-                                        </a>
+                                    <a id="element${full['id']}" href="javascript:void(0)"
+                                          onclick="deleteTeacher(${full['id']})"
+                                          class="btn btn-sm bg-danger">
+                                          <i class="fa fa-trash " aria-hidden="true"></i>
+                                      </a>
                                         <a href="/admin/teacher/edit/${full['id']}"
                                             class="btn btn-sm bg-danger-light">
                                             <i class="feather-edit"></i>

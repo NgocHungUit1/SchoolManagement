@@ -2,39 +2,46 @@
 
 namespace App\Http\Controllers;
 
+namespace App\Http\Controllers;
+
 use App\Http\Requests\InsertStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
-use App\Models\ClassModel;
-use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
+use App\Services\StudentService;
 
 class StudentController extends Controller
 {
-    function list() {
+    protected $service;
 
-        $data['getRecord'] = User::getStudent();
+    public function __construct(StudentService $service)
+    {
+        $this->service = $service;
+    }
+
+    public function list()
+    {
+        $data['getRecord'] = $this->service->getAllStudents();
 
         return view('admin.student.list', $data);
     }
 
     public function getData()
     {
-        $data['data'] = User::getStudent();
+        $data['data'] = $this->service->getAllStudents();
         return $data;
     }
+
     public function add()
     {
-        $data['getClass'] = ClassModel::getClass();
+        $data['getClass'] = $this->service->getAllClasses();
         return view('admin.student.add', $data);
     }
+
     public function edit($id)
     {
+        $data['getRecord'] = $this->service->getStudentById($id);
 
-        $data['getRecord'] = User::getUserId($id);
         if (!empty($data['getRecord'])) {
-            $data['getClass'] = ClassModel::getClass();
+            $data['getClass'] = $this->service->getAllClasses();
         } else {
             abort(404);
         }
@@ -44,66 +51,22 @@ class StudentController extends Controller
 
     public function addStudent(InsertStudentRequest $request)
     {
-        $data = $request->validated();
-        $data['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
-        $data['password'] = Hash::make($request->password);
-        $data['user_type'] = 3;
-
-        if ($request->hasFile('user_avatar')) {
-            $path = 'public/uploads/profile/';
-            $get_image = $request->file('user_avatar');
-            $name_image = pathinfo($get_image->getClientOriginalName(), PATHINFO_FILENAME);
-            $new_image = $name_image . rand(0, 99) . '.' . $get_image->getClientOriginalExtension();
-            $get_image->move($path, $new_image);
-
-            $data['user_avatar'] = $new_image;
-        }
-
-        User::create($data);
+        $this->service->createStudent($request);
 
         return redirect('admin/student/list')->with('success', 'Student successfully created ');
     }
 
-
-
     public function editStudent(UpdateStudentRequest $request, $id)
     {
-        $student = User::findOrFail($id);
-        $data = $request->validated();
-        $data['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $request->date_of_birth)->toDateTimeString();
-
-        if ($request->hasFile('user_avatar')) {
-            $path = 'public/uploads/profile/';
-            $get_image = $request->file('user_avatar');
-            $name_image = pathinfo($get_image->getClientOriginalName(), PATHINFO_FILENAME);
-            $new_image = $name_image . rand(0, 99) . '.' . $get_image->getClientOriginalExtension();
-            $get_image->move($path, $new_image);
-
-            $oldImage = $student->user_avatar;
-            if ($oldImage && Storage::exists("public/uploads/profile/$oldImage")) {
-                Storage::delete("public/uploads/profile/$oldImage");
-            }
-
-            $data['user_avatar'] = $new_image;
-        }
-
-        if (!empty($request->password)) {
-            $data['password'] = Hash::make($request->password);
-        }
-
-        $student->update($data);
+        $this->service->updateStudent($request, $id);
 
         return redirect('admin/student/list')->with('success', 'Student successfully updated');
     }
 
     public function delete($id)
     {
-        $student = User::find($id);
-        $student->is_delete = 1;
-        $student->save();
+        $this->service->deleteStudent($id);
+
         return redirect('admin/student/list')->with('success', 'Student successfully deleted ');
     }
-
-    //
-
 }

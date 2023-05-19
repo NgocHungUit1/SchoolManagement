@@ -1,77 +1,62 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Exports\ClassExport;
 use App\Http\Requests\ClassRequest;
-use App\Models\ClassModel;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Services\ClassService;
 
 class ClassController extends Controller
 {
-    function list() {
-        $data['getRecord'] = ClassModel::getRecord();
-        return view('admin.class.list', $data);
+
+    private $service;
+
+    public function __construct(ClassService $service)
+    {
+        $this->service = $service;
+    }
+
+    public function list()
+    {
+        return $this->service->list();
     }
 
     public function getData()
     {
-        $data['data'] = ClassModel::getRecord();
-        return $data;
+        return $this->service->getData();
     }
 
     public function add()
     {
-        return view('admin.class.add');
+        return $this->service->add();
     }
 
     public function insertClass(ClassRequest $request)
     {
-        $data = $request->validated();
-        $data['created_by'] = Auth::user()->id;
-        ClassModel::create($data);
-        return redirect('admin/class/list')->with('success', 'Class successfully created ');
+        return $this->service->insertClass($request);
     }
 
     public function edit($id)
     {
-        $data['getRecord'] = ClassModel::getClassId($id);
-
-        return view('admin.class.edit', $data);
+        return $this->service->edit($id);
     }
 
     public function view($id)
     {
-
-        $data['getRecord'] = ClassModel::getStudent($id);
-        $data['getClass'] = ClassModel::find($id);
-        return view('admin.class.view', $data);
+        return $this->service->view($id);
     }
 
     public function myClass()
     {
-        $data['getRecord'] = ClassModel::getStudent(Auth::user()->class_id);
-        $data['getClass'] = ClassModel::find(Auth::user()->class_id);
-        return view('student.my_class', $data);
+        return $this->service->myClass();
     }
 
     public function editClass(ClassRequest $request, $id)
     {
-        $class = ClassModel::findOrFail($id);
-        $data = $request->validated();
-        $class->update($data);
-        return redirect('admin/class/list')->with('success', 'Class successfully updated ');
-
+        return $this->service->editClass($request, $id);
     }
 
     public function delete($id)
     {
-        $class = ClassModel::find($id);
-        $class->is_delete = 1;
-        $class->save();
-        return redirect('admin/admin/list')->with('success', 'Class successfully deleted ');
+        return $this->service->delete($id);
     }
 
 }

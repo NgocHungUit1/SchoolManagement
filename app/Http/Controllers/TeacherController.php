@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateTeacherRequest;
 use App\Models\ClassModel;
 use App\Models\Subject;
 use App\Models\User;
+use App\Services\TeacherService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -14,6 +15,15 @@ use Illuminate\Support\Facades\Storage;
 
 class TeacherController extends Controller
 {
+
+
+    protected $service;
+
+    public function __construct(TeacherService $service)
+    {
+        $this->service = $service;
+    }
+
     function list() {
         $data['getRecord'] = User::getTeacher();
         return view('admin.teacher.list', $data);
@@ -48,20 +58,7 @@ class TeacherController extends Controller
 
     public function addTeacher(TeacherRequest $request)
     {
-        $data = $request->validated();
-        $data['joining_date'] = Carbon::createFromFormat('d-m-Y', $request->joining_date);
-        $data['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $request->date_of_birth);
-        $data['password'] = Hash::make($request->password);
-        $data['user_type'] = 2;
-
-        if ($request->hasFile('user_avatar')) {
-            $path = 'public/uploads/profile/';
-            $new_image = pathinfo($request->file('user_avatar')->getClientOriginalName(), PATHINFO_FILENAME) . rand(0, 99) . '.' . $request->file('user_avatar')->getClientOriginalExtension();
-            $request->file('user_avatar')->move($path, $new_image);
-            $data['user_avatar'] = $new_image;
-        }
-
-        User::create($data);
+        $this->service->createTeacher($request);
 
         return redirect('admin/teacher/list')->with('success', 'Teacher successfully created');
     }
@@ -69,32 +66,9 @@ class TeacherController extends Controller
 
     public function editTeacher(UpdateTeacherRequest $request, $id)
     {
-        $teacher = User::findOrFail($id);
-        $data = $request->validated();
-        $data['joining_date'] = Carbon::createFromFormat('d-m-Y', $request->joining_date);
-        $data['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $request->date_of_birth);
-
-        if ($request->hasFile('user_avatar')) {
-            $path = 'public/uploads/profile/';
-            $new_image = pathinfo($request->file('user_avatar')->getClientOriginalName(), PATHINFO_FILENAME) . rand(0, 99) . '.' . $request->file('user_avatar')->getClientOriginalExtension();
-            $request->file('user_avatar')->move($path, $new_image);
-            $oldImage = $teacher->user_avatar;
-            if ($oldImage && Storage::exists("public/uploads/profile/$oldImage")) {
-                Storage::delete("public/uploads/profile/$oldImage");
-            }
-            $data['user_avatar'] = $new_image;
-        }
-
-        if (!empty($request->password)) {
-            $data['password'] = Hash::make($request->password);
-        }
-
-        $teacher->update($data);
-
+        $this->service->updateTeacher($request, $id);
         return redirect('admin/teacher/list')->with('success', 'Teacher successfully updated');
     }
-
-
     public function delete($id)
     {
         $teacher = User::find($id);

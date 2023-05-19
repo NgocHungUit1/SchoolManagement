@@ -4,22 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Exports\SubjectExport;
 use App\Http\Requests\SubjectRequest;
-use App\Models\ClassSubject;
-use App\Models\Subject;
+use App\Services\SubjectService;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class SubjectController extends Controller
 {
+    private $subjectService;
 
-    function list() {
-        $data['getRecord'] = Subject::getRecord();
+    public function __construct(SubjectService $subjectService)
+    {
+        $this->subjectService = $subjectService;
+    }
+
+    public function list()
+    {
+        $data['getRecord'] = $this->subjectService->getSubjects();
         return view('admin.subject.list', $data);
     }
 
     public function getData()
     {
-        $data['data'] = Subject::getRecord();
+        $data['data'] = $this->subjectService->getSubjects();
         return $data;
     }
 
@@ -33,7 +39,7 @@ class SubjectController extends Controller
         $data = $request->validated();
         $data['created_by'] = Auth::user()->id;
 
-        Subject::create($data);
+        $this->subjectService->createSubject($data);
 
         return redirect('admin/subject/list')->with('success', 'Subject successfully created');
     }
@@ -41,33 +47,29 @@ class SubjectController extends Controller
 
     public function delete($id)
     {
-        $subject = Subject::getSubjectId($id);
-        $subject->is_delete = 1;
-        $subject->save();
+        $this->subjectService->deleteSubject($id);
         return redirect('admin/subject/list')->with('success', 'Subject successfully deleted ');
     }
 
     public function edit($id)
     {
-        $data['getRecord'] = Subject::getSubjectId($id);
+        $data['getRecord'] = $this->subjectService->getSubjectById($id);
 
         return view('admin.subject.edit', $data);
     }
 
     public function editSubject(SubjectRequest $request, $id)
     {
-        $subject = Subject::findOrFail($id);
         $data = $request->validated();
-        $subject->update($data);
+        $this->subjectService->updateSubject($id, $data);
         return redirect('admin/subject/list')->with('success', 'Class successfully updated ');
 
     }
 
     public function mySubject()
     {
-        $data['getRecord'] = ClassSubject::getMySubjectTeacher(Auth::user()->class_id);
+        $data['getRecord'] = $this->subjectService->getMySubjects(Auth::user()->class_id);
 
         return view('student.my_subject', $data);
     }
-
 }
