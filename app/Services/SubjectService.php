@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Http\Requests\SubjectRequest;
 use App\Models\ClassSubject;
 use App\Models\Subject;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SubjectService
 {
@@ -13,10 +15,21 @@ class SubjectService
         return Subject::getRecord();
     }
 
-    public function createSubject(array $data)
+    public function createSubject(SubjectRequest $request)
     {
+        Log::info('createSubject request', ['data' => $request->all()]);
+
+        $data = $request->validated();
         $data['created_by'] = Auth::user()->id;
-        Subject::create($data);
+
+        try {
+            $subject = Subject::create($data);
+            Log::info('createSubject success', ['subject_id' => $subject->id]);
+            return redirect('admin/subject/list')->with('success', 'Subject successfully created ');
+        } catch (\Exception $e) {
+            Log::error('createSubject error', ['message' => $e->getMessage()]);
+            return redirect()->back()->withInput()->withErrors(['error' => 'Unable to create subject']);
+        }
     }
 
     public function deleteSubject($id)

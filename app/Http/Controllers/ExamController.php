@@ -2,22 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\ExamExport;
 use App\Http\Requests\ExamRequest;
 use App\Models\ClassModel;
 use App\Models\ClassSubject;
-use App\Models\ClassSubjectTimeTable;
 use App\Models\ClassTeacher;
 use App\Models\Exam;
 use App\Models\ExamSchedule;
 use App\Models\ExamScore;
-use App\Models\Subject;
 use App\Models\User;
 use App\Services\ExamService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
-
 
 class ExamController extends Controller
 {
@@ -33,8 +28,7 @@ class ExamController extends Controller
         return $this->examService->insertScore($request);
     }
 
-    function list(Request $request)
-    {
+    function list(Request $request) {
         $data['getRecord'] = Exam::getRecord();
         return view('admin.exam.list', $data);
     }
@@ -96,7 +90,6 @@ class ExamController extends Controller
             $data['getStudent'] = User::getStudentClassExam($request->class_id);
         }
 
-
         return view('admin.exam.score', $data);
     }
 
@@ -120,35 +113,12 @@ class ExamController extends Controller
         return $result;
     }
 
-
     //student
+
     public function myExam(Request $request)
     {
         $class_id = Auth::user()->class_id;
-        $getExam = ExamSchedule::getExam($class_id);
-        $result = array();
-        foreach ($getExam as $value) {
-            $dataE = array();
-            $dataE['name'] = $value->exam_name;
-            $getExamTimeTable = ExamSchedule::getExamTimeTable($value->exam_id, $class_id);
-
-            $resultS = array();
-            foreach ($getExamTimeTable as $valueS) {
-                $dataS = array();
-                $dataS['subject_name'] = $valueS->subject_name;
-                $dataS['exam_date'] = $valueS->exam_date;
-                $dataS['start_time'] = $valueS->start_time;
-                $dataS['end_time'] = $valueS->end_time;
-                $dataS['room_number'] = $valueS->room_number;
-                $dataS['full_mark'] = $valueS->full_mark;
-                $dataS['passing_mark'] = $valueS->passing_mark;
-                $resultS[] = $dataS;
-            }
-            $dataE['exam'] = $resultS;
-            $result[] = $dataE;
-        }
-
-        $data['getRecord'] = $result;
+        $data['getRecord'] = $this->examService->getMyExam($class_id);
 
         return view('student.my_exam', $data);
     }
@@ -160,46 +130,18 @@ class ExamController extends Controller
         $data['getExam'] = ExamSchedule::getExam($class_id);
         $data['getSubject'] = ClassSubject::getMySubjectTeacher(Auth::user()->class_id);
 
-        // dd($data);
-
         return view('student.academic_record', $data);
     }
     //teacher
+
     public function myExamTeacher(Request $request)
     {
-        $result = array();
-        $getClass = ClassTeacher::getMyClassTeacher(Auth::user()->id);
-        foreach ($getClass as $class) {
-            $dataC = array();
-            $dataC['class_name'] = $class->class_name;
-            $getExam = ExamSchedule::getExamTeacher($class->class_id, $class->subject_id);
-            $examArray = array();
-            foreach ($getExam as $exam) {
-                $dataE = array();
-                $dataE['name'] = $exam->exam_name;
-                $getExamTimeTable = ExamSchedule::getExamTimeTableTeacher($exam->exam_id, $class->class_id, $class->subject_id);
-                $subjectArray = array();
-                foreach ($getExamTimeTable as $valueS) {
-                    $dataS = array();
-                    $dataS['subject_name'] = $valueS->subject_name;
-                    $dataS['exam_date'] = $valueS->exam_date;
-                    $dataS['start_time'] = $valueS->start_time;
-                    $dataS['end_time'] = $valueS->end_time;
-                    $dataS['room_number'] = $valueS->room_number;
-                    $dataS['full_mark'] = $valueS->full_mark;
-                    $dataS['passing_mark'] = $valueS->passing_mark;
-                    $subjectArray[] = $dataS;
-                }
-                $dataE['subject'] = $subjectArray;
-                $examArray[] = $dataE;
-            }
-            $dataC['exam'] = $examArray;
-            $result[] = $dataC;
-        }
-        $data['getRecord'] = $result;
+        $user_id = Auth::user()->id;
+        $data['getRecord'] = $this->examService->getMyExamTeacher($user_id);
 
         return view('teacher.my_exam', $data);
     }
+
 
     public function examScoreTeacher(Request $request)
     {
@@ -212,7 +154,6 @@ class ExamController extends Controller
             $data['getExam'] = ExamSchedule::getExam($request->class_id);
             $data['getStudent'] = User::getStudentClassExam($request->class_id);
         }
-
 
         return view('teacher.exam_score', $data);
     }

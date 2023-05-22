@@ -24,7 +24,6 @@ class ClassTeacherController extends Controller
     public function list()
     {
         $data['getRecord'] = $this->classTeacherService->getList();
-
         return view('admin.assign_class_teacher.list', $data);
     }
 

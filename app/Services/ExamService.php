@@ -2,9 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\ClassModel;
 use App\Models\ClassSubject;
-use App\Models\Exam;
+use App\Models\ClassTeacher;
 use App\Models\ExamSchedule;
 use App\Models\ExamScore;
 use Illuminate\Http\Request;
@@ -83,7 +82,8 @@ class ExamService
         return redirect()->back()->with('success', 'Exam Schedule successfully created ');
     }
 
-    private function checkTimeSlotOverlap($class_id, $schedule) {
+    private function checkTimeSlotOverlap($class_id, $schedule)
+    {
         $overlapping = ExamSchedule::where('class_id', $class_id)
             ->where(function ($query) use ($schedule) {
                 $query->where(function ($q) use ($schedule) {
@@ -132,6 +132,69 @@ class ExamService
         }
 
         return redirect()->back()->with('success', 'Exam scores have been saved.');
+    }
+
+    public function getMyExam($class_id)
+    {
+        $getExam = ExamSchedule::getExam($class_id);
+        $result = array();
+        foreach ($getExam as $value) {
+            $dataE = array();
+            $dataE['name'] = $value->exam_name;
+            $getExamTimeTable = ExamSchedule::getExamTimeTable($value->exam_id, $class_id);
+
+            $resultS = array();
+            foreach ($getExamTimeTable as $valueS) {
+                $dataS = array();
+                $dataS['subject_name'] = $valueS->subject_name;
+                $dataS['exam_date'] = $valueS->exam_date;
+                $dataS['start_time'] = $valueS->start_time;
+                $dataS['end_time'] = $valueS->end_time;
+                $dataS['room_number'] = $valueS->room_number;
+                $dataS['full_mark'] = $valueS->full_mark;
+                $dataS['passing_mark'] = $valueS->passing_mark;
+                $resultS[] = $dataS;
+            }
+            $dataE['exam'] = $resultS;
+            $result[] = $dataE;
+        }
+
+        return $result;
+    }
+
+    public function getMyExamTeacher($user_id)
+    {
+        $result = array();
+        $getClass = ClassTeacher::getMyClassTeacher($user_id);
+        foreach ($getClass as $class) {
+            $dataC = array();
+            $dataC['class_name'] = $class->class_name;
+            $getExam = ExamSchedule::getExamTeacher($class->class_id, $class->subject_id);
+            $examArray = array();
+            foreach ($getExam as $exam) {
+                $dataE = array();
+                $dataE['name'] = $exam->exam_name;
+                $getExamTimeTable = ExamSchedule::getExamTimeTableTeacher($exam->exam_id, $class->class_id, $class->subject_id);
+                $subjectArray = array();
+                foreach ($getExamTimeTable as $valueS) {
+                    $dataS = array();
+                    $dataS['subject_name'] = $valueS->subject_name;
+                    $dataS['exam_date'] = $valueS->exam_date;
+                    $dataS['start_time'] = $valueS->start_time;
+                    $dataS['end_time'] = $valueS->end_time;
+                    $dataS['room_number'] = $valueS->room_number;
+                    $dataS['full_mark'] = $valueS->full_mark;
+                    $dataS['passing_mark'] = $valueS->passing_mark;
+                    $subjectArray[] = $dataS;
+                }
+                $dataE['subject'] = $subjectArray;
+                $examArray[] = $dataE;
+            }
+            $dataC['exam'] = $examArray;
+            $result[] = $dataC;
+        }
+
+        return $result;
     }
 
 }

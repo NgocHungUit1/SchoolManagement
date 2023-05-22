@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\SubjectExport;
 use App\Http\Requests\SubjectRequest;
 use App\Services\SubjectService;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
 
 class SubjectController extends Controller
 {
@@ -17,8 +15,7 @@ class SubjectController extends Controller
         $this->subjectService = $subjectService;
     }
 
-    public function list()
-    {
+    function list() {
         $data['getRecord'] = $this->subjectService->getSubjects();
         return view('admin.subject.list', $data);
     }
@@ -36,14 +33,8 @@ class SubjectController extends Controller
 
     public function insertSubject(SubjectRequest $request)
     {
-        $data = $request->validated();
-        $data['created_by'] = Auth::user()->id;
-
-        $this->subjectService->createSubject($data);
-
-        return redirect('admin/subject/list')->with('success', 'Subject successfully created');
+        return $this->subjectService->createSubject($request);
     }
-
 
     public function delete($id)
     {

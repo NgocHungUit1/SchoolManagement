@@ -4,11 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\ClassModel;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class StudentControllerTest extends TestCase
@@ -48,9 +44,10 @@ class StudentControllerTest extends TestCase
             'roll_number' => 'A01',
             'class_id' => $class->id,
             'gender' => 'Male',
-            'date_of_birth' => '1999-01-01',
+            'date_of_birth' => '01-01-1999',
             'mobile_number' => '0987654321',
             'email' => 'john.doe@example.com',
+            'address' => 'address',
             'password' => 'password',
             'user_type' => '3',
         ]);
@@ -104,6 +101,7 @@ class StudentControllerTest extends TestCase
             'gender' => 'Male',
             'date_of_birth' => '01-01-1999',
             'mobile_number' => '0987654321',
+            'address' => 'address',
             'password' => 'password',
             'user_type' => '3',
         ]);
@@ -112,28 +110,27 @@ class StudentControllerTest extends TestCase
     }
 
     public function testDeleteStudent()
-{
-    // Tạo một user với user_type = 1
-    $user = User::factory()->create(['user_type' => 1]);
+    {
+        // Tạo một user với user_type = 1
+        $user = User::factory()->create(['user_type' => 1]);
 
-    // Tạo một student
-    $student = User::factory()->create(['user_type' => 3]);
+        // Tạo một student
+        $student = User::factory()->create(['user_type' => 3]);
 
-    // Đăng nhập với user vừa tạo
-    $this->actingAs($user);
+        // Đăng nhập với user vừa tạo
+        $this->actingAs($user);
 
-    // Gửi request để xóa student
-    $response = $this->withoutMiddleware()->get('/admin/student/delete/'.$student->id);
+        // Gửi request để xóa student
+        $response = $this->withoutMiddleware()->get('/admin/student/delete/' . $student->id);
 
-    // Kiểm tra xem có redirect đến trang danh sách sinh viên không
-    $response->assertRedirect('admin/student/list');
+        // Kiểm tra xem có redirect đến trang danh sách sinh viên không
+        $response->assertRedirect('admin/student/list');
 
-    // Kiểm tra xem student đã bị xóa khỏi cơ sở dữ liệu chưa
-    $this->assertDatabaseHas('users', [
-        'id' => $student->id,
-        'is_delete' => 1,
-    ]);
-}
-
+        // Kiểm tra xem student đã bị xóa khỏi cơ sở dữ liệu chưa
+        $this->assertDatabaseHas('users', [
+            'id' => $student->id,
+            'is_delete' => 1,
+        ]);
+    }
 
 }

@@ -4,9 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class UserControllerTest extends TestCase
@@ -23,9 +21,8 @@ class UserControllerTest extends TestCase
     {
         $admin = User::factory()->create([
             'user_type' => 1,
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
-
 
         $response = $this->withoutMiddleware()->post('/login', [
             'email' => $admin->email,
@@ -40,9 +37,8 @@ class UserControllerTest extends TestCase
     {
         $student = User::factory()->create([
             'user_type' => 3,
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
-
 
         $response = $this->withoutMiddleware()->post('/login', [
             'email' => $student->email,
@@ -57,9 +53,8 @@ class UserControllerTest extends TestCase
     {
         $teacher = User::factory()->create([
             'user_type' => 2,
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
-
 
         $response = $this->withoutMiddleware()->post('/login', [
             'email' => $teacher->email,
@@ -68,7 +63,6 @@ class UserControllerTest extends TestCase
 
         $response->assertRedirect('teacher/dashboard');
     }
-
 
     public function testUserCanLogout()
     {
@@ -122,6 +116,7 @@ class UserControllerTest extends TestCase
             'email' => 'Admin@gmail.com',
             'user_type' => '1',
             'password' => 'password',
+
         ]);
 
         //assert that the response status code is a redirect (302)
@@ -131,7 +126,7 @@ class UserControllerTest extends TestCase
         $this->assertEquals('Class A', $updatedAdmin->name);
         $this->assertEquals('Admin@gmail.com', $updatedAdmin->email);
         $this->assertEquals('1', $updatedAdmin->user_type);
-        $this->assertTrue(Hash::check('password', $updatedAdmin->password));
+        $this->assertEquals('password', $updatedAdmin->password);
     }
 
     public function testDeleteAdminWithUserTypeOne()

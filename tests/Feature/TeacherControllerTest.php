@@ -2,13 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\ClassModel;
+use App\Models\Subject;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class TeacherControllerTest extends TestCase
@@ -38,6 +34,8 @@ class TeacherControllerTest extends TestCase
         // Tạo một user với user_type = 1
         $user = User::factory()->create(['user_type' => 1]);
 
+        $subject = Subject::factory()->create();
+
         // Đăng nhập với user vừa tạo
         $this->actingAs($user);
 
@@ -47,6 +45,7 @@ class TeacherControllerTest extends TestCase
             'teacher_id' => 'T001',
             'joining_date' => '01-01-1999',
             'qualification' => 'Bachelor',
+            'subject_id' => $subject->id,
             'experience' => '2 years',
             'address' => '123 Main St',
             'gender' => 'Male',
@@ -84,7 +83,7 @@ class TeacherControllerTest extends TestCase
 
         ]);
 
-        $response->assertSessionHasErrors(['name', 'joining_date', 'qualification', 'experience', 'address', 'gender', 'date_of_birth', 'mobile_number','password']);
+        $response->assertSessionHasErrors(['name', 'joining_date', 'qualification', 'experience', 'address', 'gender', 'date_of_birth', 'mobile_number', 'password']);
     }
 
     public function testUpdateTeacherWithUserTypeTwo()
@@ -94,6 +93,7 @@ class TeacherControllerTest extends TestCase
 
         // Tạo một teacher
         $teacher = User::factory()->create(['user_type' => 2]);
+        $subject = Subject::factory()->create();
 
         // Đăng nhập với user vừa tạo
         $this->actingAs($user);
@@ -104,6 +104,7 @@ class TeacherControllerTest extends TestCase
             'joining_date' => '01-01-1999',
             'qualification' => 'Bachelor',
             'experience' => '2 years',
+            'subject_id' => $subject->id,
             'address' => '123 Main St',
             'gender' => 'Male',
             'date_of_birth' => '01-01-1999',
@@ -127,7 +128,7 @@ class TeacherControllerTest extends TestCase
 
         // Gửi request để xóa teacher
 
-        $response = $this->withoutMiddleware()->get('/admin/teacher/delete/'.$teacher->id);
+        $response = $this->withoutMiddleware()->get('/admin/teacher/delete/' . $teacher->id);
 
         // Kiểm tra xem có redirect đến trang danh sách teacher không
         $response->assertRedirect('admin/teacher/list');
