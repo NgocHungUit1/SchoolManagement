@@ -119,7 +119,7 @@ php artisan serve
 ## Contact
 
 
-
+Cody Nguyen cody.nguyen.goldenowl@gmail.com
 Project Link Production: http://52.77.233.105/
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
