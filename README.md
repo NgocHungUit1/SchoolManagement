@@ -82,7 +82,7 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-![image](![image](https://github.com/NgocHungUit1/SchoolManagement/assets/108797023/c299d0e3-7a2b-4849-9c7a-829416f517d0))
+![image](https://github.com/NgocHungUit1/SchoolManagement/assets/108797023/c3276ba0-4c1f-4aab-8112-2f8b08468f68)
 
 
 
