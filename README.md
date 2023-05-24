@@ -136,6 +136,7 @@ The school management project is a software system that helps manage activities 
 ``` bash
 #Clone the repository
 Git clone git@github.com:NgocHungUit1/SchoolManagement.git
+
 # install dependencies
 composer update
 composer install
@@ -171,7 +172,7 @@ php artisan serve
 
 
 
-Project Link: [https://github.com/NgocHungUit1/laravel_shop]
+Project Link Production: http://52.77.233.105/
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
