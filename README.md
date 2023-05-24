@@ -82,6 +82,7 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
+The school management project is a software system that helps manage activities within a school, including features such as student management, teacher management, class management, timetable management, exam results management, and more.
 ![image](https://github.com/NgocHungUit1/SchoolManagement/assets/108797023/c3276ba0-4c1f-4aab-8112-2f8b08468f68)
 
 
@@ -91,9 +92,6 @@
 
 
 ### Built With
-
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-
 
 * [![Laravel][Laravel.com]][Laravel-url]
 * [![Bootstrap][Bootstrap.com]][Bootstrap-url]
@@ -136,6 +134,8 @@ This section should list any major frameworks/libraries used to bootstrap your p
 <!-- USAGE EXAMPLES -->
 ## Usage
 ``` bash
+#Clone the repository
+Git clone git@github.com:NgocHungUit1/SchoolManagement.git
 # install dependencies
 composer update
 composer install
@@ -144,6 +144,12 @@ npm install
 # create .env file and generate the application key
 cp .env.example .env
 php artisan key:generate
+
+#Run the database migrations
+php artisan migrate
+
+#Run the database seeder and you're done
+php artisan db:seed
 
 
 ```
