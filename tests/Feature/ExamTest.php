@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Exam;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ExamTest extends TestCase
@@ -14,7 +15,7 @@ class ExamTest extends TestCase
      *
      * @return void
      */
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     public function testCreateExamWithUserTypeOne()
     {
@@ -33,7 +34,6 @@ class ExamTest extends TestCase
         ]);
 
         $response->assertRedirect('admin/exam/list');
-
     }
 
     public function test_edit_Exam_with_valid_input()
@@ -84,5 +84,29 @@ class ExamTest extends TestCase
 
         //assert that the error message is displayed on the page
         $response->assertSessionHasErrors(['name']);
+    }
+
+    public function testDeleteExam()
+    {
+        // Tạo một user với user_type = 1
+        $user = User::factory()->create(['user_type' => 1]);
+
+        // Tạo một student
+        $exam = Exam::factory()->create();
+
+        // Đăng nhập với user vừa tạo
+        $this->actingAs($user);
+
+        // Gửi request để xóa student
+        $response = $this->withoutMiddleware()->get('/admin/exam/delete/' . $exam->id);
+
+        // Kiểm tra xem có redirect đến trang danh sách sinh viên không
+        $response->assertRedirect('admin/exam/list');
+
+        // Kiểm tra xem student đã bị xóa khỏi cơ sở dữ liệu chưa
+        $this->assertDatabaseHas('exam', [
+            'id' => $exam->id,
+            'is_delete' => 1,
+        ]);
     }
 }

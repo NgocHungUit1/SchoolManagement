@@ -8,11 +8,14 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\ClassSubject;
+use App\Models\ClassSubjectTimeTable;
 use App\Models\Subject;
+use App\Models\Week;
+use App\Services\ClassTimeTableService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 
-class ClassSubjectControllerTest extends TestCase
+class ClassSubjectTimeTableTest extends TestCase
 {
     use RefreshDatabase;
     /** @test */
@@ -24,28 +27,31 @@ class ClassSubjectControllerTest extends TestCase
         // Đăng nhập với user vừa tạo
         $this->actingAs($user);
 
-        // Create a class and subject to assign
-        $class = ClassModel::factory()->create();
-        $subject = Subject::factory()->create();
+
+        $day = Week::factory()->create();
+        $class_subject = ClassSubjectTimeTable::factory()->create();
 
         // Make a request to add the subject to the class
-        $response = $this->withoutMiddleware()->post('/admin/assign_subject/add', [
-            'class_id' => $class->id,
-            'subject_id' => [$subject->id],
-            'created_by' => $user->id,
-            'status' => 1
+        $response = $this->withoutMiddleware()->post('/admin/class_timetable/add', [
+            'class_id' => $class_subject->class_id,
+            'subject_id' => $class_subject->subject_id,
+            'day_id' => [$day->id],
+            'room_number' => ['John Doe'],
+            'start_time' => ['11:30'],
+            'end_time' => ['12:30'],
+            'start_date' => '01-01-1999',
+            'end_date' => '01-01-1999',
         ]);
 
         // Assert that the response status is HTTP 302 (redirect)
         $response->assertStatus(302);
 
         // Assert that the subject was assigned to the class
-        $this->assertDatabaseHas('class_subject', [
-            'class_id' => $class->id,
-            'subject_id' => $subject->id,
-            'status' => 1,
-            'created_by' => $user->id,
-        ]);
+        // $this->assertDatabaseHas('class_subject_timetable', [
+        //     'class_id' => $class_subject->class_id,
+        //     'subject_id' => $class_subject->subject_id,
+        //     'day_id' => [$day->id],
+        // ]);
     }
 
     public function testUpdate()

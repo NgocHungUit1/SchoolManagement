@@ -6,10 +6,16 @@ namespace Database\Seeders;
 
 use App\Models\ClassModel;
 use App\Models\ClassSubject;
+use App\Models\ClassSubjectTimeTable;
+use App\Models\ClassTeacher;
 use App\Models\Exam;
 use App\Models\Subject;
 use App\Models\User;
+use App\Models\Week;
+use Database\Factories\DayFactory;
 use Illuminate\Database\Seeder;
+use Faker\Factory as Faker;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -33,5 +39,8 @@ class DatabaseSeeder extends Seeder
 
         ClassSubject::factory()->count(3)->create();
 
+        ClassTeacher::factory()->count(3)->create();
+
+        ClassSubjectTimeTable::factory()->count(3)->create();
     }
 }

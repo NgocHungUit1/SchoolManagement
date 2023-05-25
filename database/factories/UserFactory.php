@@ -25,6 +25,7 @@ class UserFactory extends Factory
             'admission_number' => fake()->unique()->randomNumber(),
             'roll_number' => fake()->randomNumber(),
             'class_id' => NULL, // Bạn có thể thay đổi giá trị mặc định này tùy theo nhu cầu sử dụng của bạn
+            'subject_id' => NULL, // Bạn có thể thay đổi giá trị mặc định này tùy theo nhu cầu sử dụng của bạn
             'date_of_birth' => fake()->date(),
             'joining_date' => fake()->date(),
             'gender' => fake()->randomElement(['male', 'female']),
@@ -48,7 +49,7 @@ class UserFactory extends Factory
      */
     public function unverified()
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

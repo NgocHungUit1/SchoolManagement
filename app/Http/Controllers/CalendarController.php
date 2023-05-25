@@ -1,90 +1,78 @@
 <?php
 
+/**
+ *  CalendarController
+ *
+ * @category   Controller
+ * @package    MyApp
+ * @subpackage Controllers
+ * @author     Cody <cody.nguyen.goldenowl@gmail.com>
+ * @license    https://opensource.org/licenses/MIT MIT
+ * @link       https://laravel.com/
+ */
+
 namespace App\Http\Controllers;
 
-use App\Models\ClassSubject;
-use App\Models\ClassSubjectTimeTable;
-use App\Models\ClassTeacher;
-use App\Models\ExamSchedule;
-use App\Models\Week;
+use Illuminate\Http\Request;
+use App\Services\CalendarService;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * CalendarController
+ *
+ * @category CalendarController
+ * @package  PackageName
+ *
+ * @author  Cody <cody.nguyen.goldenowl@gmail.com>
+ * @license https://opensource.org/licenses/MIT MIT License
+ * @link    http://www.example.com
+ */
 class CalendarController extends Controller
 {
+    /**
+     * CalendarService instance.
+     *
+     * @var CalendarService
+     */
+    protected $calendarService;
 
+    /**
+     * CalendarController constructor.
+     *
+     * @param CalendarService $calendarService CalendarService
+     *
+     * @return void
+     */
+    public function __construct(CalendarService $calendarService)
+    {
+        $this->calendarService = $calendarService;
+    }
+
+    /**
+     * Shows the calender student.
+     *
+     * @return mixed Calendar
+     */
     public function myCalendar()
     {
-        $data['getTimeTable'] = $this->getTimeTable(Auth::user()->class_id);
-        $data['getExamTimeTable'] = $this->getExamTimeTable(Auth::user()->class_id);
-        return view('student.my_calendar', $data)->with('success', 'My Time Table Student ');
+        $data['getTimeTable'] = $this->calendarService
+            ->getTimeTable(Auth::user()->class_id);
+        $data['getExamTimeTable'] = $this->calendarService
+            ->getExamTimeTable(Auth::user()->class_id);
+        return view('student.my_calendar', $data)
+            ->with('success', 'My Time Table Student ');
     }
 
-    //student
-    public function getExamTimeTable($class_id)
-    {
-        $getExam = ExamSchedule::getExam($class_id);
-        $result = array();
-        foreach ($getExam as $value) {
-            $dataE = array();
-            $dataE['name'] = $value->exam_name;
-            $getExamTimeTable = ExamSchedule::getExamTimeTable($value->exam_id, $class_id);
-            $resultS = array();
-            foreach ($getExamTimeTable as $valueS) {
-                $dataS = array();
-                $dataS['subject_name'] = $valueS->subject_name;
-                $dataS['exam_date'] = $valueS->exam_date;
-                $dataS['start_time'] = $valueS->start_time;
-                $dataS['end_time'] = $valueS->end_time;
-                $dataS['room_number'] = $valueS->room_number;
-                $dataS['full_mark'] = $valueS->full_mark;
-                $dataS['passing_mark'] = $valueS->passing_mark;
-                $resultS[] = $dataS;
-            }
-            $dataE['exam'] = $resultS;
-            $result[] = $dataE;
-        }
-        return $result;
-
-    }
-
-    public function getTimeTable($class_id)
-    {
-        $result = array();
-        $getRecord = ClassSubject::getMySubjectTeacher($class_id);
-        foreach ($getRecord as $value) {
-            $dataS['name'] = $value->subject_name;
-            $dataS['teacher_name'] = $value->teacher_name;
-            $getDay = Week::getRecord();
-            $day = array();
-            foreach ($getDay as $valueDay) {
-                $dataDay = array();
-                $dataDay['day_name'] = $valueDay->name;
-                $dataDay['fullcalendar_day'] = $valueDay->fullcalendar_day;
-                $ClassSubject = ClassSubjectTimeTable::getRecord($value->class_id, $value->subject_id, $valueDay->id);
-                if (!empty($ClassSubject)) {
-                    $dataDay['start_time'] = $ClassSubject->start_time;
-                    $dataDay['end_time'] = $ClassSubject->end_time;
-                    $dataDay['room_number'] = $ClassSubject->room_number;
-                    $dataDay['start_date'] = $ClassSubject->start_date;
-                    $dataDay['end_date'] = $ClassSubject->end_date;
-                    $day[] = $dataDay;
-                }
-            }
-            $dataS['day'] = $day;
-            $result[] = $dataS;
-
-        }
-        return $result;
-    }
-
-    //teacher
-
+    /**
+     * Shows the calender teacher.
+     *
+     * @return mixed Calendar
+     */
     public function myTeacherCalendar()
     {
         $teacher_id = Auth::user()->id;
         $data['getCalendarTeacher'] = ClassTeacher::getCalendarTeacher($teacher_id);
-        // dd($data);
-        return view('teacher.my_calendar', $data)->with('success', 'My Time Table Teacher ');
+        return view('teacher.my_calendar', $data)
+            ->with('success', 'My Time Table Teacher ');
     }
-
 }

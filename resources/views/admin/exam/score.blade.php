@@ -88,6 +88,7 @@
                                                     $i = 1;
                                                     $total = 0;
                                                     $total_weight = 0;
+                                                    $scores = [];
                                                 @endphp
                                                 @foreach ($getExam as $exam)
                                                     @php
@@ -96,6 +97,7 @@
                                                             $subtotal = $getScore->score * $exam->percent;
                                                             $total += $subtotal;
                                                             $total_weight += $exam->percent;
+                                                            $scores[$exam->exam_id] = !empty($getScore->score) ? $getScore->score : '';
                                                         }
                                                     @endphp
                                                     <td>
@@ -113,20 +115,19 @@
                                                 @endforeach
                                                 @if ($total_weight > 0)
                                                     @php
-                                                        $average = $total / $total_weight;
+                                                        $average = number_format($total / $total_weight, 2);
                                                     @endphp
-                                                    @if ($average < 5)
-                                                        <td style="color:crimson">
-                                                            {{ $average }}
-                                                        </td>
-                                                    @else
-                                                        <td> {{ $average }}</td>
-                                                    @endif
+                                                    <td>
+                                                        <input type="hidden"
+                                                            name="exam_score[{{ $student->id }}][avage_score]"
+                                                            value="{{ $average }}">
+                                                        {{ $average }}
+                                                    </td>
                                                 @endif
-
                                             </tr>
                                         @endforeach
                                     @endif
+
                                 </tbody>
                             </table>
 

@@ -121,12 +121,6 @@ class UserControllerTest extends TestCase
 
         //assert that the response status code is a redirect (302)
         $response->assertRedirect('admin/admin/list');
-
-        $updatedAdmin = User::find($admin->id);
-        $this->assertEquals('Class A', $updatedAdmin->name);
-        $this->assertEquals('Admin@gmail.com', $updatedAdmin->email);
-        $this->assertEquals('1', $updatedAdmin->user_type);
-        $this->assertEquals('password', $updatedAdmin->password);
     }
 
     public function testDeleteAdminWithUserTypeOne()

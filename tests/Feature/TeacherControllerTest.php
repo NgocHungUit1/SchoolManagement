@@ -138,6 +138,5 @@ class TeacherControllerTest extends TestCase
             'id' => $teacher->id,
             'is_delete' => 1,
         ]);
-
     }
 }

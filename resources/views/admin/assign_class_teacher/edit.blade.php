@@ -62,32 +62,31 @@
                                                 @endforeach
                                             @endif
                                         </select>
-                                        <div style="color:red">{{ $errors->first('teacher_id') }}
-                                        </div>
                                     </div>
-                                    <div class="form-group row">
-                                        <label>Status <span class="login-danger">*</span></label>
-                                        <select class="form-control select" name="status">
-                                            <option {{ $getRecord->status == 0 ? 'selected' : '' }} value="0">Active
-                                            </option>
-                                            <option {{ $getRecord->status == 1 ? 'selected' : '' }} value="1">InActive
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-form-label col-md-2"></label>
-                                        <div class="col-md-10">
-                                            <button type="submit" class="btn btn-primary">Submit</button>
-                                        </div>
-                                    </div>
-                                </form>
                             </div>
+                            <div class="form-group row">
+                                <label>Status <span class="login-danger">*</span></label>
+                                <select class="form-control select" name="status">
+                                    <option {{ $getRecord->status == 0 ? 'selected' : '' }} value="0">Active
+                                    </option>
+                                    <option {{ $getRecord->status == 1 ? 'selected' : '' }} value="1">InActive
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-form-label col-md-2"></label>
+                                <div class="col-md-10">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </div>
+                            </form>
                         </div>
-
                     </div>
+
                 </div>
             </div>
         </div>
+    </div>
 
     </div>
     @push('js')

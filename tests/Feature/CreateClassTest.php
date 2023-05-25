@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\ClassModel;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class CreateClassTest extends TestCase
@@ -14,7 +15,7 @@ class CreateClassTest extends TestCase
      *
      * @return void
      */
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     public function testCreateClassWithUserTypeOne()
     {
@@ -33,6 +34,7 @@ class CreateClassTest extends TestCase
         ]);
 
         $response->assertRedirect('admin/class/list');
+        // Kiểm tra số lượng class trong database sau khi tạo class
 
     }
 
@@ -84,4 +86,27 @@ class CreateClassTest extends TestCase
         $response->assertSessionHasErrors(['name']);
     }
 
+    public function testDeleteClassSubject()
+    {
+        // Tạo một user với user_type = 1
+        $user = User::factory()->create(['user_type' => 1]);
+
+        // Tạo một student
+        $class = ClassModel::factory()->create();
+
+        // Đăng nhập với user vừa tạo
+        $this->actingAs($user);
+
+        // Gửi request để xóa student
+        $response = $this->withoutMiddleware()->get('/admin/class/delete/' . $class->id);
+
+        // Kiểm tra xem có redirect đến trang danh sách sinh viên không
+
+
+        // Kiểm tra xem student đã bị xóa khỏi cơ sở dữ liệu chưa
+        $this->assertDatabaseHas('class', [
+            'id' => $class->id,
+            'is_delete' => 1,
+        ]);
+    }
 }

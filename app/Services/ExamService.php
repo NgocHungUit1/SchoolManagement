@@ -1,16 +1,46 @@
 <?php
 
+/**
+ *  ExamService
+ *
+ * @category   Services
+ * @package    App\Services
+ * @subpackage Services
+ * @author     Cody <cody.nguyen.goldenowl@gmail.com>
+ * @license    https://opensource.org/licenses/MIT MIT
+ * @link       https://laravel.com/
+ */
+
 namespace App\Services;
 
 use App\Models\ClassSubject;
 use App\Models\ClassTeacher;
 use App\Models\ExamSchedule;
+use App\Models\Exam;
 use App\Models\ExamScore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * ExamService
+ *
+ * @category Services
+ * @package  App\Services
+ *
+ * @author  Cody <cody.nguyen.goldenowl@gmail.com>
+ * @license https://opensource.org/licenses/MIT MIT License
+ * @link    http://www.example.com
+ */
 class ExamService
 {
+    /**
+     * Get Exam Schedule .
+     *
+     * @param int $examId  The ID of the exam
+     * @param int $classId The ID of the class
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getExamSchedule($examId, $classId)
     {
         $result = [];
@@ -26,7 +56,11 @@ class ExamService
                     'subject_type' => $value->subject_type,
                 ];
 
-                $examSchedule = ExamSchedule::getRecordSignle($examId, $classId, $value->subject_id);
+                $examSchedule = ExamSchedule::getRecordSignle(
+                    $examId,
+                    $classId,
+                    $value->subject_id
+                );
 
                 if (!empty($examSchedule)) {
                     $dataS['exam_date'] = $examSchedule->exam_date;
@@ -51,89 +85,190 @@ class ExamService
         return $result;
     }
 
+    /**
+     * Exam Schedule Insert .
+     *
+     * @param Request $request Request object
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function examScheduleInsert(Request $request)
     {
         ExamSchedule::deleteRecord($request->exam_id, $request->class_id);
 
         foreach ($request->schedule as $schedule) {
-            if (!empty($schedule['subject_id']) && !empty($schedule['exam_date']) && !empty($schedule['start_time']) && !empty($schedule['end_time']) && !empty($schedule['room_number']) && !empty($schedule['full_mark']) && !empty($schedule['passing_mark'])) {
+            if (
+                !empty($schedule['subject_id'])
+                && !empty($schedule['exam_date'])
+                && !empty($schedule['start_time'])
+                && !empty($schedule['end_time'])
+                && !empty($schedule['room_number'])
+                && !empty($schedule['full_mark'])
+                && !empty($schedule['passing_mark'])
+            ) {
                 // Check for overlapping time slots
-                $overlapping = $this->checkTimeSlotOverlap($request->class_id, $schedule);
+                $overlapping = $this->_checkTimeSlotOverlap(
+                    $request->class_id,
+                    $schedule
+                );
                 if ($overlapping > 0) {
-                    return redirect()->back()->with('error', 'Time slot overlap detected');
+                    return redirect()->back()
+                        ->with('error', 'Time slot overlap detected');
                 }
 
-                $save = new ExamSchedule([
-                    'exam_id' => $request->exam_id,
-                    'class_id' => $request->class_id,
-                    'subject_id' => $schedule['subject_id'],
-                    'exam_date' => $schedule['exam_date'],
-                    'start_time' => $schedule['start_time'],
-                    'end_time' => $schedule['end_time'],
-                    'room_number' => $schedule['room_number'],
-                    'full_mark' => $schedule['full_mark'],
-                    'passing_mark' => $schedule['passing_mark'],
-                    'created_by' => Auth::user()->id,
-                ]);
+                $save = new ExamSchedule(
+                    [
+                        'exam_id' => $request->exam_id,
+                        'class_id' => $request->class_id,
+                        'subject_id' => $schedule['subject_id'],
+                        'exam_date' => $schedule['exam_date'],
+                        'start_time' => $schedule['start_time'],
+                        'end_time' => $schedule['end_time'],
+                        'room_number' => $schedule['room_number'],
+                        'full_mark' => $schedule['full_mark'],
+                        'passing_mark' => $schedule['passing_mark'],
+                        'created_by' => Auth::user()->id,
+                    ]
+                );
                 $save->save();
             }
         }
 
-        return redirect()->back()->with('success', 'Exam Schedule successfully created ');
+        return redirect()->back()
+            ->with('success', 'Exam Schedule successfully created ');
     }
 
-    private function checkTimeSlotOverlap($class_id, $schedule)
+    /**
+     * Check Time Slot Overlap.
+     *
+     * @param int $class_id The ID of the class_id
+     * @param int $schedule The ID of the schedule
+     *
+     * @return \Illuminate\View\View
+     */
+    private function _checkTimeSlotOverlap($class_id, $schedule)
     {
         $overlapping = ExamSchedule::where('class_id', $class_id)
-            ->where(function ($query) use ($schedule) {
-                $query->where(function ($q) use ($schedule) {
-                    $q->where('exam_date', '=', $schedule['exam_date'])
-                        ->whereBetween('start_time', [$schedule['start_time'], $schedule['end_time']]);
-                })
-                    ->orWhere(function ($q) use ($schedule) {
-                        $q->where('exam_date', '=', $schedule['exam_date'])
-                            ->whereBetween('end_time', [$schedule['start_time'], $schedule['end_time']]);
-                    })
-                    ->orWhere(function ($q) use ($schedule) {
-                        $q->where('exam_date', '=', $schedule['exam_date'])
-                            ->where('start_time', '<', $schedule['start_time'])
-                            ->where('end_time', '>', $schedule['start_time']);
-                    })
-                    ->orWhere(function ($q) use ($schedule) {
-                        $q->where('exam_date', '=', $schedule['exam_date'])
-                            ->where('start_time', '<', $schedule['end_time'])
-                            ->where('end_time', '>', $schedule['end_time']);
-                    });
-            })->count();
+            ->where(
+                function ($query) use ($schedule) {
+                    $query->where(
+                        function ($q) use ($schedule) {
+                            $q->where('exam_date', '=', $schedule['exam_date'])
+                                ->whereBetween(
+                                    'start_time',
+                                    [
+                                        $schedule['start_time'],
+                                        $schedule['end_time']
+                                    ]
+                                );
+                        }
+                    )
+                        ->orWhere(
+                            function ($q) use ($schedule) {
+                                $q->where('exam_date', '=', $schedule['exam_date'])
+                                    ->whereBetween(
+                                        'end_time',
+                                        [
+                                            $schedule['start_time'],
+                                            $schedule['end_time']
+                                        ]
+                                    );
+                            }
+                        )
+                        ->orWhere(
+                            function ($q) use ($schedule) {
+                                $q->where('exam_date', '=', $schedule['exam_date'])
+                                    ->where(
+                                        'start_time',
+                                        '<',
+                                        $schedule['start_time']
+                                    )
+                                    ->where(
+                                        'end_time',
+                                        '>',
+                                        $schedule['start_time']
+                                    );
+                            }
+                        )
+                        ->orWhere(
+                            function ($q) use ($schedule) {
+                                $q->where('exam_date', '=', $schedule['exam_date'])
+                                    ->where(
+                                        'start_time',
+                                        '<',
+                                        $schedule['end_time']
+                                    )
+                                    ->where(
+                                        'end_time',
+                                        '>',
+                                        $schedule['end_time']
+                                    );
+                            }
+                        );
+                }
+            )->count();
 
         return $overlapping;
     }
-
+    /**
+     * Insert Score.
+     *
+     * @param Request $request Request object
+     *
+     * @return \Illuminate\View\View
+     */
     public function insertScore(Request $request)
     {
         ExamScore::where('class_id', '=', $request->class_id)
             ->where('subject_id', '=', $request->subject_id)
             ->delete();
-
         $examScores = $request->input('exam_score');
         foreach ($examScores as $studentId => $scores) {
+            $total = 0;
+            $total_weight = 0;
             foreach ($scores as $scoreData) {
-                if (!empty($studentId) && !empty($scoreData['exam_id']) && !empty($scoreData['score'])) {
-                    ExamScore::create([
-                        'exam_id' => $scoreData['exam_id'],
-                        'class_id' => $request->input('class_id'),
-                        'subject_id' => $request->input('subject_id'),
-                        'student_id' => $studentId,
-                        'score' => $scoreData['score'],
-                        'created_by' => Auth::user()->id,
-                    ]);
+                if (
+                    !empty($studentId)
+                    && !empty($scoreData['exam_id'])
+                    && !empty($scoreData['score'])
+                ) {
+                    $exam = Exam::find($scoreData['exam_id']);
+                    $subtotal = $scoreData['score'] * $exam->description;
+                    $total += $subtotal;
+                    $total_weight += $exam->description;
+                    ExamScore::create(
+                        [
+                            'exam_id' => $scoreData['exam_id'],
+                            'class_id' => $request->input('class_id'),
+                            'subject_id' => $request->input('subject_id'),
+                            'student_id' => $studentId,
+                            'score' => $scoreData['score'],
+                            'created_by' => Auth::user()->id,
+                        ]
+                    );
                 }
+            }
+            if ($total_weight > 0) {
+                $average = $total / $total_weight;
+                ExamScore::where('class_id', '=', $request->class_id)
+                    ->where('subject_id', '=', $request->subject_id)
+                    ->where('student_id', '=', $studentId)
+                    ->update(['avage_score' => $average]);
             }
         }
 
-        return redirect()->back()->with('success', 'Exam scores have been saved.');
+        return redirect()->back()
+            ->with('success', 'Exam scores have been saved.');
     }
 
+
+    /**
+     * Get My Exam .
+     *
+     * @param int $class_id The ID of the class_id
+     *
+     * @return \Illuminate\View\View
+     */
     public function getMyExam($class_id)
     {
         $getExam = ExamSchedule::getExam($class_id);
@@ -141,7 +276,10 @@ class ExamService
         foreach ($getExam as $value) {
             $dataE = array();
             $dataE['name'] = $value->exam_name;
-            $getExamTimeTable = ExamSchedule::getExamTimeTable($value->exam_id, $class_id);
+            $getExamTimeTable = ExamSchedule::getExamTimeTable(
+                $value->exam_id,
+                $class_id
+            );
 
             $resultS = array();
             foreach ($getExamTimeTable as $valueS) {
@@ -161,7 +299,13 @@ class ExamService
 
         return $result;
     }
-
+    /**
+     * Get My Exam Teacher.
+     *
+     * @param int $user_id The ID of the user
+     *
+     * @return \Illuminate\View\View
+     */
     public function getMyExamTeacher($user_id)
     {
         $result = array();
@@ -169,12 +313,19 @@ class ExamService
         foreach ($getClass as $class) {
             $dataC = array();
             $dataC['class_name'] = $class->class_name;
-            $getExam = ExamSchedule::getExamTeacher($class->class_id, $class->subject_id);
+            $getExam = ExamSchedule::getExamTeacher(
+                $class->class_id,
+                $class->subject_id
+            );
             $examArray = array();
             foreach ($getExam as $exam) {
                 $dataE = array();
                 $dataE['name'] = $exam->exam_name;
-                $getExamTimeTable = ExamSchedule::getExamTimeTableTeacher($exam->exam_id, $class->class_id, $class->subject_id);
+                $getExamTimeTable = ExamSchedule::getExamTimeTableTeacher(
+                    $exam->exam_id,
+                    $class->class_id,
+                    $class->subject_id
+                );
                 $subjectArray = array();
                 foreach ($getExamTimeTable as $valueS) {
                     $dataS = array();
@@ -197,4 +348,40 @@ class ExamService
         return $result;
     }
 
+    /**
+     * Add Scores By Teacher.
+     *
+     * @param int $classId    The ID of the classId
+     * @param int $subjectId  The ID of the subjectId
+     * @param $examScores The ID of the examScores
+     *
+     * @return \Illuminate\View\View
+     */
+    public function addScoresByTeacher($classId, $subjectId, $examScores)
+    {
+        ExamScore::where('class_id', '=', $classId)
+            ->where('subject_id', '=', $subjectId)->delete();
+
+        foreach ($examScores as $studentId => $scores) {
+            foreach ($scores as $scoreData) {
+                if (
+                    !empty($studentId)
+                    && !empty($scoreData['exam_id'])
+                    && !empty($scoreData['score'])
+                ) {
+
+                    ExamScore::create(
+                        [
+                            'exam_id' => $scoreData['exam_id'],
+                            'class_id' => $classId,
+                            'subject_id' => $subjectId,
+                            'student_id' => $studentId,
+                            'score' => $scoreData['score'],
+                            'created_by' => Auth::user()->id,
+                        ]
+                    );
+                }
+            }
+        }
+    }
 }

@@ -145,6 +145,9 @@
                             <li class=" {{ set_active(['admin/exam/score']) }}"><a
                                     href="{{ url('admin/exam/score') }}"
                                     class=" {{ set_active(['admin/exam/score']) }}">Exam Score</a></li>
+                            <li class=" {{ set_active(['admin/academic']) }}"><a href="{{ url('admin/academic') }}"
+                                    class=" {{ set_active(['admin/academic']) }}">Academic Record</a></li>
+
                         </ul>
                     </li>
 

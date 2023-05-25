@@ -132,5 +132,4 @@ class StudentControllerTest extends TestCase
             'is_delete' => 1,
         ]);
     }
-
 }

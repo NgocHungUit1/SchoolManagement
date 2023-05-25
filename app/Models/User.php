@@ -27,7 +27,7 @@ class User extends Authenticatable
         'subject_id',
         'joining_date',
         'qualification',
-        'experience' ,
+        'experience',
         'gender',
         'address',
         'date_of_birth',
@@ -189,12 +189,12 @@ class User extends Authenticatable
         return $return;
     }
 
-    public static function getStudentClassExam($class_id)
+    public static function getStudentClassExam($id)
     {
-        return self::select('users.id','users.name')
+        return self::select('users.id', 'users.name')
             ->where('users.user_type', '=', 3)
             ->where('users.is_delete', '=', 0)
-            ->where('users.class_id', '=', $class_id)
+            ->where('users.class_id', '=', $id)
             ->orderBy('users.id', 'desc')
             ->get();
     }
@@ -208,7 +208,6 @@ class User extends Authenticatable
             ->where('users.status', '=', 0)
             ->orderBy('users.id', 'desc')
             ->get();
-         return $return;
+        return $return;
     }
-
 }

@@ -1,5 +1,16 @@
 <?php
 
+/**
+ *  DashboardController
+ *
+ * @category   Controller
+ * @package    MyApp
+ * @subpackage Controllers
+ * @author     Cody <cody.nguyen.goldenowl@gmail.com>
+ * @license    https://opensource.org/licenses/MIT MIT
+ * @link       https://laravel.com/
+ */
+
 namespace App\Http\Controllers;
 
 use App\Models\ClassModel;
@@ -8,8 +19,23 @@ use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * DashboardController
+ *
+ * @category DashboardController
+ * @package  PackageName
+ *
+ * @author  Cody <cody.nguyen.goldenowl@gmail.com>
+ * @license https://opensource.org/licenses/MIT MIT License
+ * @link    http://www.example.com
+ */
 class DashboardController extends Controller
 {
+    /**
+     * Shows dashboard user.
+     *
+     * @return mixed Calendar
+     */
     public function dashboard()
     {
 
@@ -27,5 +53,4 @@ class DashboardController extends Controller
             return view('student/dashboard', $data);
         }
     }
-
 }
