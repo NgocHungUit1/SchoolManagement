@@ -128,18 +128,7 @@ class User extends Authenticatable
     public static function getStudentStar()
     {
         $return = User::selectRaw('users.*, class.name as class_name')->leftJoin('class', 'class.id', '=', 'users.class_id')->where('users.user_type', '=', 3)->where('users.is_delete', '=', 0);
-
-        if (!empty(Request::get('mobile_number'))) {
-            $return = $return->where('users.mobile_number', 'like', '%' . Request::get('mobile_number') . '%');
-        }
-        if (!empty(Request::get('name'))) {
-            $return = $return->where('users.name', 'like', '%' . Request::get('name') . '%');
-        }
-        if (!empty(Request::get('class'))) {
-            $return = $return->where('class.name', 'like', '%' . Request::get('class') . '%');
-        }
-
-        $return = $return->orderBy('users.id', 'desc')->take(5)->get();
+        $return = $return->orderBy('users.score', 'desc')->limit(5)->get();
 
         return $return;
     }

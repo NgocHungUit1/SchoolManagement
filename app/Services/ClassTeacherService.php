@@ -103,6 +103,7 @@ class ClassTeacherService
                 $data['class_id'],
                 $data['subject_id']
             );
+
             if (!empty($getAlreadyTeacher)) {
                 // Nếu đã có giáo viên dạy môn học cho lớp học đó rồi
                 if ($getAlreadyTeacher->teacher_id == $teacher_id) {

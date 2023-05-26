@@ -82,13 +82,18 @@
                                 </thead>
                                 <tbody>
                                     @if (!empty($getStudent) && !empty($getStudent->count()))
+                                        @php
+                                            $all_exam = count($getExam);
+                                        @endphp
                                         @foreach ($getStudent as $student)
                                             <tr>
                                                 <td>{{ $student->name }}</td>
                                                 @php
                                                     $i = 1;
                                                     $total = 0;
+                                                    $total_subjects_scored = 0;
                                                     $total_weight = 0;
+                                                    $scores = [];
                                                 @endphp
                                                 @foreach ($getExam as $exam)
                                                     @php
@@ -97,6 +102,8 @@
                                                             $subtotal = $getScore->score * $exam->percent;
                                                             $total += $subtotal;
                                                             $total_weight += $exam->percent;
+                                                            $total_subjects_scored++;
+                                                            $scores[$exam->exam_id] = !empty($getScore->score) ? $getScore->score : '';
                                                         }
                                                     @endphp
                                                     <td>
@@ -112,19 +119,21 @@
                                                         $i++;
                                                     @endphp
                                                 @endforeach
-                                                @if ($total_weight > 0)
-                                                    @php
-                                                        $average = $total / $total_weight;
-                                                    @endphp
-                                                    @if ($average < 5)
-                                                        <td style="color:crimson">
+                                                @if ($total_subjects_scored == $all_exam)
+                                                    @if ($total_weight > 0)
+                                                        @php
+                                                            $average = number_format($total / $total_weight, 2);
+                                                        @endphp
+                                                        <td>
+                                                            <input type="hidden"
+                                                                name="exam_score[{{ $student->id }}][avage_score]"
+                                                                value="{{ $average }}">
                                                             {{ $average }}
                                                         </td>
-                                                    @else
-                                                        <td> {{ $average }}</td>
                                                     @endif
+                                                @else
+                                                    <td></td>
                                                 @endif
-
                                             </tr>
                                         @endforeach
                                     @endif
@@ -142,30 +151,6 @@
 
 
     </div>
-
-
-    <div class="modal fade contentmodal" id="myModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content doctor-profile">
-                <div class="modal-header pb-0 border-bottom-0  justify-content-end">
-
-                </div>
-                <div class="modal-body">
-                    <div class="delete-wrap text-center">
-                        <div class="del-icon">
-                            <i class="feather-check-circle text-success"></i>
-                        </div>
-                        <h2>Thêm điểm thành công</h2>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Đóng</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
 
 
     @push('js')

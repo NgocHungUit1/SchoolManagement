@@ -88,13 +88,14 @@ class ClassTimeTableController extends Controller
                     ->with('success', 'Class Time table successfully created ');
             } else {
                 return back()->withInput()
-                    ->with('warning', 'Time slot overlaps .');
+                    ->with('error', 'Time slot overlaps .');
             }
         }
 
         return redirect()->back()
             ->with('success', 'Class Time table successfully created ');
     }
+
 
     /**
      * Get subject list by class id.

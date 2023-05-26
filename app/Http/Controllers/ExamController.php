@@ -191,19 +191,67 @@ class ExamController extends Controller
         return view('admin.exam.score', $data);
     }
 
+    /**
+     * Display Exam score.
+     *
+     * @param Request $request Request object
+     *
+     * @return mixed Result of the update operation
+     */
     public function academic(Request $request)
     {
         $data['getRecord'] = ClassModel::getClass();
         return view('admin.exam.academic', $data);
     }
 
-    public function academicRecord(Request $request, $id)
+    /**
+     * AcademicRecord a class.
+     *
+     * @param int $id Class ID
+     *
+     * @return mixed Result of the AcademicRecord operation
+     */
+    public function academicRecord($id)
     {
+        $data['getClass'] = ClassModel::find($id);
         $data['getStudent'] = User::getStudentClassExam($id);
         $data['getSubject'] = ClassSubject::MySubject($id);
         $data['getScore'] = ExamScore::getAcademicRecord($id);
+
+        foreach ($data['getStudent'] as $student) {
+            $scored_subjects = []; // Khởi tạo một mảng tạm thời để lưu trữ các subject_id đã được chấm điểm của học sinh
+            $total_score = 0;
+            $total_subjects_scored = 0;
+
+            foreach ($data['getSubject'] as $subject) {
+                $scores = $data['getScore']->where('subject_id', $subject->subject_id)
+                    ->where('student_id', $student->id)
+                    ->first()->avage_score ?? '';
+                if (!empty($scores)) {
+                    $total_score += $scores;
+                    $total_subjects_scored++;
+
+                    // Lưu trữ subject_id của môn đã được chấm điểm vào mảng tạm thời
+                    $scored_subjects[] = $subject->subject_id;
+                }
+            }
+
+            // Tính giá trị $all_subjects dựa trên số lượng phần tử trong mảng getSubject
+            $all_subjects = count($data['getSubject']);
+
+            // Kiểm tra xem số môn đã được chấm điểm của học sinh có bằng tổng số môn hay không
+            if ($total_subjects_scored == $all_subjects) {
+                $average = number_format($total_score / $all_subjects, 2);
+                // Cập nhật giá trị avagescore của học sinh hiện tại trong bảng User
+                $user = User::find($student->id);
+                $user->score = $average;
+                $user->save();
+            }
+        }
+
         return view('admin.exam.academic_record', $data);
     }
+
 
     /**
      * Display exam Schedule
@@ -290,6 +338,22 @@ class ExamController extends Controller
 
         return view('teacher.my_exam', $data);
     }
+    /**
+     * AcademicRecord a class teacher.
+     *
+     * @param int $id Class ID
+     *
+     * @return mixed Result of the AcademicRecord operation
+     */
+    public function academicScoreClass($id)
+    {
+        $data['getClass'] = ClassModel::find($id);
+        $data['getStudent'] = User::getStudentClassExam($id);
+        $data['getSubject'] = ClassSubject::MySubject($id);
+        $data['getScore'] = ExamScore::getAcademicRecord($id);
+        return view('teacher.class_academic_score', $data);
+    }
+
 
     /**
      * My Exam score Teacher
@@ -322,14 +386,7 @@ class ExamController extends Controller
      */
     public function addScoreByTeacher(Request $request)
     {
-        $classId = $request->input('class_id');
-        $subjectId = $request->input('subject_id');
-        $examScores = $request->input('exam_score');
-
-        $this->examService->addScoresByTeacher($classId, $subjectId, $examScores);
-
-        return redirect()->back()
-            ->with('success', 'Exam scores have been saved.');
+        return $this->examService->insertScore($request);
     }
 
     /**

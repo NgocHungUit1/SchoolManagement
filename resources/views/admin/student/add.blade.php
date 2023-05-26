@@ -115,15 +115,6 @@
                                                     <div style="color:red">{{ $errors->first('class_id') }}</div>
                                                 </div>
                                             </div>
-
-                                            <div class="col-12 col-sm-4">
-                                                <div class="form-group local-forms">
-                                                    <label>Admission ID </label>
-                                                    <input class="form-control" type="text" name="admission_number"
-                                                        placeholder="Enter Admission ID">
-                                                    <div style="color:red">{{ $errors->first('admission_number') }}</div>
-                                                </div>
-                                            </div>
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
                                                     <label>Phone </label>

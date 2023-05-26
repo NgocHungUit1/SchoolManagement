@@ -88,47 +88,17 @@
                                         </tr>
                                     @endforeach
                                 @endif
+
+
                             </tbody>
                         </table>
 
 
                     </form>
                 </div>
-
-
-
-            </div>
-
-        </div>
-
-
-
-    </div>
-
-
-    <div class="modal fade contentmodal" id="myModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content doctor-profile">
-                <div class="modal-header pb-0 border-bottom-0  justify-content-end">
-
-                </div>
-                <div class="modal-body">
-                    <div class="delete-wrap text-center">
-                        <div class="del-icon">
-                            <i class="feather-check-circle text-success"></i>
-                        </div>
-                        <h2>Thêm điểm thành công</h2>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Đóng</button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
-
-
-
 
     @push('js')
         <script>

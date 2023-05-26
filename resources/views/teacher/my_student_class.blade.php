@@ -61,7 +61,7 @@
                                                 <td>
 
                                                     @if ($value->status == 0)
-                                                        <button style="width:85px" class="btn btn-success" type="button"><i
+                                                        <button class="btn btn-success" type="button"><i
                                                                 class="fe fe-check-verified"></i>
                                                             Active
                                                         </button>
@@ -76,7 +76,14 @@
                                                 <td> <a href="{{ url('teacher/my-student/view/' . $value->id) }}"
                                                         class="btn btn-sm bg-success-light me-2">
                                                         <i class="feather-eye"></i>
-                                                    </a></td>
+                                                    </a>
+                                                    <a style="color:aliceblue"
+                                                        href="{{ url('teacher/my-class/score/' . $value->id) }}"
+                                                        class="btn btn-primary">
+                                                        Grade report
+                                                    </a>
+                                                </td>
+
                                             </tr>
                                         @endforeach
 

@@ -98,47 +98,60 @@ class ClassTimeTableService
      */
     public function createClassTimeTable($request)
     {
-
-        ClassSubjectTimeTable::where('class_id', '=', $request->class_id)
+        $overlapping = false;
+        $existingRecords = ClassSubjectTimeTable::where(
+            'class_id',
+            '=',
+            $request->class_id
+        )
             ->where('subject_id', '=', $request->subject_id)
-            ->delete();
+            ->get();
+        if (count($existingRecords) > 0) {
+            $existingRecordsIds = $existingRecords->pluck('id')->toArray();
+            ClassSubjectTimeTable::destroy($existingRecordsIds);
+        }
+
         if (!empty($request->timetable)) {
             foreach ($request->timetable as $timetable) {
-                if (
-                    !empty($timetable['day_id'])
+                if (!empty($timetable['day_id'])
                     && !empty($timetable['start_time'])
                     && !empty($timetable['end_time'])
                     && !empty($timetable['room_number'])
                 ) {
-
-                    $overlapping = $this->_checkTimeSlotOverlap(
+                    $overlappingCount = $this->_checkTimeSlotOverlap(
                         $request->class_id,
                         $timetable
                     );
-
-                    if ($overlapping > 0) {
-                        return false;
+                    if ($overlappingCount > 0) {
+                        $overlapping = true;
+                    } else {
+                        $save = new ClassSubjectTimeTable(
+                            [
+                                'class_id' => $request->class_id,
+                                'subject_id' => $request->subject_id,
+                                'day_id' => $timetable['day_id'],
+                                'start_time' => $timetable['start_time'],
+                                'end_time' => $timetable['end_time'],
+                                'room_number' => $timetable['room_number'],
+                                'start_date' => $request->start_date,
+                                'end_date' => $request->end_date,
+                            ]
+                        );
+                        $save->save();
                     }
-                    $save = new ClassSubjectTimeTable(
-                        [
-                            'class_id' => $request->class_id,
-                            'subject_id' => $request->subject_id,
-                            'day_id' => $timetable['day_id'],
-                            'start_time' => $timetable['start_time'],
-                            'end_time' => $timetable['end_time'],
-                            'room_number' => $timetable['room_number'],
-                            'start_date' => $request->start_date,
-                            'end_date' => $request->end_date,
-                        ]
-                    );
-                    $save->save();
                 }
             }
         }
 
-
-        return true;
+        if ($overlapping) {
+            return false;
+        } else {
+            return true;
+        }
     }
+
+
+
 
     /**
      * Check Time Slot Overlap.

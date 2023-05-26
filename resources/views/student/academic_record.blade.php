@@ -105,10 +105,11 @@
                                                     @endphp
                                                     @if ($average < 5)
                                                         <td style="color:crimson">
-                                                            {{ $average }}
+                                                            {{ !empty($average) ? number_format(floatval($average), 2) : '' }}
                                                         </td>
                                                     @else
-                                                        <td> {{ $average }}</td>
+                                                        <td> {{ !empty($average) ? number_format(floatval($average), 2) : '' }}
+                                                        </td>
                                                     @endif
                                                 @endif
                                             </tr>

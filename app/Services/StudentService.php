@@ -67,6 +67,7 @@ class StudentService
     public function createStudent(InsertStudentRequest $request)
     {
         $data = $request->validated();
+        $data['admission_number'] = 'Student -' . substr(md5(microtime()), rand(0, 26), 5);
         $data['date_of_birth'] = Carbon::createFromFormat(
             'd-m-Y',
             $request->date_of_birth

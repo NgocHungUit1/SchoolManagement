@@ -25,7 +25,7 @@ class InsertStudentRequest extends FormRequest
     {
         return [
             'email' => 'required|email|unique:users',
-            'admission_number' => 'required|unique:users',
+            // 'admission_number' => 'required|unique:users',
             'name' => 'required',
             'mobile_number' => 'required',
             'class_id' => 'required',
@@ -35,6 +35,5 @@ class InsertStudentRequest extends FormRequest
             'password' => 'required',
             'address' => 'required',
         ];
-
     }
 }

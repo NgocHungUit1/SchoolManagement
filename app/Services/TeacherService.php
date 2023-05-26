@@ -45,6 +45,7 @@ class TeacherService
     public function createTeacher(TeacherRequest $request)
     {
         $data = $request->validated();
+        $data['teacher_id'] = 'Teacher' . substr(md5(microtime()), rand(0, 26), 5);
         $data['date_of_birth'] = Carbon::createFromFormat(
             'd-m-Y',
             $request->date_of_birth

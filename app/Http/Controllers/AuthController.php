@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 /**
@@ -76,8 +77,8 @@ class AuthController extends Controller
                 'password' => $request->password
             ],
             $remember
-        )
-        ) {
+        )) {
+            Session::put('user', Auth::user());
             // Redirect to the respective dashboard
             if (Auth::user()->user_type == 1) {
                 return redirect('admin/dashboard')

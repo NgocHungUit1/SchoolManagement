@@ -26,7 +26,7 @@ class TeacherControllerTest extends TestCase
         // Gửi request không có dữ liệu
         $response = $this->withoutMiddleware()->post('/admin/teacher/add', []);
 
-        $response->assertSessionHasErrors(['name', 'teacher_id', 'joining_date', 'qualification', 'experience', 'address', 'gender', 'date_of_birth', 'mobile_number', 'email', 'password']);
+        $response->assertSessionHasErrors(['name', 'joining_date', 'qualification', 'experience', 'address', 'gender', 'date_of_birth', 'mobile_number', 'email', 'password']);
     }
 
     public function testCreateTeacherWithUserTypeTwo()

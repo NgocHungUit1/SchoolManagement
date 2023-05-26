@@ -155,6 +155,7 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::get('teacher/exam_score', [ExamController::class, 'examScoreTeacher']);
     Route::get('teacher/my-student', [TeacherController::class, 'myStudent']);
     Route::get('teacher/my-student/view/{id}', [ClassController::class, 'view']);
+    Route::get('teacher/my-class/score/{id}', [ExamController::class, 'academicScoreClass']);
     Route::get('teacher/get-student', [TeacherController::class, 'getStudent']);
     Route::get('teacher/get_subject', [ClassTeacherController::class, 'getSubject']);
     Route::get('teacher/get_class', [TeacherController::class, 'getClass']);

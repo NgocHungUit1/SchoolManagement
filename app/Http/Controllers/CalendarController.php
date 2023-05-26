@@ -13,6 +13,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClassTeacher;
 use Illuminate\Http\Request;
 use App\Services\CalendarService;
 use Illuminate\Support\Facades\Auth;

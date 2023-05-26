@@ -53,14 +53,14 @@
                                             <div class="col-12">
                                                 <h5 class="form-title"><span>Basic Details</span></h5>
                                             </div>
-                                            <div class="col-12 col-sm-4">
+                                            {{-- <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
                                                     <label>Teacher ID <span class="login-danger">*</span></label>
                                                     <input type="text" name="teacher_id" class="form-control"
                                                         placeholder="Teacher ID">
                                                     <div style="color:red">{{ $errors->first('teacher_id') }}</div>
                                                 </div>
-                                            </div>
+                                            </div> --}}
                                             <div class="col-12 col-sm-4">
                                                 <div class="form-group local-forms">
                                                     <label>Name <span class="login-danger">*</span></label>

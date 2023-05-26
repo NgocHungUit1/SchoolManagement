@@ -26,7 +26,7 @@ class StudentControllerTest extends TestCase
         // Gửi request không có dữ liệu
         $response = $this->withoutMiddleware()->post('/admin/student/add', []);
 
-        $response->assertSessionHasErrors(['name', 'admission_number', 'roll_number', 'class_id', 'gender', 'date_of_birth', 'mobile_number', 'email', 'password']);
+        $response->assertSessionHasErrors(['name', 'roll_number', 'class_id', 'gender', 'date_of_birth', 'mobile_number', 'email', 'password']);
     }
 
     public function testCreateStudentWithUserTypeThree()
