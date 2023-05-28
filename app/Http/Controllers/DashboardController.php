@@ -51,7 +51,7 @@ class DashboardController extends Controller
         $data['getClass'] = ClassModel::getRecord();
         $data['getSubject'] = Subject::getSubject();
 
-        $user_ip_address = $request->ip();
+
         $dauthangnay = Carbon::now('Asia/Ho_Chi_Minh')
             ->startOfMonth()->toDateString();
         $dauthangtruoc = Carbon::now('Asia/Ho_Chi_Minh')
@@ -84,18 +84,26 @@ class DashboardController extends Controller
 
         $data['visitor_thisyear_count'] = $visitor_thisyear->count();
         //current online
-        $visitor_current = Visitor::where('ip_address', $user_ip_address)->get();
-        $visitor_count = $visitor_current->count();
-        $data['visitor_counts'] = $visitor_current->count();
-        if ($visitor_count < 1) {
+        $user_ip_address = $request->ip();
+        $visitor = Visitor::where('ip_address', $user_ip_address)->first();
+        if ($visitor) {
+            // update last activity time
+            $visitor->date_visitor = Carbon::now();
+            $visitor->save();
+        } else {
+            // create new visitor
             $visitor = new Visitor();
             $visitor->ip_address = $user_ip_address;
-            $visitor->date_visitor = Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
+            $visitor->date_visitor = Carbon::now();
             $visitor->save();
         }
+
         //total visitor
         $visitor = Visitor::all();
         $data['visitor_total'] = $visitor->count();
+
+        $online_users = Visitor::where('date_visitor', '>', Carbon::now()->subMinutes(5))->get();
+        $data['visitor_counts'] = $online_users->count();
 
         if (Auth::user()->user_type == 1) {
             return view('admin/dashboard', $data);
