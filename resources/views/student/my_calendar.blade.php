@@ -24,11 +24,9 @@
                                         <div class="col-lg-2">
                                             <div class="form-group">
                                                 <button type="submit" name="semester_id" value="1"
-                                                    class="btn btn-primary {{ Request::get('semester_id') == 1 ? 'active' : '' }}">Học
-                                                    kì 1</button>
+                                                    class="btn btn-primary {{ Request::get('semester_id') == 1 ? 'active' : '' }}">HK1</button>
                                                 <button type="submit" name="semester_id" value="2"
-                                                    class="btn btn-primary {{ Request::get('semester_id') == 2 ? 'active' : '' }}">Học
-                                                    kì 2</button>
+                                                    class="btn btn-primary {{ Request::get('semester_id') == 2 ? 'active' : '' }}">HK2</button>
                                             </div>
                                         </div>
 

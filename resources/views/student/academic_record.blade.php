@@ -57,11 +57,9 @@
                                                 <div class="col-lg-2">
                                                     <div class="form-group">
                                                         <button type="submit" name="semester_id" value="1"
-                                                            class="btn btn-primary {{ Request::get('semester_id') == 1 ? 'active' : '' }}">Học
-                                                            kì 1</button>
+                                                            class="btn btn-primary {{ Request::get('semester_id') == 1 ? 'active' : '' }}">HK1</button>
                                                         <button type="submit" name="semester_id" value="2"
-                                                            class="btn btn-primary {{ Request::get('semester_id') == 2 ? 'active' : '' }}">Học
-                                                            kì 2</button>
+                                                            class="btn btn-primary {{ Request::get('semester_id') == 2 ? 'active' : '' }}">HK2</button>
 
                                                     </div>
 
@@ -155,7 +153,7 @@
 
                                         @if ($average_score_count === $total_subjects && $average_score_count > 0)
                                             <tr>
-                                                <td>
+                                                <td style="color: blue">
                                                     <strong>Average:
                                                         {{ number_format(round($total_score / $total_subjects, 2), 2) }}</strong>
                                                 </td>
@@ -164,11 +162,11 @@
                                         @endif
                                         @foreach ($StudentScoreSemester as $value)
                                             <tr>
-                                                <td>
+                                                <td style="color: red">
                                                     <strong>Average year:
                                                         {{ $value->avage_score }}</strong>
                                                 </td>
-                                                <td>
+                                                <td style="color: red">
                                                     <strong>Rank:
                                                         {{ $value->rank }}</strong>
                                                 </td>

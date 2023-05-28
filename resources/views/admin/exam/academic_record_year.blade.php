@@ -51,9 +51,9 @@
                             <thead class="student-thread">
                                 <tr>
                                     <th>Student Name</th>
-                                    <th>Average Score 1</th>
-                                    <th>Average Score 2</th>
-                                    <th>Average Score CN</th>
+                                    <th>HK1</th>
+                                    <th>HK2</th>
+                                    <th>CN</th>
                                     <th>Classification</th>
                                 </tr>
                             </thead>
