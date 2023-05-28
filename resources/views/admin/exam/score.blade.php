@@ -49,6 +49,17 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="form-group">
+                                    <select class="form-control " name="semester_id">
+                                        @foreach ($getExamSemester as $value)
+                                            <option {{ Request::get('semester_id') == $value->id ? 'selected' : '' }}
+                                                value="{{ $value->id }}">{{ $value->name }}</option>
+                                        @endforeach
+
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-lg-2">
                                 <div class="search-student-btn">
                                     <button type="submit" class="btn btn-primary">Search</button>
@@ -61,15 +72,16 @@
                         <h3 class="page-title">Mark Register</h3>
 
                         <form action="" method="post">
-
                             @csrf
-
                             <input type="hidden" name="class_id" value="{{ Request::get('class_id') }}">
                             <input type="hidden" name="subject_id" value="{{ Request::get('subject_id') }}">
-                            <table class="table border-0 star-student  table-striped">
+                            <input type="hidden" name="semester_id" value="{{ Request::get('semester_id') }}">
+                            <table class="table border-0 star-student datatable table-striped">
+                                <br>
                                 <div class="col-md-12 text-right">
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                 </div>
+                                <br>
                                 <thead class="student-thread">
                                     <tr>
                                         <th>Student Name</th>
@@ -96,7 +108,7 @@
                                                 @endphp
                                                 @foreach ($getExam as $exam)
                                                     @php
-                                                        $getScore = $exam->getScore(Request::get('class_id'), $student->id, $exam->exam_id, Request::get('subject_id'));
+                                                        $getScore = $exam->getScoreSemester(Request::get('class_id'), $student->id, $exam->exam_id, Request::get('subject_id'), Request::get('semester_id'));
                                                         if (!empty($getScore)) {
                                                             $subtotal = $getScore->score * $exam->percent;
                                                             $total += $subtotal;

@@ -20,18 +20,24 @@ class ClassSubjectTimeTable extends Model
         'start_date',
         'end_date',
         'created_by',
+        'semester_id'
     ];
 
-    public static function getRecord($class_id, $subject_id, $day_id)
+    public static function getRecord($class_id, $subject_id, $day_id, $semester_id)
     {
-        return self::where('class_id', '=', $class_id)->where('subject_id', '=', $subject_id)->where('day_id', '=', $day_id)->first();
+        return self::where('class_id', '=', $class_id)
+            ->where('subject_id', '=', $subject_id)
+            ->where('day_id', '=', $day_id)
+            ->where('semester_id', '=', $semester_id)
+            ->first();
     }
 
-    public static function getDate($class_id, $subject_id)
+    public static function getDate($class_id, $subject_id, $semester_id)
     {
         return self::select('start_date', 'end_date')
-        ->where('class_id', '=', $class_id)
-        ->where('subject_id', '=', $subject_id)
-        ->first();
+            ->where('class_id', '=', $class_id)
+            ->where('subject_id', '=', $subject_id)
+            ->where('semester_id', '=', $semester_id)
+            ->first();
     }
 }

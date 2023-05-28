@@ -72,10 +72,16 @@
                                                     @endif
 
                                                 </td>
-                                                <td> <a href="{{ url('admin/academic_record/' . $value->id) }}"
-                                                        class="btn btn-sm bg-success-light me-2">
-                                                        <i class="feather-eye"></i>
-                                                    </a></td>
+                                                <td>
+                                                    <a style="color: white"
+                                                        href="{{ url('admin/academic_record/' . $value->id . '/' . ($value->semester_id = 1)) }}"
+                                                        class="btn btn-primary ">HK1
+                                                    </a>
+                                                    <a style="color: white"href="{{ url('admin/academic_record/' . $value->id . '/' . ($value->semester_id = 2)) }}"
+                                                        class="btn btn-primary ">HK2
+                                                    </a>
+                                                </td>
+
                                             </tr>
                                         @endforeach
 

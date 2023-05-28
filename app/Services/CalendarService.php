@@ -18,6 +18,7 @@ use App\Models\ClassSubjectTimeTable;
 use App\Models\ClassTeacher;
 use App\Models\ExamSchedule;
 use App\Models\Week;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -40,16 +41,18 @@ class CalendarService
      *
      * @return \Illuminate\View\View
      */
-    public function getExamTimeTable($class_id)
+    public function getExamTimeTable($request, $class_id)
     {
         $getExam = ExamSchedule::getExam($class_id);
+        $semester_id = $request->semester_id;
         $result = array();
         foreach ($getExam as $value) {
             $dataE = array();
             $dataE['name'] = $value->exam_name;
             $getExamTimeTable = ExamSchedule::getExamTimeTable(
                 $value->exam_id,
-                $class_id
+                $class_id,
+                $semester_id
             );
             $resultS = array();
             foreach ($getExamTimeTable as $valueS) {
@@ -76,9 +79,10 @@ class CalendarService
      *
      * @return \Illuminate\View\View
      */
-    public function getTimeTable($class_id)
+    public function getTimeTable($request, $class_id)
     {
         $result = array();
+        $semester_id = $request->semester_id;
         $getRecord = ClassSubject::getMySubjectTeacher($class_id);
         foreach ($getRecord as $value) {
             $dataS['name'] = $value->subject_name;
@@ -92,7 +96,8 @@ class CalendarService
                 $ClassSubject = ClassSubjectTimeTable::getRecord(
                     $value->class_id,
                     $value->subject_id,
-                    $valueDay->id
+                    $valueDay->id,
+                    $semester_id
                 );
                 if (!empty($ClassSubject)) {
                     $dataDay['start_time'] = $ClassSubject->start_time;

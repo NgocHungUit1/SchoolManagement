@@ -14,8 +14,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassTeacher;
+use App\Models\Semester;
 use Illuminate\Http\Request;
 use App\Services\CalendarService;
+use App\Services\ExamService;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -36,6 +38,7 @@ class CalendarController extends Controller
      * @var CalendarService
      */
     protected $calendarService;
+    protected $examService;
 
     /**
      * CalendarController constructor.
@@ -44,9 +47,10 @@ class CalendarController extends Controller
      *
      * @return void
      */
-    public function __construct(CalendarService $calendarService)
+    public function __construct(CalendarService $calendarService, ExamService $examService)
     {
         $this->calendarService = $calendarService;
+        $this->examService = $examService;
     }
 
     /**
@@ -54,12 +58,13 @@ class CalendarController extends Controller
      *
      * @return mixed Calendar
      */
-    public function myCalendar()
+    public function myCalendar(Request $request)
     {
+        $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
         $data['getTimeTable'] = $this->calendarService
-            ->getTimeTable(Auth::user()->class_id);
+            ->getTimeTable($request, Auth::user()->class_id);
         $data['getExamTimeTable'] = $this->calendarService
-            ->getExamTimeTable(Auth::user()->class_id);
+            ->getExamTimeTable($request, Auth::user()->class_id);
         return view('student.my_calendar', $data)
             ->with('success', 'My Time Table Student ');
     }
@@ -69,10 +74,13 @@ class CalendarController extends Controller
      *
      * @return mixed Calendar
      */
-    public function myTeacherCalendar()
+    public function myTeacherCalendar(Request $request)
     {
         $teacher_id = Auth::user()->id;
-        $data['getCalendarTeacher'] = ClassTeacher::getCalendarTeacher($teacher_id);
+        $semester_id = $request->semester_id;
+        $data['getCalendarTeacher'] = ClassTeacher::getCalendarTeacher($teacher_id, $semester_id);
+        $data['getExamCalendar'] = $this->examService->getMyExamTeacher($request, $teacher_id);
+        // dd($data);
         return view('teacher.my_calendar', $data)
             ->with('success', 'My Time Table Teacher ');
     }

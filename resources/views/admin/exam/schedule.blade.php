@@ -71,6 +71,17 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="form-group">
+                                    <select class="form-control " name="semester_id">
+                                        @foreach ($getExamSemester as $value)
+                                            <option {{ Request::get('semester_id') == $value->id ? 'selected' : '' }}
+                                                value="{{ $value->id }}">{{ $value->name }}</option>
+                                        @endforeach
+
+                                    </select>
+                                </div>
+                            </div>
 
                             <div class="col-lg-2">
                                 <div class="search-student-btn">
@@ -84,6 +95,7 @@
                         @csrf
                         <input type="hidden" name="exam_id" value="{{ Request::get('exam_id') }}">
                         <input type="hidden" name="class_id" value="{{ Request::get('class_id') }}">
+                        <input type="hidden" name="semester_id" value="{{ Request::get('semester_id') }}">
                         <div class="table-responsive" id="user">
                             <h3 class="page-title">Exam Schedule</h3>
                             <table class="table border-0 star-student  table-striped">
@@ -137,8 +149,10 @@
                                             </td>
                                             <td>
                                                 <a style="color:white" class="btn btn-success" data-bs-toggle="modal"
-                                                    data-bs-target="#studentUser" data-class-id="{{ $value['class_id'] }}"
-                                                    data-subject-id="{{ $value['subject_id'] }}">
+                                                    data-bs-target="#studentUser"
+                                                    data-class-id="{{ $value['class_id'] }}"
+                                                    data-subject-id="{{ $value['subject_id'] }}"
+                                                    data-semester-id="{{ $value['semester_id'] }}">
                                                     Class Subject Time Table
                                                 </a>
 
@@ -234,8 +248,10 @@
             $('#studentUser').on('show.bs.modal', function(e) {
                 var class_id = $(e.relatedTarget).data('class-id');
                 var subject_id = $(e.relatedTarget).data('subject-id');
+                var semester_id = $(e.relatedTarget).data('semester-id');
                 $.ajax({
-                    url: '/admin/my-subject-class/timetable/' + class_id + '/' + subject_id,
+                    url: '/admin/my-subject-class/timetable/' + class_id + '/' + subject_id + '/' +
+                        semester_id,
                     type: 'GET',
                     dataType: 'json',
                     success: function(data) {

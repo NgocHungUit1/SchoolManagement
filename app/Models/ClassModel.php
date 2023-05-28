@@ -42,6 +42,16 @@ class ClassModel extends Model
         return $return;
     }
 
+    public static function getClassAcademic()
+    {
+        $return = ClassModel::select('class.*', 'exam_score.semester_id as semester_id ')
+            ->join('exam_score', 'exam_score.class_id', '=', 'class.id')
+            ->where('class.is_delete', '=', 0)
+            ->where('class.status', '=', 0)
+            ->orderBy('class.name', 'asc')->first()->get();
+        return $return;
+    }
+
     public static function getStudent($id)
     {
         $return = User::select('users.*', 'users.name as student_name', 'class.name as class_name')
@@ -96,5 +106,4 @@ class ClassModel extends Model
             ->get();
         return $return;
     }
-
 }

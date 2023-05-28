@@ -15,11 +15,6 @@
             </a>
         @endif
     </div>
-
-
-
-
-
     <ul class="nav user-menu">
         <li class="nav-item dropdown has-arrow new-user-menus">
             @if (Auth::user()->user_type == 1)
@@ -173,14 +168,15 @@
                     </li>
                 @elseif (Auth::user()->user_type == 2)
                     <li class=" {{ set_active(['teacher/my-calendar']) }}"><a
-                            href="{{ url('teacher/my-calendar') }}"
+                            href="{{ url('teacher/my-calendar/?semester_id=1') }}"
                             class=" {{ set_active(['teacher/my-calendar']) }}">
                             <i class="far fa-calendar"></i>
                             <span>
                                 My Calendar</span></a>
                     </li>
-                    <li class=" {{ set_active(['teacher/my_exam']) }}"><a href="{{ url('teacher/my_exam') }}"
-                            class=" {{ set_active(['teacher/my_exam']) }}">
+                    <li class=" {{ set_active(['teacher/my_exam']) }}"><a
+                            href="{{ url('teacher/my_exam/?semester_id=1') }}"
+                            class=" {{ set_active(['teacher/my_exam/']) }}">
                             <i class="fas fa-clipboard-list"></i> <span>
                                 Exam</span></a>
                     </li>
@@ -205,7 +201,7 @@
                     </li>
                 @elseif (Auth::user()->user_type == 3)
                     <li class=" {{ set_active(['student/my-calendar']) }}"><a
-                            href="{{ url('student/my-calendar') }}"
+                            href="{{ url('student/my-calendar/?semester_id=1') }}"
                             class=" {{ set_active(['student/my-calendar']) }}">
                             <i class="far fa-calendar"></i>
                             </i> <span>
@@ -217,7 +213,8 @@
                             </i> <span>
                                 My Class</span></a>
                     </li>
-                    <li class=" {{ set_active(['student/my-exam']) }}"><a href="{{ url('student/my-exam') }}"
+                    <li class=" {{ set_active(['student/my-exam']) }}"><a
+                            href="{{ url('student/my-exam/?semester_id=1') }}"
                             class=" {{ set_active(['student/my-exam']) }}">
                             <i class="far fa-file-alt"></i>
                             </i> <span>
@@ -229,7 +226,8 @@
                             </i> <span>
                                 Subject List</span></a>
                     </li>
-                    <li class=" {{ set_active(['student/my-score']) }}"><a href="{{ url('student/my-score') }}"
+                    <li class=" {{ set_active(['student/my-score']) }}"><a
+                            href="{{ url('student/my-score/?semester_id=1') }}"
                             class=" {{ set_active(['student/my-score']) }}">
                             <i class="fas fa-book-reader"></i> <span>
                                 Academic Record</span></a>

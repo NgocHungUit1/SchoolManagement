@@ -20,10 +20,13 @@ use App\Models\ClassTeacher;
 use App\Models\Exam;
 use App\Models\ExamSchedule;
 use App\Models\ExamScore;
+use App\Models\Semester;
+use App\Models\StudentScoreSemester;
 use App\Models\User;
 use App\Services\ExamService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 
 /**
  * ExamController
@@ -179,12 +182,13 @@ class ExamController extends Controller
      */
     public function examScore(Request $request)
     {
+        $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
         $data['getClass'] = ClassModel::getClass();
         if (!empty($request->class_id)) {
             $data['getSubject'] = ClassSubject::MySubject($request->class_id);
         }
 
-        if (!empty($request->subject_id) && !empty($request->class_id)) {
+        if (!empty($request->subject_id) && !empty($request->class_id) && !empty($request->semester_id)) {
             $data['getExam'] = ExamSchedule::getExam($request->class_id);
             $data['getStudent'] = User::getStudentClassExam($request->class_id);
         }
@@ -200,7 +204,8 @@ class ExamController extends Controller
      */
     public function academic(Request $request)
     {
-        $data['getRecord'] = ClassModel::getClass();
+        $data['getRecord'] = ClassModel::getClassAcademic();
+
         return view('admin.exam.academic', $data);
     }
 
@@ -211,45 +216,33 @@ class ExamController extends Controller
      *
      * @return mixed Result of the AcademicRecord operation
      */
-    public function academicRecord($id)
+    public function academicRecord($id, $semester_id)
+    {
+        $data = $this->examService->getAcademicData($id, $semester_id);
+
+        if (Auth::user()->user_type == 1) {
+            return view('admin.exam.academic_record', $data);
+        } elseif (Auth::user()->user_type == 2) {
+            return view('teacher.academic_record', $data);
+        }
+
+        return view('admin.exam.academic_record', $data);
+    }
+
+    public function academicRecords($id)
     {
         $data['getClass'] = ClassModel::find($id);
         $data['getStudent'] = User::getStudentClassExam($id);
         $data['getSubject'] = ClassSubject::MySubject($id);
-        $data['getScore'] = ExamScore::getAcademicRecord($id);
+        $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
+        $data['getRecord'] = ClassModel::getClassAcademic();
+        $studentAverages = $this->examService->getAverages($data['getStudent']);
 
-        foreach ($data['getStudent'] as $student) {
-            $scored_subjects = []; // Khởi tạo một mảng tạm thời để lưu trữ các subject_id đã được chấm điểm của học sinh
-            $total_score = 0;
-            $total_subjects_scored = 0;
-
-            foreach ($data['getSubject'] as $subject) {
-                $scores = $data['getScore']->where('subject_id', $subject->subject_id)
-                    ->where('student_id', $student->id)
-                    ->first()->avage_score ?? '';
-                if (!empty($scores)) {
-                    $total_score += $scores;
-                    $total_subjects_scored++;
-
-                    // Lưu trữ subject_id của môn đã được chấm điểm vào mảng tạm thời
-                    $scored_subjects[] = $subject->subject_id;
-                }
-            }
-
-            // Tính giá trị $all_subjects dựa trên số lượng phần tử trong mảng getSubject
-            $all_subjects = count($data['getSubject']);
-
-            // Kiểm tra xem số môn đã được chấm điểm của học sinh có bằng tổng số môn hay không
-            if ($total_subjects_scored == $all_subjects) {
-                $average = number_format($total_score / $all_subjects, 2);
-                // Cập nhật giá trị avagescore của học sinh hiện tại trong bảng User
-                $user = User::find($student->id);
-                $user->score = $average;
-                $user->save();
-            }
+        if (Auth::user()->user_type == 1) {
+            return view('admin.exam.academic_record_year', $data, compact('studentAverages'));
+        } elseif (Auth::user()->user_type == 2) {
+            return view('teacher.academic_record_year', $data, compact('studentAverages'));
         }
-
-        return view('admin.exam.academic_record', $data);
     }
 
 
@@ -264,7 +257,8 @@ class ExamController extends Controller
     {
         $result = $this->examService->getExamSchedule(
             $request->exam_id,
-            $request->class_id
+            $request->class_id,
+            $request->semester_id,
         );
 
         $data = [
@@ -272,6 +266,7 @@ class ExamController extends Controller
             'getClassS' => ClassModel::find($request->class_id),
             'getExam' => Exam::getExam(),
             'getRecord' => $result,
+            'getExamSemester' => Semester::whereIn('id', [1, 2])->get(),
         ];
 
         return view('admin.exam.schedule', $data)
@@ -301,7 +296,8 @@ class ExamController extends Controller
     public function myExam(Request $request)
     {
         $class_id = Auth::user()->class_id;
-        $data['getRecord'] = $this->examService->getMyExam($class_id);
+        $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
+        $data['getRecord'] = $this->examService->getMyExam($request, $class_id);
 
         return view('student.my_exam', $data);
     }
@@ -311,18 +307,23 @@ class ExamController extends Controller
      *
      * @return mixed Result of the update operation
      */
-    public function scoreStudent()
+    public function scoreStudent(Request $request)
     {
         $class_id = Auth::user()->class_id;
+        $semester_id = $request->semester_id;
         $data['getRecord'] = ExamScore::getRecordStudent(
             $class_id,
-            Auth::user()->id
+            Auth::user()->id,
+            $semester_id
         );
         $data['getExam'] = ExamSchedule::getExam($class_id);
         $data['getSubject'] = ClassSubject::getMySubjectTeacher(
             Auth::user()->class_id
         );
-
+        $data['StudentScoreSemester'] = StudentScoreSemester::where(
+            'student_id',
+            Auth::user()->id
+        )->where('semester_id', 3)->get();
         return view('student.academic_record', $data);
     }
 
@@ -331,10 +332,10 @@ class ExamController extends Controller
      *
      * @return mixed Result of the update operation
      */
-    public function myExamTeacher()
+    public function myExamTeacher(Request $request)
     {
         $user_id = Auth::user()->id;
-        $data['getRecord'] = $this->examService->getMyExamTeacher($user_id);
+        $data['getRecord'] = $this->examService->getMyExamTeacher($request, $user_id);
 
         return view('teacher.my_exam', $data);
     }
@@ -345,12 +346,12 @@ class ExamController extends Controller
      *
      * @return mixed Result of the AcademicRecord operation
      */
-    public function academicScoreClass($id)
+    public function academicScoreClass($id, $semester_id)
     {
         $data['getClass'] = ClassModel::find($id);
         $data['getStudent'] = User::getStudentClassExam($id);
         $data['getSubject'] = ClassSubject::MySubject($id);
-        $data['getScore'] = ExamScore::getAcademicRecord($id);
+        $data['getScore'] = ExamScore::getAcademicRecords($id, $semester_id);
         return view('teacher.class_academic_score', $data);
     }
 
@@ -364,9 +365,21 @@ class ExamController extends Controller
      */
     public function examScoreTeacher(Request $request)
     {
+        $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
         $data['getClass'] = ClassModel::getStudentTeacher(Auth::user()->id);
+        $class_id = $request->input('class_id');
+        // Kiểm tra xem môn học được chọn có thuộc danh sách các môn học được phân công cho giáo viên hay không
+        $assigned_subjects = ClassTeacher::getAssignedSubjects(Auth::user()->id, $class_id);
+        $subject_id = $request->input('subject_id');
+        if (!empty($subject_id) && !in_array($subject_id, $assigned_subjects)) {
+            return redirect(URL::previous())->with('error', 'Unauthorized access ');
+        }
+
         if (!empty($request->class_id)) {
-            $data['getSubject'] = ClassSubject::MySubject($request->class_id);
+            $data['getSubject'] =  ClassTeacher::getSubjectExam(
+                $request->class_id,
+                Auth::user()->id
+            )->whereIn('subject_id', $assigned_subjects); // Thêm điều kiện kiểm tra môn học
         }
 
         if (!empty($request->subject_id) && !empty($request->class_id)) {
@@ -376,6 +389,7 @@ class ExamController extends Controller
 
         return view('teacher.exam_score', $data);
     }
+
 
     /**
      * ADd Exam score by Teacher

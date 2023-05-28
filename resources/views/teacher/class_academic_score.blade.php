@@ -3,8 +3,8 @@
     <div class="main-wrapper">
         <div class="page-wrapper">
             <div class="content container-fluid">
-
                 <div class="page-header">
+
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="page-sub-header">
@@ -15,13 +15,37 @@
                                 </ul>
                             </div>
                         </div>
+                        <div class="student-group-form">
+                            <form action="" method="get">
+                                <div class="row">
+                                    @include('_message')
+                                    <div class="col-lg-2">
+                                        <div class="form-group">
+                                            <a style="color: white"
+                                                href="{{ url('teacher/my-class/score/' . $getClass->id . '/' . '1') }}"
+                                                class="btn btn-primary ">HK1
+                                            </a>
+                                            <a style="color: white"
+                                                href="{{ url('teacher/my-class/score/' . $getClass->id . '/' . '2') }}"
+                                                class="btn btn-primary ">HK2
+                                            </a>
+                                            <a style="color: white"
+                                                href="{{ url('teacher/academic_record_year/' . $getClass->id) }}"
+                                                class="btn btn-primary ">Summary
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 <div class="table-responsive" id="user">
                     <h3 class="page-title">Class {{ $getClass->name }}</h3>
                     <form action="" method="post">
                         @csrf
-                        <table class="table border-0 star-student  table-striped">
+                        <table class="table border-0 star-student datatable table-striped">
 
                             <thead class="student-thread">
                                 <tr>
@@ -53,7 +77,7 @@
                                                         $getScore
                                                             ->where('subject_id', $subject->subject_id)
                                                             ->where('student_id', $student->id)
-                                                            ->first()->avage_score ?? '';
+                                                            ->first()->score ?? '';
                                                     if (!empty($scores)) {
                                                         $total_score += $scores;
                                                         $total_subjects_scored++;
@@ -88,8 +112,6 @@
                                         </tr>
                                     @endforeach
                                 @endif
-
-
                             </tbody>
                         </table>
 
@@ -97,8 +119,37 @@
                     </form>
                 </div>
             </div>
+
+        </div>
+
+
+
+    </div>
+
+
+    <div class="modal fade contentmodal" id="myModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content doctor-profile">
+                <div class="modal-header pb-0 border-bottom-0  justify-content-end">
+
+                </div>
+                <div class="modal-body">
+                    <div class="delete-wrap text-center">
+                        <div class="del-icon">
+                            <i class="feather-check-circle text-success"></i>
+                        </div>
+                        <h2>Thêm điểm thành công</h2>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+
+
 
     @push('js')
         <script>
@@ -145,6 +196,7 @@
                 });
             });
         </script>
+
 
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

@@ -30,12 +30,12 @@ class ClassTeacher extends Model
 
     public function class()
     {
-        return $this->belongsTo(ClassModel::class,'class_id'); // Mối quan hệ 1-nhiều (Belongs To) với bảng Class (Laravel sẽ tự đoán khóa ngoại là class_id)
+        return $this->belongsTo(ClassModel::class, 'class_id'); // Mối quan hệ 1-nhiều (Belongs To) với bảng Class (Laravel sẽ tự đoán khóa ngoại là class_id)
     }
 
     public function subject()
     {
-        return $this->belongsTo(Subject::class,'subject_id'); // Mối quan hệ 1-nhiều (Belongs To) với bảng Subject (Laravel sẽ tự đoán khóa ngoại là subject_id)
+        return $this->belongsTo(Subject::class, 'subject_id'); // Mối quan hệ 1-nhiều (Belongs To) với bảng Subject (Laravel sẽ tự đoán khóa ngoại là subject_id)
     }
 
     public function createdBy()
@@ -193,7 +193,7 @@ class ClassTeacher extends Model
             ->get();
     }
 
-    public static function getCalendarTeacher($teacher_id)
+    public static function getCalendarTeacher($teacher_id, $semester_id)
     {
         return ClassTeacher::select(
             'class_subject_timetable.*',
@@ -207,9 +207,18 @@ class ClassTeacher extends Model
             ->join('subject', 'subject.id', '=', 'teacher_class.subject_id')
             ->join('class_subject_timetable', 'class_subject_timetable.subject_id', '=', 'subject.id')
             ->join('day_of_week', 'day_of_week.id', '=', 'class_subject_timetable.day_id')
+            ->where('class_subject_timetable.semester_id', '=', $semester_id)
             ->where('teacher_class.is_delete', '=', 0)
             ->where('teacher_class.status', '=', 0)
             ->where('teacher_class.teacher_id', '=', $teacher_id)
             ->get();
+    }
+
+    public static function getAssignedSubjects($teacher_id, $class_id)
+    {
+        return self::where('teacher_id', $teacher_id)
+            ->where('class_id', $class_id)
+            ->pluck('subject_id')
+            ->toArray();
     }
 }

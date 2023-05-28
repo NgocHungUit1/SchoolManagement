@@ -71,6 +71,17 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="form-group">
+                                    <select class="form-control " name="semester_id">
+                                        @foreach ($getExamSemester as $value)
+                                            <option {{ Request::get('semester_id') == $value->id ? 'selected' : '' }}
+                                                value="{{ $value->id }}">{{ $value->name }}</option>
+                                        @endforeach
+
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-lg-2">
                                 <div class="search-student-btn">
                                     <button type="submit" class="btn btn-primary">Search</button>
@@ -83,8 +94,7 @@
                         @csrf
                         <input type="hidden" name="class_id" value="{{ Request::get('class_id') }}">
                         <input type="hidden" name="subject_id" value="{{ Request::get('subject_id') }}">
-
-
+                        <input type="hidden" name="semester_id" value="{{ Request::get('semester_id') }}">
                         <div class="col-lg-3 col-md-6">
                             <label for="start_date" style="max-width: 50%;">Start Date:</label>
                             <input type="date" class="form-control" name="start_date"

@@ -64,6 +64,9 @@ class ClassSubject extends Model
             ->get();
     }
 
+
+
+
     public static function getMySubjectTeacher($class_id)
     {
         return ClassTeacher::select(

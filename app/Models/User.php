@@ -127,12 +127,16 @@ class User extends Authenticatable
 
     public static function getStudentStar()
     {
-        $return = User::selectRaw('users.*, class.name as class_name')->leftJoin('class', 'class.id', '=', 'users.class_id')->where('users.user_type', '=', 3)->where('users.is_delete', '=', 0);
-        $return = $return->orderBy('users.score', 'desc')->limit(5)->get();
+        $return = User::selectRaw('users.*, class.name as class_name,student_score_average.avage_score as score')
+            ->leftJoin('class', 'class.id', '=', 'users.class_id')
+            ->join('student_score_average', 'student_score_average.student_id', '=', 'users.id')
+            ->where('student_score_average.semester_id', '=', 3)
+            ->where('users.user_type', '=', 3)
+            ->where('users.is_delete', '=', 0);
+        $return = $return->orderBy('student_score_average.avage_score', 'desc')->limit(5)->get();
 
         return $return;
     }
-
     public static function getTeacher()
     {
         $return = User::selectRaw('users.*, subject.name as subject_name')->leftJoin('subject', 'subject.id', '=', 'users.subject_id')->where('users.user_type', '=', 2)->where('users.is_delete', '=', 0);
@@ -185,6 +189,16 @@ class User extends Authenticatable
             ->where('users.is_delete', '=', 0)
             ->where('users.class_id', '=', $id)
             ->orderBy('users.id', 'desc')
+            ->get();
+    }
+
+    public static function getStudentClassScore($id)
+    {
+        return self::select('users.id', 'users.name', 'users.score')
+            ->where('users.user_type', '=', 3)
+            ->where('users.is_delete', '=', 0)
+            ->where('users.class_id', '=', $id)
+            ->orderBy('users.score', 'desc')
             ->get();
     }
 

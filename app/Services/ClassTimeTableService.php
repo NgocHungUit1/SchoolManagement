@@ -17,6 +17,7 @@ use App\Models\ClassModel;
 use App\Models\ClassSubject;
 use App\Models\ClassSubjectTimeTable;
 use App\Models\ClassTeacher;
+use App\Models\Semester;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -50,9 +51,11 @@ class ClassTimeTableService
         if (!empty($request->class_id)) {
             $data['getSubject'] = ClassSubject::MySubject($request->class_id);
         }
+        $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
         $data['ClassSubjectDate'] = ClassSubjectTimeTable::getDate(
             $request->class_id,
-            $request->subject_id
+            $request->subject_id,
+            $request->semester_id,
         );
         $getDay = Week::getRecord();
         $day = array();
@@ -60,11 +63,12 @@ class ClassTimeTableService
             $dataDay = array();
             $dataDay['day_id'] = $value->id;
             $dataDay['day_name'] = $value->name;
-            if (!empty($request->class_id) && !empty($request->subject_id)) {
+            if (!empty($request->class_id) && !empty($request->subject_id) && !empty($request->semester_id)) {
                 $ClassSubject = ClassSubjectTimeTable::getRecord(
                     $request->class_id,
                     $request->subject_id,
-                    $value->id
+                    $value->id,
+                    $request->semester_id,
                 );
                 if (!empty($ClassSubject)) {
                     $dataDay['start_time'] = $ClassSubject->start_time;
@@ -105,6 +109,7 @@ class ClassTimeTableService
             $request->class_id
         )
             ->where('subject_id', '=', $request->subject_id)
+            ->where('semester_id', '=', $request->semester_id)
             ->get();
         if (count($existingRecords) > 0) {
             $existingRecordsIds = $existingRecords->pluck('id')->toArray();
@@ -113,14 +118,16 @@ class ClassTimeTableService
 
         if (!empty($request->timetable)) {
             foreach ($request->timetable as $timetable) {
-                if (!empty($timetable['day_id'])
+                if (
+                    !empty($timetable['day_id'])
                     && !empty($timetable['start_time'])
                     && !empty($timetable['end_time'])
                     && !empty($timetable['room_number'])
                 ) {
                     $overlappingCount = $this->_checkTimeSlotOverlap(
                         $request->class_id,
-                        $timetable
+                        $timetable,
+                        $request->semester_id,
                     );
                     if ($overlappingCount > 0) {
                         $overlapping = true;
@@ -129,6 +136,7 @@ class ClassTimeTableService
                             [
                                 'class_id' => $request->class_id,
                                 'subject_id' => $request->subject_id,
+                                'semester_id' => $request->semester_id,
                                 'day_id' => $timetable['day_id'],
                                 'start_time' => $timetable['start_time'],
                                 'end_time' => $timetable['end_time'],
@@ -161,12 +169,13 @@ class ClassTimeTableService
      *
      * @return \Illuminate\View\View
      */
-    private function _checkTimeSlotOverlap($class_id, $timetable)
+    private function _checkTimeSlotOverlap($class_id, $timetable, $semester_id)
     {
         $overlapping = ClassSubjectTimeTable::where(
             [
                 ['class_id', '=', $class_id],
-                ['day_id', '=', $timetable['day_id']]
+                ['day_id', '=', $timetable['day_id']],
+                ['semester_id', '=', $semester_id]
             ]
         )->where(
             function ($query) use ($timetable) {
@@ -223,7 +232,8 @@ class ClassTimeTableService
                 $ClassSubject = ClassSubjectTimeTable::getRecord(
                     $value->class_id,
                     $value->subject_id,
-                    $valueDay->id
+                    $valueDay->id,
+                    $value->semester_id,
                 );
                 if (!empty($ClassSubject)) {
                     $dataDay['start_time'] = $ClassSubject->start_time;
@@ -258,7 +268,8 @@ class ClassTimeTableService
         $data['getSubject'] = Subject::find($subject_id);
         $data['ClassSubjectDate'] = ClassSubjectTimeTable::getDate(
             $request->class_id,
-            $request->subject_id
+            $request->subject_id,
+            $request->semester_id
         );
 
         $getDay = Week::getRecord();
@@ -271,7 +282,8 @@ class ClassTimeTableService
             $ClassSubject = ClassSubjectTimeTable::getRecord(
                 $class_id,
                 $subject_id,
-                $valueDay->id
+                $valueDay->id,
+                $request->semester_id,
             );
 
             if (!empty($ClassSubject)) {

@@ -78,9 +78,19 @@
                                                         <i class="feather-eye"></i>
                                                     </a>
                                                     <a style="color:aliceblue"
-                                                        href="{{ url('teacher/my-class/score/' . $value->id) }}"
+                                                        href="{{ url('teacher/my-class/score/' . $value->id . '/' . '1') }}"
                                                         class="btn btn-primary">
-                                                        Grade report
+                                                        HK1
+                                                    </a>
+                                                    <a style="color:aliceblue"
+                                                        href="{{ url('teacher/my-class/score/' . $value->id . '/' . '2') }}"
+                                                        class="btn btn-primary">
+                                                        HK2
+                                                    </a>
+                                                    <a style="color:aliceblue"
+                                                        href="{{ url('teacher/academic_record_year/' . $value->id) }}"
+                                                        class="btn btn-primary">
+                                                        Summary
                                                     </a>
                                                 </td>
 
