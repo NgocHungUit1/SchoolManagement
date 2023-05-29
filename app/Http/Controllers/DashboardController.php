@@ -84,7 +84,7 @@ class DashboardController extends Controller
 
         $data['visitor_thisyear_count'] = $visitor_thisyear->count();
         //current online
-        $user_ip_address = $request->ip();
+        $user_ip_address = $request->getClientIp();
         $visitor = Visitor::where('ip_address', $user_ip_address)->first();
         if ($visitor) {
             // update last activity time

@@ -232,12 +232,12 @@
                             <i class="fas fa-book-reader"></i> <span>
                                 Academic Record</span></a>
                     </li>
-                    <li class=" {{ set_active(['student/my-timetable']) }}"><a
+                    {{-- <li class=" {{ set_active(['student/my-timetable']) }}"><a
                             href="{{ url('student/my-timetable') }}"
                             class=" {{ set_active(['student/my-timetable']) }}">
                             <i class="fas fa-book-reader"></i> <span>
                                 Class Time Table</span></a>
-                    </li>
+                    </li> --}}
                 @endif
 
             </ul>

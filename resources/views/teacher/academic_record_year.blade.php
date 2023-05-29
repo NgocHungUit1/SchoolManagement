@@ -11,7 +11,7 @@
                             <div class="page-sub-header">
                                 <h3 class="page-title">Academic Score</h3>
                                 <ul class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="{{ url('admin/dashboard') }}">DashBoard</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ url('teacher/dashboard') }}">DashBoard</a></li>
                                     <li class="breadcrumb-item active">Academic Score</li>
                                 </ul>
                             </div>
@@ -64,11 +64,11 @@
                                     @foreach ($getStudent as $student)
                                         <tr>
                                             <td>{{ $student->name }}</td>
-                                            <td>{{ $student_averages[$student->id]['semester_1_average'] ?? '' }}</td>
-                                            <td>{{ $student_averages[$student->id]['semester_2_average'] ?? '' }}</td>
-                                            <td>{{ $student_averages[$student->id]['yearly_average'] ?? '' }}</td>
+                                            <td>{{ $studentAverages[$student->id]['semester_1_average'] ?? '' }}</td>
+                                            <td>{{ $studentAverages[$student->id]['semester_2_average'] ?? '' }}</td>
+                                            <td>{{ $studentAverages[$student->id]['yearly_average'] ?? '' }}</td>
                                             @php
-                                                $rank = $student_averages[$student->id]['rank'] ?? '';
+                                                $rank = $studentAverages[$student->id]['rank'] ?? '';
                                                 $color = '';
                                                 if ($rank === 'A') {
                                                     $color = 'green';
