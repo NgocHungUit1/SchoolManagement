@@ -188,7 +188,10 @@ class ExamController extends Controller
             $data['getSubject'] = ClassSubject::MySubject($request->class_id);
         }
 
-        if (!empty($request->subject_id) && !empty($request->class_id) && !empty($request->semester_id)) {
+        if (
+            !empty($request->subject_id) && !empty($request->class_id)
+            && !empty($request->semester_id)
+        ) {
             $data['getExam'] = ExamSchedule::getExam($request->class_id);
             $data['getStudent'] = User::getStudentClassExam($request->class_id);
         }
@@ -212,7 +215,8 @@ class ExamController extends Controller
     /**
      * AcademicRecord a class.
      *
-     * @param int $id Class ID
+     * @param int $id          Class ID
+     * @param int $semester_id Semester ID
      *
      * @return mixed Result of the AcademicRecord operation
      */
@@ -229,6 +233,13 @@ class ExamController extends Controller
         return view('admin.exam.academic_record', $data);
     }
 
+    /**
+     * AcademicRecord year a class.
+     *
+     * @param int $id Class ID
+     *
+     * @return mixed Result of the AcademicRecord operation
+     */
     public function academicRecords($id)
     {
         $data['getClass'] = ClassModel::find($id);
@@ -282,7 +293,18 @@ class ExamController extends Controller
      */
     public function examScheduleInsert(Request $request)
     {
-        $result = $this->examService->examScheduleInsert($request);
+        $exam_id = $request->input('exam_id');
+        $class_id = $request->input('class_id');
+        $semester_id = $request->input('semester_id');
+        $schedules = $request->input('schedule');
+
+        $result = $this->examService->examScheduleInsert(
+            $exam_id,
+            $class_id,
+            $semester_id,
+            $schedules
+        );
+
         return $result;
     }
 
@@ -305,6 +327,8 @@ class ExamController extends Controller
     /**
      * My Score exam of student
      *
+     * @param Request $request Request object
+     *
      * @return mixed Result of the update operation
      */
     public function scoreStudent(Request $request)
@@ -317,7 +341,7 @@ class ExamController extends Controller
             $semester_id
         );
         $data['getExam'] = ExamSchedule::getExam($class_id);
-        $data['getSubject'] = ClassSubject::getMySubjectTeacher(
+        $data['getSubject'] = ClassTeacher::getMySubjectTeacher(
             Auth::user()->class_id
         );
         $data['StudentScoreSemester'] = StudentScoreSemester::where(
@@ -329,6 +353,8 @@ class ExamController extends Controller
 
     /**
      * My Exam Teacher
+     *
+     * @param Request $request Request object
      *
      * @return mixed Result of the update operation
      */
@@ -342,7 +368,8 @@ class ExamController extends Controller
     /**
      * AcademicRecord a class teacher.
      *
-     * @param int $id Class ID
+     * @param int $id          Class ID
+     * @param int $semester_id Semester ID
      *
      * @return mixed Result of the AcademicRecord operation
      */

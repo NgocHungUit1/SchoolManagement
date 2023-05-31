@@ -45,51 +45,54 @@ class ClassTimeTableService
      *
      * @return array
      */
-    public static function getClassTimetable(Request $request)
+    public static function getClassTimetable($class_id, $subject_id, $semester_id)
     {
-        $data['getClass'] = ClassModel::getClass();
-        if (!empty($request->class_id)) {
-            $data['getSubject'] = ClassSubject::MySubject($request->class_id);
+        $data = [
+            'getClass' => ClassModel::getClass(),
+            'getExamSemester' => Semester::whereIn('id', [1, 2])->get(),
+            'ClassSubjectDate' => ClassSubjectTimeTable::getDate($class_id, $subject_id, $semester_id),
+            'day' => [],
+        ];
+
+        if (!empty($class_id)) {
+            $data['getSubject'] = ClassSubject::MySubject($class_id);
         }
-        $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
-        $data['ClassSubjectDate'] = ClassSubjectTimeTable::getDate(
-            $request->class_id,
-            $request->subject_id,
-            $request->semester_id,
+
+        $classSubjectList = ClassSubjectTimeTable::getRecord(
+            [$class_id],
+            [$subject_id],
+            Week::pluck('id')->toArray(),
+            $semester_id
         );
-        $getDay = Week::getRecord();
-        $day = array();
-        foreach ($getDay as $value) {
-            $dataDay = array();
-            $dataDay['day_id'] = $value->id;
-            $dataDay['day_name'] = $value->name;
-            if (!empty($request->class_id) && !empty($request->subject_id) && !empty($request->semester_id)) {
-                $ClassSubject = ClassSubjectTimeTable::getRecord(
-                    $request->class_id,
-                    $request->subject_id,
-                    $value->id,
-                    $request->semester_id,
-                );
-                if (!empty($ClassSubject)) {
-                    $dataDay['start_time'] = $ClassSubject->start_time;
-                    $dataDay['end_time'] = $ClassSubject->end_time;
-                    $dataDay['room_number'] = $ClassSubject->room_number;
-                } else {
-                    $dataDay['start_time'] = '';
-                    $dataDay['end_time'] = '';
-                    $dataDay['room_number'] = '';
-                }
-            } else {
-                $dataDay['start_time'] = '';
-                $dataDay['end_time'] = '';
-                $dataDay['room_number'] = '';
+        $daysOfWeek = Week::all();
+
+        foreach ($daysOfWeek as $day) {
+            $ClassSubject = $classSubjectList->where('class_id', $class_id)
+                ->where('subject_id', $subject_id)
+                ->where('day_id', $day->id)
+                ->where('semester_id', $semester_id)
+                ->first();
+
+            $dataDay = [
+                'day_id' => $day->id,
+                'day_name' => $day->name,
+                'start_time' => '',
+                'end_time' => '',
+                'room_number' => '',
+            ];
+
+            if ($ClassSubject) {
+                $dataDay['start_time'] = $ClassSubject->start_time;
+                $dataDay['end_time'] = $ClassSubject->end_time;
+                $dataDay['room_number'] = $ClassSubject->room_number;
             }
-            $day[] = $dataDay;
+
+            $data['day'][] = $dataDay;
         }
-        $data['day'] = $day;
 
         return $data;
     }
+
 
     /**
      * ClassTimeTableService::createClassTimeTable()
@@ -100,65 +103,55 @@ class ClassTimeTableService
      *
      * @return \Illuminate\View\View
      */
-    public function createClassTimeTable($request)
+    public function createClassTimeTable($classId, $subjectId, $semesterId, $timetable, $startDate, $endDate)
     {
         $overlapping = false;
-        $existingRecords = ClassSubjectTimeTable::where(
-            'class_id',
-            '=',
-            $request->class_id
-        )
-            ->where('subject_id', '=', $request->subject_id)
-            ->where('semester_id', '=', $request->semester_id)
-            ->get();
-        if (count($existingRecords) > 0) {
-            $existingRecordsIds = $existingRecords->pluck('id')->toArray();
-            ClassSubjectTimeTable::destroy($existingRecordsIds);
+        $existingRecords = ClassSubjectTimeTable::where([
+            ['class_id', '=', $classId],
+            ['subject_id', '=', $subjectId],
+            ['semester_id', '=', $semesterId],
+        ])->get();
+
+        if ($existingRecords->isNotEmpty()) {
+            $existingRecords->pluck('id')->each(function ($id) {
+                ClassSubjectTimeTable::destroy($id);
+            });
         }
 
-        if (!empty($request->timetable)) {
-            foreach ($request->timetable as $timetable) {
-                if (
-                    !empty($timetable['day_id'])
-                    && !empty($timetable['start_time'])
-                    && !empty($timetable['end_time'])
-                    && !empty($timetable['room_number'])
-                ) {
-                    $overlappingCount = $this->_checkTimeSlotOverlap(
-                        $request->class_id,
-                        $timetable,
-                        $request->semester_id,
-                    );
-                    if ($overlappingCount > 0) {
-                        $overlapping = true;
-                    } else {
-                        $save = new ClassSubjectTimeTable(
-                            [
-                                'class_id' => $request->class_id,
-                                'subject_id' => $request->subject_id,
-                                'semester_id' => $request->semester_id,
-                                'day_id' => $timetable['day_id'],
-                                'start_time' => $timetable['start_time'],
-                                'end_time' => $timetable['end_time'],
-                                'room_number' => $timetable['room_number'],
-                                'start_date' => $request->start_date,
-                                'end_date' => $request->end_date,
-                            ]
-                        );
-                        $save->save();
-                    }
+        foreach ($timetable as $schedule) {
+            if (
+                !empty($schedule['day_id']) &&
+                !empty($schedule['start_time']) &&
+                !empty($schedule['end_time']) &&
+                !empty($schedule['room_number'])
+            ) {
+                $overlapCount = $this->_checkTimeSlotOverlap(
+                    $classId,
+                    $schedule,
+                    $semesterId
+                );
+
+                if ($overlapCount === 0) {
+                    $table = new ClassSubjectTimeTable([
+                        'class_id' => $classId,
+                        'subject_id' => $subjectId,
+                        'semester_id' => $semesterId,
+                        'day_id' => $schedule['day_id'],
+                        'start_time' => $schedule['start_time'],
+                        'end_time' => $schedule['end_time'],
+                        'room_number' => $schedule['room_number'],
+                        'start_date' => $startDate,
+                        'end_date' => $endDate,
+                    ]);
+                    $table->save();
+                } else {
+                    $overlapping = true;
                 }
             }
         }
 
-        if ($overlapping) {
-            return false;
-        } else {
-            return true;
-        }
+        return !$overlapping;
     }
-
-
 
 
     /**
@@ -213,45 +206,6 @@ class ClassTimeTableService
         return $overlapping;
     }
 
-    /**
-     * Get my time table(student,teacher).
-     *
-     * @return \Illuminate\View\View
-     */
-    public function getMyTimeTable()
-    {
-        $result = [];
-        $getRecord = ClassSubject::MySubject(Auth::user()->class_id);
-        foreach ($getRecord as $value) {
-            $dataS['name'] = $value->subject_name;
-            $getDay = Week::getRecord();
-            $day = [];
-            foreach ($getDay as $valueDay) {
-                $dataDay = [];
-                $dataDay['day_name'] = $valueDay->name;
-                $ClassSubject = ClassSubjectTimeTable::getRecord(
-                    $value->class_id,
-                    $value->subject_id,
-                    $valueDay->id,
-                    $value->semester_id,
-                );
-                if (!empty($ClassSubject)) {
-                    $dataDay['start_time'] = $ClassSubject->start_time;
-                    $dataDay['end_time'] = $ClassSubject->end_time;
-                    $dataDay['room_number'] = $ClassSubject->room_number;
-                } else {
-                    $dataDay['start_time'] = '';
-                    $dataDay['end_time'] = '';
-                    $dataDay['room_number'] = '';
-                }
-                $day[] = $dataDay;
-            }
-            $dataS['day'] = $day;
-            $result[] = $dataS;
-        }
-
-        return $result;
-    }
 
     /**
      * Get my time table(student,teacher).
@@ -262,43 +216,28 @@ class ClassTimeTableService
      *
      * @return \Illuminate\View\View
      */
-    public function getTeacherTimeTable($class_id, $subject_id, Request $request)
+    public function getTeacherTimeTable($class_id, $subject_id, $semester_id)
     {
-        $data['getClass'] = ClassModel::find($class_id);
-        $data['getSubject'] = Subject::find($subject_id);
-        $data['ClassSubjectDate'] = ClassSubjectTimeTable::getDate(
-            $request->class_id,
-            $request->subject_id,
-            $request->semester_id
-        );
 
-        $getDay = Week::getRecord();
-        $day = [];
-
+        $weekIDs = Week::pluck('id')->toArray();
+        $classSubjectList = ClassSubjectTimeTable::getRecord([$class_id], [$subject_id], $weekIDs, $semester_id);
+        $result = [];
+        $getDay = Week::all();
         foreach ($getDay as $valueDay) {
-            $dataDay = [];
             $dataDay['day_name'] = $valueDay->name;
             $dataDay['day_id'] = $valueDay->id;
-            $ClassSubject = ClassSubjectTimeTable::getRecord(
-                $class_id,
-                $subject_id,
-                $valueDay->id,
-                $request->semester_id,
-            );
 
-            if (!empty($ClassSubject)) {
-                $dataDay['start_time'] = $ClassSubject->start_time;
-                $dataDay['end_time'] = $ClassSubject->end_time;
-                $dataDay['room_number'] = $ClassSubject->room_number;
-                $dataDay['start_date'] = $ClassSubject->start_date;
-                $dataDay['end_date'] = $ClassSubject->end_date;
-            } else {
-                $dataDay['start_time'] = '';
-                $dataDay['end_time'] = '';
-                $dataDay['room_number'] = '';
-                $dataDay['start_date'] = '';
-                $dataDay['end_date'] = '';
-            }
+            $ClassSubject = $classSubjectList->where('class_id', $class_id)
+                ->where('subject_id', $subject_id)
+                ->where('day_id', $valueDay->id)
+                ->where('semester_id', $semester_id)
+                ->first();
+
+            $dataDay['start_time'] = !empty($ClassSubject) ? $ClassSubject->start_time : '';
+            $dataDay['end_time'] = !empty($ClassSubject) ? $ClassSubject->end_time : '';
+            $dataDay['room_number'] = !empty($ClassSubject) ? $ClassSubject->room_number : '';
+            $dataDay['start_date'] = !empty($ClassSubject) ? $ClassSubject->start_date : '';
+            $dataDay['end_date'] = !empty($ClassSubject) ? $ClassSubject->end_date : '';
 
             $result[] = $dataDay;
         }

@@ -59,6 +59,7 @@ class StudentController extends Controller
     {
         $data['getRecord'] = $this->service->getAllStudents();
 
+
         return view('admin.student.list', $data);
     }
 

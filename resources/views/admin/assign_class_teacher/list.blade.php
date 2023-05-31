@@ -131,16 +131,16 @@
                             data: "id"
                         },
                         {
-                            data: "class_name"
+                            data: "classroom.name"
                         },
                         {
-                            data: "subject_name"
+                            data: "subject.name"
                         },
                         {
-                            data: "teacher_name"
+                            data: "teacher.name"
                         },
                         {
-                            data: "created_by_name"
+                            data: "created_by.name"
                         },
                         {
                             data: "created_at"

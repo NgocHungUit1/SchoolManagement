@@ -49,50 +49,47 @@ class ExamService
      */
     public function getExamSchedule($examId, $classId, $semesterId)
     {
-
         $result = [];
 
         if (!empty($examId) && !empty($classId)  && !empty($semesterId)) {
             $getSubject = ClassSubject::MySubject($classId);
+
+            $examSchedules = ExamSchedule::getExamSchedules(
+                $getSubject->pluck('subject_id')->toArray(),
+                $classId,
+                $examId,
+                $semesterId
+            );
+
             foreach ($getSubject as $value) {
-                $dataS = [
+                $dataExam = [
                     'subject_id' => $value->subject_id,
                     'class_id' => $value->class_id,
-                    'subject_name' => $value->subject_name,
-                    'subject_type' => $value->subject_type,
+                    'subject_name' => $value->subject->name,
+                    'subject_type' => $value->subject->type,
                 ];
+                $examSchedule = $examSchedules->whereIn('subject_id', $value->subject_id,)
+                    ->where('class_id', $classId)
+                    ->where('exam_id', $examId)
+                    ->where('semester_id', $semesterId)
+                    ->first();
 
-                $examSchedule = ExamSchedule::getRecordSignle(
-                    $examId,
-                    $classId,
-                    $value->subject_id,
-                    $semesterId
-                );
+                $dataExam['exam_date'] = !empty($examSchedule) ? $examSchedule->exam_date : '';
+                $dataExam['start_time'] = !empty($examSchedule) ? $examSchedule->start_time : '';
+                $dataExam['end_time'] = !empty($examSchedule) ? $examSchedule->end_time : '';
+                $dataExam['room_number'] = !empty($examSchedule) ? $examSchedule->room_number : '';
+                $dataExam['passing_mark'] = !empty($examSchedule) ? $examSchedule->passing_mark : '';
+                $dataExam['full_mark'] = !empty($examSchedule) ? $examSchedule->full_mark : '';
+                $dataExam['semester_id'] = !empty($examSchedule) ? $examSchedule->semester_id : '';
 
-                if (!empty($examSchedule)) {
-                    $dataS['exam_date'] = $examSchedule->exam_date;
-                    $dataS['start_time'] = $examSchedule->start_time;
-                    $dataS['end_time'] = $examSchedule->end_time;
-                    $dataS['room_number'] = $examSchedule->room_number;
-                    $dataS['full_mark'] = $examSchedule->full_mark;
-                    $dataS['passing_mark'] = $examSchedule->passing_mark;
-                    $dataS['semester_id'] = $examSchedule->semester_id;
-                } else {
-                    $dataS['exam_date'] = '';
-                    $dataS['start_time'] = '';
-                    $dataS['end_time'] = '';
-                    $dataS['room_number'] = '';
-                    $dataS['full_mark'] = '';
-                    $dataS['passing_mark'] = '';
-                    $dataS['semester_id'] = '';
-                }
-
-                $result[] = $dataS;
+                $result[] = $dataExam;
             }
         }
 
         return $result;
     }
+
+
 
     /**
      * Get Academic score  .
@@ -122,17 +119,17 @@ class ExamService
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function examScheduleInsert(Request $request)
+    public function examScheduleInsert($exam_id, $class_id, $semester_id, $schedules)
     {
-
         ExamSchedule::deleteRecord(
-            $request->exam_id,
-            $request->class_id,
-            $request->semester_id
+            $exam_id,
+            $class_id,
+            $semester_id
         );
 
-        foreach ($request->schedule as $schedule) {
-            if (!empty($schedule['subject_id'])
+        foreach ($schedules as $schedule) {
+            if (
+                !empty($schedule['subject_id'])
                 && !empty($schedule['exam_date'])
                 && !empty($schedule['start_time'])
                 && !empty($schedule['end_time'])
@@ -142,7 +139,7 @@ class ExamService
             ) {
                 // Check for overlapping time slots
                 $overlapping = $this->_checkTimeSlotOverlap(
-                    $request->class_id,
+                    $class_id,
                     $schedule
                 );
                 if ($overlapping > 0) {
@@ -152,8 +149,8 @@ class ExamService
 
                 $save = new ExamSchedule(
                     [
-                        'exam_id' => $request->exam_id,
-                        'class_id' => $request->class_id,
+                        'exam_id' => $exam_id,
+                        'class_id' => $class_id,
                         'subject_id' => $schedule['subject_id'],
                         'exam_date' => $schedule['exam_date'],
                         'start_time' => $schedule['start_time'],
@@ -162,7 +159,7 @@ class ExamService
                         'full_mark' => $schedule['full_mark'],
                         'passing_mark' => $schedule['passing_mark'],
                         'created_by' => Auth::user()->id,
-                        'semester_id' => $request->semester_id
+                        'semester_id' => $semester_id
                     ]
                 );
                 $save->save();
@@ -650,7 +647,8 @@ class ExamService
 
         foreach ($examScores as $studentId => $scores) {
             foreach ($scores as $scoreData) {
-                if (!empty($studentId)
+                if (
+                    !empty($studentId)
                     && !empty($scoreData['exam_id'])
                     && !empty($scoreData['score'])
                 ) {

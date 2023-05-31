@@ -27,6 +27,7 @@ class ExamScore extends Model
     {
         return self::where('class_id', '=', $class_id)->where('student_id', '=', $student_id)->where('exam_id', '=', $exam_id)->where('subject_id', '=', $subject_id)->first();
     }
+
     public static function CheckAlreadySemester($class_id, $student_id, $exam_id, $subject_id, $semester_id)
     {
         return self::where('class_id', '=', $class_id)

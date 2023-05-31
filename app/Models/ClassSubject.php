@@ -22,6 +22,21 @@ class ClassSubject extends Model
         'created_at' => 'date:Y-m-d',
     ];
 
+    public function classroom()
+    {
+        return $this->belongsTo(ClassModel::class, 'class_id'); // Mối quan hệ 1-nhiều (Belongs To) với bảng Class (Laravel sẽ tự đoán khóa ngoại là class_id)
+    }
+
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class, 'subject_id'); // Mối quan hệ 1-nhiều (Belongs To) với bảng Subject (Laravel sẽ tự đoán khóa ngoại là subject_id)
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by'); // Mối quan hệ 1-nhiều (Belongs To) với bảng User với khóa ngoại là created_by
+    }
+
     public static function getRecord()
     {
         $return = self::select('class_subject.*', 'class.name as class_name', 'subject.name as subject_name', 'users.name as created_by_name')->join('subject', 'subject.id', '=', 'class_subject.subject_id')->join('class', 'class.id', '=', 'class_subject.class_id')->join('users', 'users.id', '=', 'class_subject.created_by')->where('class_subject.is_delete', '=', 0);
@@ -53,39 +68,41 @@ class ClassSubject extends Model
 
     public static function MySubject($class_id)
     {
-        return self::select('class_subject.*', 'subject.name as subject_name', 'subject.type as subject_type')
-            ->join('subject', 'subject.id', '=', 'class_subject.subject_id')
-            ->join('class', 'class.id', '=', 'class_subject.class_id')
-            ->join('users', 'users.id', '=', 'class_subject.created_by')
-            ->where('class_subject.class_id', '=', $class_id)
-            ->where('class_subject.is_delete', '=', 0)
-            ->where('class_subject.status', '=', 0)
-            ->orderBy('class_subject.id', 'desc')
+        return self::with(['subject' => function ($query) {
+            $query->select('id', 'name', 'type');
+        }, 'createdBy', 'classroom'])
+            ->where('class_id', '=', $class_id)
+            ->where('is_delete', '=', 0)
+            ->where('status', '=', 0)
+            ->orderByDesc('id')
             ->get();
     }
 
 
 
 
-    public static function getMySubjectTeacher($class_id)
-    {
-        return ClassTeacher::select(
-            'teacher_class.*',
-            'class.name as class_name',
-            'subject.name as subject_name',
-            'subject.type as subject_type',
-            'teacher.name as teacher_name'
-        )
-            ->join('users as teacher', 'teacher.id', '=', 'teacher_class.teacher_id')
-            ->join('class', 'class.id', '=', 'teacher_class.class_id')
-            ->join('subject', 'subject.id', '=', 'teacher_class.subject_id')
-            ->where('teacher_class.is_delete', '=', 0)
-            ->where('teacher_class.status', '=', 0)
-            ->where('subject.is_delete', '=', 0)
-            ->where('subject.status', '=', 0)
-            ->where('class.is_delete', '=', 0)
-            ->where('class.status', '=', 0)
-            ->where('teacher_class.class_id', '=', $class_id)
-            ->get();
-    }
+
+    // public static function getMySubjectTeacher($class_id)
+    // {
+    //     return ClassTeacher::select(
+    //         'teacher_class.*',
+    //         'class.name as class_name',
+    //         'subject.name as subject_name',
+    //         'subject.type as subject_type',
+    //         'teacher.name as teacher_name'
+    //     )
+    //         ->join('users as teacher', 'teacher.id', '=', 'teacher_class.teacher_id')
+    //         ->join('class', 'class.id', '=', 'teacher_class.class_id')
+    //         ->join('subject', 'subject.id', '=', 'teacher_class.subject_id')
+    //         ->where('teacher_class.is_delete', '=', 0)
+    //         ->where('teacher_class.status', '=', 0)
+    //         ->where('subject.is_delete', '=', 0)
+    //         ->where('subject.status', '=', 0)
+    //         ->where('class.is_delete', '=', 0)
+    //         ->where('class.status', '=', 0)
+    //         ->where('teacher_class.class_id', '=', $class_id)
+    //         ->get();
+    // }
+
+
 }

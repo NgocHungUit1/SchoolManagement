@@ -66,7 +66,12 @@ class ClassTimeTableController extends Controller
      */
     public function list(Request $request)
     {
-        $data = ClassTimetableService::getClassTimetable($request);
+        $class_id = $request->input('class_id');
+        $subject_id = $request->input('subject_id');
+        $semester_id = $request->input('semester_id');
+
+        $data = ClassTimetableService::getClassTimetable($class_id, $subject_id, $semester_id);
+
         return view('admin.class_timetable.list', $data);
     }
 
@@ -80,17 +85,25 @@ class ClassTimeTableController extends Controller
     public function add(Request $request)
     {
         if ($request->isMethod('post')) {
+            $classId = $request->input('class_id');
+            $subjectId = $request->input('subject_id');
+            $semesterId = $request->input('semester_id');
+            $timetable = $request->input('timetable');
+            $startDate = $request->input('start_date');
+            $endDate = $request->input('end_date');
+
             $createClassTimeTable = $this->classTimeTableService
-                ->createClassTimeTable($request);
+                ->createClassTimeTable($classId, $subjectId, $semesterId, $timetable, $startDate, $endDate);
 
             if ($createClassTimeTable) {
                 return redirect()->back()
-                    ->with('success', 'Class Time table successfully created ');
+                    ->with('success', 'Class time table successfully created');
             } else {
                 return back()->withInput()
-                    ->with('error', 'Time slot overlaps .');
+                    ->with('error', 'Time slot overlaps.');
             }
         }
+
 
         return redirect()->back()
             ->with('success', 'Class Time table successfully created ');
@@ -118,32 +131,18 @@ class ClassTimeTableController extends Controller
     }
 
     /**
-     * Display the time table of current student.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function myTimeTable()
-    {
-        $myTimeTable = (new ClassTimetableService())->getMyTimeTable();
-        $data['getRecord'] = $myTimeTable;
-
-        return view('student.my_timetable', $data)
-            ->with('success', 'My Time Table Student ');
-    }
-
-    /**
      * Display the time table of current teacher for given class and subject.
      *
      * @param int     $class_id   The ID of the class_id
      * @param int     $subject_id The ID of the subject_id
-     * @param Request $request    The HTTP request
+     * @param int     $semester_id The ID of the semester_id
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function myTimeTableTeacher($class_id, $subject_id, Request $request)
+    public function myTimeTableTeacher($class_id, $subject_id, $semester_id)
     {
         $result = $this->classTimeTableService
-            ->getTeacherTimeTable($class_id, $subject_id, $request);
+            ->getTeacherTimeTable($class_id, $subject_id, $semester_id);
 
         return response()->json($result);
     }

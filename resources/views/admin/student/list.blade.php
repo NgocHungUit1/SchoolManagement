@@ -144,7 +144,7 @@
                             data: "name"
                         },
                         {
-                            data: "class_name"
+                            data: "classModel.name"
                         },
                         {
                             data: "gender"

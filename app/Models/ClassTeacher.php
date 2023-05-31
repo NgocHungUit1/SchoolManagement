@@ -28,7 +28,7 @@ class ClassTeacher extends Model
         return $this->belongsTo(User::class, 'teacher_id'); // Mối quan hệ 1-nhiều (Belongs To) với bảng User với khóa ngoại là teacher_id
     }
 
-    public function class()
+    public function classroom()
     {
         return $this->belongsTo(ClassModel::class, 'class_id'); // Mối quan hệ 1-nhiều (Belongs To) với bảng Class (Laravel sẽ tự đoán khóa ngoại là class_id)
     }
@@ -45,7 +45,7 @@ class ClassTeacher extends Model
 
     public static function getRecord()
     {
-        return self::withRelations()
+        return self::with(['teacher', 'subject', 'classroom', 'createdBy'])
             ->className(Request::get('class_name'))
             ->subjectName(Request::get('subject_name'))
             ->teacherName(Request::get('teacher_name'))
@@ -53,23 +53,22 @@ class ClassTeacher extends Model
             ->get();
     }
 
-    public function scopeWithRelations($query)
-    {
-        return $query->select('teacher_class.*', 'class.name as class_name', 'subject.name as subject_name', 'teacher.name as teacher_name', 'users.name as created_by_name')
-            ->join('users as teacher', 'teacher.id', '=', 'teacher_class.teacher_id')
-            ->join('class', 'class.id', '=', 'teacher_class.class_id')
-            ->join('subject', 'subject.id', '=', 'teacher_class.subject_id')
-            ->join('users', 'users.id', '=', 'teacher_class.created_by')
-            ->where('teacher_class.is_delete', '=', 0);
-    }
+    // public function scopeWithRelations($query)
+    // {
+    //     return $query->with(['teacher', 'subject', 'classroom', 'createdBy'])
+    //         ->where('teacher_class.is_delete', '=', 0);
+    // }
 
     public function scopeClassName($query, $className)
     {
         if (!empty($className)) {
-            return $query->where('class.name', 'like', '%' . $className . '%');
+            return $query->whereHas('classroom', function ($q) use ($className) {
+                $q->where('name', 'like', "%$className%");
+            });
         }
         return $query;
     }
+
 
     public function scopeSubjectName($query, $subjectName)
     {
@@ -85,6 +84,26 @@ class ClassTeacher extends Model
             return $query->where('teacher.name', 'like', '%' . $teacherName . '%');
         }
         return $query;
+    }
+
+    public static function getMySubjectTeacher($class_id)
+    {
+        return self::with(['teacher', 'subject'])
+            ->whereHas('classroom', function ($query) use ($class_id) {
+                $query->where([
+                    ['id', $class_id],
+                    ['is_delete', 0],
+                    ['status', 0]
+                ]);
+            })->whereHas('subject', function ($query) {
+                $query->where([
+                    ['is_delete', 0],
+                    ['status', 0]
+                ]);
+            })->where('is_delete', 0)
+            ->where('status', 0)
+            ->orderBy('id', 'desc')
+            ->get();
     }
 
     public static function getAlreadyFirst($class_id, $teacher_id, $subject_id)

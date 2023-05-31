@@ -19,10 +19,10 @@ class ClassModel extends Model
         'is_delete',
     ];
 
-    public function user()
-    {
-        return $this->belongsTo('App\Models\User', 'class_id', 'id');
-    }
+    // public function users()
+    // {
+    //     return $this->hasMany(User::class);
+    // }
 
     public static function getClassId($id)
     {

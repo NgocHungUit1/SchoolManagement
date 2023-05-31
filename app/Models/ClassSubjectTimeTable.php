@@ -23,14 +23,15 @@ class ClassSubjectTimeTable extends Model
         'semester_id'
     ];
 
-    public static function getRecord($class_id, $subject_id, $day_id, $semester_id)
+    public static function getRecord($classIds, $subjectIds, $dayIds, $semesterId)
     {
-        return self::where('class_id', '=', $class_id)
-            ->where('subject_id', '=', $subject_id)
-            ->where('day_id', '=', $day_id)
-            ->where('semester_id', '=', $semester_id)
-            ->first();
+        return self::whereIn('class_id', $classIds)
+            ->whereIn('subject_id', $subjectIds)
+            ->whereIn('day_id', $dayIds)
+            ->where('semester_id', $semesterId)
+            ->get();
     }
+
 
     public static function getDate($class_id, $subject_id, $semester_id)
     {

@@ -62,7 +62,9 @@ class ClassTeacherController extends Controller
      */
     function list()
     {
-        $data['getRecord'] = $this->classTeacherService->getList();
+        $data['getRecord']  = ClassTeacher::with(['teacher', 'subject', 'classroom', 'createdBy'])
+            ->where('is_delete', '=', 0)
+            ->get();
         return view('admin.assign_class_teacher.list', $data);
     }
 

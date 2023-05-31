@@ -34,8 +34,10 @@ class CalendarController extends Controller
 {
     /**
      * CalendarService instance.
+     * ExamService instance.
      *
      * @var CalendarService
+     * @var ExamService
      */
     protected $calendarService;
     protected $examService;
@@ -44,6 +46,7 @@ class CalendarController extends Controller
      * CalendarController constructor.
      *
      * @param CalendarService $calendarService CalendarService
+     * @param ExamService     $examService     ExamService
      *
      * @return void
      */
@@ -56,21 +59,26 @@ class CalendarController extends Controller
     /**
      * Shows the calender student.
      *
+     * @param Request $request Request object
+     *
      * @return mixed Calendar
      */
     public function myCalendar(Request $request)
     {
         $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
         $data['getTimeTable'] = $this->calendarService
-            ->getTimeTable($request, Auth::user()->class_id);
+            ->getTimeTable($request->semester_id, Auth::user()->class_id);
+        // Lấy semester_id từ request
         $data['getExamTimeTable'] = $this->calendarService
-            ->getExamTimeTable($request, Auth::user()->class_id);
+            ->getExamTimeTable($request->semester_id, Auth::user()->class_id);
         return view('student.my_calendar', $data)
             ->with('success', 'My Time Table Student ');
     }
 
     /**
      * Shows the calender teacher.
+     *
+     * @param Request $request Request object
      *
      * @return mixed Calendar
      */
