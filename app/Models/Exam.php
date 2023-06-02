@@ -22,43 +22,30 @@ class Exam extends Model
     ];
 
 
-    public function user()
+    public function createdBy()
     {
-        return $this->belongsTo('App\Models\User', 'created_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
-    public static function getRecord()
+    public static function getRecord($exam_name = '')
     {
-        $return = self::select('exam.*', 'users.name as created_by_name')
-            ->join('users', 'users.id', '=', 'exam.created_by')
-            ->where('exam.is_delete', '=', 0);
+        $query = self::with('createdBy')
+            ->where('is_delete', 0);
 
-        if (!empty(Request::get('exam'))) {
-            $return = $return->where('exam.name', 'like', '%' . Request::get('exam') . '%');
+        if (!empty($exam_name)) {
+            $query = $query->where('name', 'like', '%' . $exam_name . '%');
         }
-        $return = $return->orderBy('exam.id', 'desc')->get();
-        return $return;
+
+        return $query->orderBy('id', 'desc')->get();
     }
+
 
     public static function getExam()
     {
-        $return = self::select('exam.*', 'users.name as created_by_name')
-            ->join('users', 'users.id', '=', 'exam.created_by')
+        $return = self::with('createdBy')
+            ->where('is_delete', 0)
             ->where('exam.is_delete', '=', 0)
             ->orderBy('exam.name', 'asc')->get();
         return $return;
     }
-
-    public static function getStudent($id)
-    {
-        $return = User::select('users.*', 'users.name as student_name', 'class.name as class_name')
-            ->join('class', 'class.id', '=', 'users.class_id')
-            ->where('users.user_type', '=', 3)
-            ->where('users.is_delete', '=', 0)
-            ->where('class.status', '=', 0)
-            ->where('class.id', '=', $id)
-            ->orderBy('student_name', 'asc')->get();
-        return $return;
-    }
-
 }

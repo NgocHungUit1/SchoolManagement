@@ -23,14 +23,60 @@ class ClassSubjectTimeTable extends Model
         'semester_id'
     ];
 
+    public function days()
+    {
+        return $this->belongsTo(Week::class, 'day_id');
+    }
+
+    public function classrooms()
+    {
+        return $this->belongsTo(ClassModel::class, 'class_id');
+    }
+
+    public function subjects()
+    {
+        return $this->belongsTo(Subject::class, 'subject_id');
+    }
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class, 'semester_id');
+    }
+
     public static function getRecord($classIds, $subjectIds, $dayIds, $semesterId)
     {
-        return self::whereIn('class_id', $classIds)
+        return self::with(['subjects', 'classrooms', 'days'])
+            ->where('class_id', $classIds)
             ->whereIn('subject_id', $subjectIds)
             ->whereIn('day_id', $dayIds)
             ->where('semester_id', $semesterId)
+            ->groupBy('day_id')
             ->get();
     }
+
+    public static function getTimeTable($semester_id, $class_id)
+    {
+        return self::with(['subjects', 'classrooms', 'days'])
+            ->join('teacher_class', function ($join) use ($class_id) {
+                $join->on('class_subject_timetable.subject_id', '=', 'teacher_class.subject_id')
+                    ->where('teacher_class.class_id', '=', $class_id)
+                    ->where('teacher_class.is_delete', '=', 0)
+                    ->where('teacher_class.status', '=', 0);
+            })
+            ->where('class_subject_timetable.class_id', '=', $class_id)
+            ->where('class_subject_timetable.semester_id', '=', $semester_id)
+            ->get();
+    }
+
+    // public static function getRecord($classIds, $subjectIds, $dayIds, $semesterId)
+    // {
+    //     return self::whereIn('class_id', $classIds)
+    //         ->whereIn('subject_id', $subjectIds)
+    //         ->whereIn('day_id', $dayIds)
+    //         ->where('semester_id', $semesterId)
+    //         ->groupBy('day_id')
+    //         ->get();
+    // }
 
 
     public static function getDate($class_id, $subject_id, $semester_id)

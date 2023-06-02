@@ -158,9 +158,7 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::get('teacher/my-student/view/{id}', [ClassController::class, 'view']);
     Route::get('teacher/my-class/score/{id}/{semester_id}', [ExamController::class, 'academicScoreClass']);
     Route::get('teacher/academic_record_year/{id}', [ExamController::class, 'academicRecords']);
-    Route::get('teacher/get-student', [TeacherController::class, 'getStudent']);
     Route::get('teacher/get_subject', [ClassTeacherController::class, 'getSubject']);
-    Route::get('teacher/get_class', [TeacherController::class, 'getClass']);
     Route::get('teacher/my_exam', [ExamController::class, 'myExamTeacher']);
     Route::get('teacher/my-calendar', [CalendarController::class, 'myTeacherCalendar']);
 });

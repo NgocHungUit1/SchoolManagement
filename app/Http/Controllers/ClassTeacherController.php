@@ -62,7 +62,7 @@ class ClassTeacherController extends Controller
      */
     function list()
     {
-        $data['getRecord']  = ClassTeacher::with(['teacher', 'subject', 'classroom', 'createdBy'])
+        $data['getRecord']  = ClassTeacher::with(['teachers', 'subjects', 'classes', 'createdBy'])
             ->where('is_delete', '=', 0)
             ->get();
         return view('admin.assign_class_teacher.list', $data);
@@ -73,10 +73,19 @@ class ClassTeacherController extends Controller
      *
      * @return array The data for assigned teacher to classes.
      */
-    public function getData()
+    public function getData(Request $request)
     {
-        $data['data'] = ClassTeacher::getRecord();
+        $class_name = $request->input('class_name');
+        $subject_name = $request->input('subject_name');
+        $teacher_name = $request->input('teacher_name');
 
+        $params = [
+            'class_name' => $class_name,
+            'subject_name' => $subject_name,
+            'teacher_name' => $teacher_name
+        ];
+
+        $data['data'] = $this->classTeacherService->getList($params);
         return $data;
     }
 
@@ -186,7 +195,7 @@ class ClassTeacherController extends Controller
         $html = "<option value=''> Select </option>";
         foreach ($getSubject as $value) {
             $html .= "<option value='" . $value->subject_id . "'>"
-                . $value->subject_name . " </option>";
+                . $value->subjects->name . " </option>";
         }
         $json['html'] = $html;
         echo json_encode($json);

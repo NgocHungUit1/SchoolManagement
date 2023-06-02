@@ -51,7 +51,7 @@
                                 <tr>
                                     <th>Student Name</th>
                                     @foreach ($getSubject as $value)
-                                        <th>{{ $value->subject_name }}</th>
+                                        <th>{{ $value->subjects->name }}</th>
                                     @endforeach
                                     <th>Average Score</th>
                                     <th>Classification</th>

@@ -20,6 +20,7 @@ use App\Models\Subject;
 use App\Models\User;
 use App\Services\TeacherService;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -70,10 +71,18 @@ class TeacherController extends Controller
      *
      * @return array Array containing all Teacher records
      */
-    public function getData()
+    public function getData(Request $request)
     {
-        $data['data'] = User::getTeacher();
+        $mobile_number = $request->input('mobile_number');
+        $address = $request->input('address');
+        $name = $request->input('name');
 
+        $params = [
+            'mobile_number' => $mobile_number,
+            'name' => $name,
+            'address' => $address
+        ];
+        $data['data'] = $this->service->getAllTeachers($params);
         return $data;
     }
 
@@ -177,14 +186,5 @@ class TeacherController extends Controller
     public function getClass()
     {
         return $this->service->getMyClass();
-    }
-    /**
-     * Display view my Student
-     *
-     * @return \Illuminate\View\View View
-     */
-    public function getStudent()
-    {
-        return $this->service->getMyStudentList();
     }
 }

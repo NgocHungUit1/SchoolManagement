@@ -39,9 +39,9 @@ class ClassTeacherService
      *
      * @return array
      */
-    public function getList()
+    public function getList(array $params = [])
     {
-        return ClassTeacher::getRecord();
+        return ClassTeacher::getRecord($params);
     }
 
     /**
@@ -93,7 +93,7 @@ class ClassTeacherService
      * @param int $id   the ID of the class to update.
      * @param $data data tacher.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\
      */
     public function update($id, $data)
     {
@@ -135,7 +135,7 @@ class ClassTeacherService
      *
      * @param int $id The ID of the ClassTeacher to delete.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\
      */
     public function delete($id)
     {
@@ -154,7 +154,7 @@ class ClassTeacherService
      *
      * @param int $user_id The ID of the teacher.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\
      */
     public function getMySubjectClass($user_id)
     {

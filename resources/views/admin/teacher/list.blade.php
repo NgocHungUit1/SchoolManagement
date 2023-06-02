@@ -162,7 +162,7 @@
                             data: "email"
                         },
                         {
-                            data: "subject_name"
+                            data: "subjects.name"
                         },
                         {
                             data: "status"

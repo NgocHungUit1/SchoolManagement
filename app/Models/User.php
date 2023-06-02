@@ -66,14 +66,31 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\ClassModel', 'created_by', 'id');
     }
 
-    public function subject()
+    public function classes()
     {
-        return $this->hasMany('App\Models\Subject', 'created_by', 'id');
+        return $this->belongsTo(ClassModel::class, 'class_id');
+    }
+
+    public function teachingClasses()
+    {
+        return $this->belongsToMany(ClassModel::class, 'teacher_class', 'teacher_id', 'class_id')
+            ->withPivot('subject_id', 'created_by', 'status')
+            ->wherePivot('is_delete', 0);
+    }
+
+    public function subjects()
+    {
+        return $this->belongsTo(Subject::class, 'subject_id');
     }
 
     public function exam()
     {
         return $this->hasMany('App\Models\Exam', 'created_by', 'id');
+    }
+
+    public function studentScoreAverages()
+    {
+        return $this->hasMany(StudentScoreSemester::class);
     }
 
     public static function getUserId($id)
@@ -107,78 +124,61 @@ class User extends Authenticatable
         return $return;
     }
 
-    public static function getStudent()
+    public static function getStudents($id)
     {
-        $return = User::selectRaw('users.*, class.name as class_name')->leftJoin('class', 'class.id', '=', 'users.class_id')->where('users.user_type', '=', 3)->where('users.is_delete', '=', 0);
+        $return = User::select('users.*', 'users.name as student_name')
+            ->where('users.user_type', '=', 3)
+            ->where('users.is_delete', '=', 0)
+            ->whereHas('classes', function ($query) {
+                $query->where('status', '=', 0);
+            })
+            ->whereHas('classes', function ($query) use ($id) {
+                $query->where('id', '=', $id);
+            })
+            ->orderBy('student_name', 'asc')->get();
+        return $return;
+    }
 
-        if (!empty(Request::get('mobile_number'))) {
-            $return = $return->where('users.mobile_number', 'like', '%' . Request::get('mobile_number') . '%');
+
+    public static function getStudent(array $params = [])
+    {
+        $return = self::with('classes')
+            ->where('users.user_type', '=', 3)
+            ->where('users.is_delete', '=', 0);
+
+        if (!empty($params['mobile_number'])) {
+            $return = $return->where('users.mobile_number', 'like', '%' . $params['mobile_number']  . '%');
         }
-        if (!empty(Request::get('name'))) {
-            $return = $return->where('users.name', 'like', '%' . Request::get('name') . '%');
+        if (!empty($params['name'])) {
+            $return = $return->where('users.name', 'like', '%' . $params['name'] . '%');
         }
-        if (!empty(Request::get('class'))) {
-            $return = $return->where('class.name', 'like', '%' . Request::get('class') . '%');
+        if (!empty($params['class'])) {
+            $return = $return->whereHas('classes', function ($query) use ($params) {
+                $query->where('name', 'like', '%' . $params['class'] . '%');
+            });
         }
 
         $return = $return->orderBy('users.id', 'desc')->get();
         return $return;
     }
 
-    public static function getStudentStar()
+    public static function getTeacher(array $params = [])
     {
-        $return = User::selectRaw('users.*, class.name as class_name,student_score_average.avage_score as score')
-            ->leftJoin('class', 'class.id', '=', 'users.class_id')
-            ->join('student_score_average', 'student_score_average.student_id', '=', 'users.id')
-            ->where('student_score_average.semester_id', '=', 3)
-            ->where('users.user_type', '=', 3)
+        $return = self::with('subjects')
+            ->where('users.user_type', '=', 2)
             ->where('users.is_delete', '=', 0);
-        $return = $return->orderBy('student_score_average.avage_score', 'desc')->limit(5)->get();
 
-        return $return;
-    }
-    public static function getTeacher()
-    {
-        $return = User::selectRaw('users.*, subject.name as subject_name')->leftJoin('subject', 'subject.id', '=', 'users.subject_id')->where('users.user_type', '=', 2)->where('users.is_delete', '=', 0);
+        if (!empty($params['mobile_number'])) {
+            $return = $return->where('users.mobile_number', 'like', '%' . $params['mobile_number']  . '%');
+        }
+        if (!empty($params['name'])) {
+            $return = $return->where('users.name', 'like', '%' . $params['name'] . '%');
+        }
+        if (!empty($params['address'])) {
+            $return = $return->where('users.address', 'like', '%' . $params['address'] . '%');
+        }
 
-        if (!empty(Request::get('mobile_number'))) {
-            $return = $return->where('users.mobile_number', 'like', '%' . Request::get('mobile_number') . '%');
-        }
-        if (!empty(Request::get('name'))) {
-            $return = $return->where('users.name', 'like', '%' . Request::get('name') . '%');
-        }
-        if (!empty(Request::get('address'))) {
-            $return = $return->where('users.address', 'like', '%' . Request::get('address') . '%');
-        }
         $return = $return->orderBy('users.id', 'desc')->get();
-        return $return;
-    }
-
-    public static function getStudentTeacher($teacher_id)
-    {
-
-        $return = self::select('users.*', 'class.name as class_name')
-            ->join('class', 'class.id', '=', 'users.class_id')
-            ->join('teacher_class', 'teacher_class.class_id', '=', 'class.id')
-            ->where('teacher_class.teacher_id', '=', $teacher_id)
-            ->where('teacher_class.is_delete', '=', 0)
-            ->where('teacher_class.status', '=', 0)
-            ->where('users.user_type', '=', 3)
-            ->where('users.is_delete', '=', 0);
-        $return = $return->orderBy('users.id', 'desc')->groupBy('users.id')
-            ->get();
-        return $return;
-    }
-
-    public static function getStudentClass()
-    {
-        $return = self::select('users.*')
-            ->join('class', 'class.id', '=', 'users.class_id')
-            ->join('exam', 'exam.class_id', '=', 'class.id')
-            ->where('users.user_type', '=', 3)
-            ->where('users.is_delete', '=', 0);
-        $return = $return->orderBy('users.id', 'desc')->groupBy('users.id')
-            ->get();
         return $return;
     }
 
@@ -211,6 +211,20 @@ class User extends Authenticatable
             ->where('users.status', '=', 0)
             ->orderBy('users.id', 'desc')
             ->get();
+        return $return;
+    }
+
+
+    public static function getStudentStar()
+    {
+        $return = User::selectRaw('users.*, class.name as class_name,student_score_average.avage_score as score')
+            ->leftJoin('class', 'class.id', '=', 'users.class_id')
+            ->join('student_score_average', 'student_score_average.student_id', '=', 'users.id')
+            ->where('student_score_average.semester_id', '=', 3)
+            ->where('users.user_type', '=', 3)
+            ->where('users.is_delete', '=', 0);
+        $return = $return->orderBy('student_score_average.avage_score', 'desc')->limit(5)->get();
+
         return $return;
     }
 }

@@ -65,8 +65,8 @@ class ExamService
                 $dataExam = [
                     'subject_id' => $value->subject_id,
                     'class_id' => $value->class_id,
-                    'subject_name' => $value->subject->name,
-                    'subject_type' => $value->subject->type,
+                    'subject_name' => $value->subjects->name,
+                    'subject_type' => $value->subjects->type,
                 ];
                 $examSchedule = $examSchedules->whereIn('subject_id', $value->subject_id,)
                     ->where('class_id', $classId)
@@ -99,14 +99,39 @@ class ExamService
      *
      * @return \Illuminate\Http\JsonResponse
      */
+    // public function getAcademicData($id, $semester_id)
+    // {
+    //     $data['getClass'] = ClassModel::find($id);
+    //     $getSubject = ClassSubject::MySubject($id);
+    //     $subject_id = $getSubject->pluck('subject_id')->toArray();
+    //     $getStudent = User::getStudentClassExam($id);
+    //     $student_id = $getStudent->pluck('id')->toArray();
+    //     $data['getScore'] = StudentScore::getAcademicRecords($id, $semester_id,  $student_id, $subject_id);
+    //     $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
+    //     $data['getRecord'] = ClassModel::getClassAcademic();
+
+    //     return $data;
+    // }
     public function getAcademicData($id, $semester_id)
     {
-        $data['getClass'] = ClassModel::find($id);
-        $data['getSubject'] = ClassSubject::MySubject($id);
-        $data['getScore'] = ExamScore::getAcademicRecords($id, $semester_id);
-        $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
-        $data['getRecord'] = ClassModel::getClassAcademic();
-        $data['getStudent'] = User::getStudentClassExam($id);
+        $class = ClassModel::find($id);
+        $subjects = ClassSubject::MySubject($id)->pluck('subject_id')->toArray();
+        $students = User::getStudentClassExam($id)->pluck('id')->toArray();
+        $scores = StudentScore::getAcademicRecords($id, $semester_id, $students, $subjects);
+
+        $examSemesters = Semester::whereIn('id', [1, 2])->get();
+        $academicRecords = ClassModel::getClassAcademic();
+        // Đưa tất cả các biến vào trong một mảng data lớn hơn
+        $data = [
+            'class' => $class,
+            'subjects' => $subjects,
+            'students' => $students,
+            'scores' => $scores,
+            'examSemesters' => $examSemesters,
+            'academicRecords' => $academicRecords,
+            'getSubject' => ClassSubject::MySubject($id),
+            'getStudent' => User::getStudentClassExam($id),
+        ];
 
         return $data;
     }
@@ -250,14 +275,19 @@ class ExamService
      *
      * @return RedirectResponse
      */
-    public function insertScore(Request $request)
+    public function insertScore($class_id, $subject_id, $semester_id, $exam_score)
     {
-        ExamScore::where('class_id', $request->class_id)
-            ->where('subject_id', $request->subject_id)
-            ->where('semester_id', $request->semester_id)
+        $response = [
+            'status' => '',
+            'message' => ''
+        ];
+
+        ExamScore::where('class_id', $class_id)
+            ->where('subject_id', $subject_id)
+            ->where('semester_id', $semester_id)
             ->delete();
 
-        foreach ($request->exam_score as $studentId => $scores) {
+        foreach ($exam_score as $studentId => $scores) {
             $total = 0;
             $total_weight = 0;
 
@@ -267,101 +297,68 @@ class ExamService
                     $subtotal = $scoreData['score'] * $exam->description;
                     $total += $subtotal;
                     $total_weight += $exam->description;
-                    $this->createExamScoreRecord($request, $studentId, $scoreData);
+                    $this->createExamScoreRecord($class_id, $subject_id, $semester_id, $studentId, $scoreData);
                 }
             }
 
-            $this->calculateStudentAverage($request, $studentId, $total, $total_weight);
+            $this->calculateStudentAverage($class_id, $subject_id, $semester_id, $studentId, $total, $total_weight);
         }
 
-        $this->updateStudentScores($request);
+        $this->updateStudentScores($class_id, $semester_id);
 
-        return redirect()->back()->with('success', 'Exam scores have been saved.');
+        $response['status'] = 'success';
+        $response['message'] = 'Exam scores have been saved.';
+
+        return $response;
     }
 
-    /**
-     * Validate score data for a given student and exam.
-     *
-     * @param mixed $studentId The student ID.
-     * @param array $scoreData The exam score data.
-     *
-     * @return bool
-     */
+
     public function validateScoreData($studentId, $scoreData)
     {
         return !empty($studentId)
             && !empty($scoreData['exam_id'])
             && !empty($scoreData['score']);
     }
-
-    /**
-     * Create an exam score record for a given student and score.
-     *
-     * @param Request $request   The HTTP request object.
-     * @param mixed   $studentId The student ID.
-     * @param array   $scoreData The exam score data.
-     *
-     * @return void
-     */
-    public function createExamScoreRecord($request, $studentId, $scoreData)
+    public function createExamScoreRecord($class_id, $subject_id, $semester_id, $studentId, $scoreData)
     {
         ExamScore::create(
             [
                 'exam_id' => $scoreData['exam_id'],
-                'class_id' => $request->class_id,
-                'semester_id' => $request->semester_id,
-                'subject_id' => $request->subject_id,
+                'class_id' => $class_id,
+                'semester_id' => $semester_id,
+                'subject_id' => $subject_id,
                 'student_id' => $studentId,
                 'score' => $scoreData['score'],
                 'created_by' => Auth::user()->id,
             ]
         );
     }
-
-    /**
-     * Calculate the average score for a given student.
-     *
-     * @param Request $request      The HTTP request object.
-     * @param mixed   $studentId    The student ID.
-     * @param float   $total        The total score for the student.
-     * @param float   $total_weight The total weight of all exams.
-     *
-     * @return void
-     */
-    public function calculateStudentAverage($request, $studentId, $total, $total_weight)
+    public function calculateStudentAverage($class_id, $subject_id, $semester_id, $studentId, $total, $total_weight)
     {
         if ($total_weight > 0) {
             $average = $total / $total_weight;
             StudentScore::updateOrCreate(
                 [
-                    'class_id' => $request->input('class_id'),
-                    'semester_id' => $request->input('semester_id'),
-                    'subject_id' => $request->input('subject_id'),
+                    'class_id' => $class_id,
+                    'semester_id' => $semester_id,
+                    'subject_id' => $subject_id,
                     'student_id' => $studentId,
                 ],
                 [
                     'score' => $average,
-                    'class_id' => $request->input('class_id'),
-                    'semester_id' => $request->input('semester_id'),
-                    'subject_id' => $request->input('subject_id'),
+                    'class_id' => $class_id,
+                    'semester_id' => $semester_id,
+                    'subject_id' => $subject_id,
                     'student_id' => $studentId,
                 ]
             );
         }
     }
-
-    /**
-     * Calculate the update average score for a given student.
-     *
-     * @param Request $request The HTTP request object.
-     *
-     * @return void
-     */
-    public function updateStudentScores($request)
+    public function updateStudentScores($class_id, $semester_id)
     {
-        $students = User::getStudentClassExam($request->class_id);
-        $subjects = ClassSubject::MySubject($request->class_id);
-        $scores = ExamScore::getAcademicRecords($request->class_id, $request->semester_id);
+        $students = User::getStudentClassExam($class_id);
+        $subjects = ClassSubject::MySubject($class_id);
+        $scores = StudentScore::getAcademicRecords($class_id, $semester_id);
 
         foreach ($students as $student) {
             $scoredSubjects = $scores
@@ -375,7 +372,7 @@ class ExamService
                 ->sum('score');
 
             if (count($scoredSubjects) === count($subjects)) {
-                $this->calculateAndSaveSemesterAverage($student->id, $request->semester_id, $totalScore, $subjects);
+                $this->calculateAndSaveSemesterAverage($student->id, $semester_id, $totalScore, $subjects);
             }
 
             if ($this->hasSufficientDataForYearlyAverage($student)) {
@@ -384,16 +381,6 @@ class ExamService
         }
     }
 
-    /**
-     * Calculate the average score for a given student.
-     *
-     * @param mixed $studentId  The student ID.
-     * @param int   $semesterId The ID of the semester
-     * @param float $totalScore The total score for the student.
-     * @param $subjects   The total weight of all exams.
-     *
-     * @return void
-     */
     public function calculateAndSaveSemesterAverage($studentId, $semesterId, $totalScore, $subjects)
     {
         $average = number_format($totalScore / count($subjects), 2);
@@ -403,14 +390,6 @@ class ExamService
             ['avage_score' => $average]
         );
     }
-
-    /**
-     * Calculate the average score for a given student.
-     *
-     * @param $student The student.
-     *
-     * @return void
-     */
     public function hasSufficientDataForYearlyAverage($student)
     {
         $semester1Average = StudentScoreSemester::where('student_id', $student->id)
@@ -423,14 +402,6 @@ class ExamService
 
         return $semester1Average !== null && $semester2Average !== null;
     }
-
-    /**
-     * Calculate the average score year for a given student.
-     *
-     * @param $student The student.
-     *
-     * @return void
-     */
     public function calculateAndSaveYearlyAverage($student)
     {
         $semester_1_average_score = StudentScoreSemester::where('student_id', $student->id)
@@ -547,38 +518,12 @@ class ExamService
      *
      * @return \Illuminate\View\View
      */
-    public function getMyExam($request, $class_id)
+    public function getMyExam($semester_id, $class_id)
     {
-        $getExam = ExamSchedule::getExam($class_id);
-        $semester_id = $request->semester_id;
-        $result = array();
-        foreach ($getExam as $value) {
-            $dataE = array();
-            $dataE['name'] = $value->exam_name;
-            $getExamTimeTable = ExamSchedule::getExamTimeTable(
-                $value->exam_id,
-                $class_id,
-                $semester_id
-            );
-
-            $resultS = array();
-            foreach ($getExamTimeTable as $valueS) {
-                $dataS = array();
-                $dataS['subject_name'] = $valueS->subject_name;
-                $dataS['exam_date'] = $valueS->exam_date;
-                $dataS['start_time'] = $valueS->start_time;
-                $dataS['end_time'] = $valueS->end_time;
-                $dataS['room_number'] = $valueS->room_number;
-                $dataS['full_mark'] = $valueS->full_mark;
-                $dataS['passing_mark'] = $valueS->passing_mark;
-                $resultS[] = $dataS;
-            }
-            $dataE['exam'] = $resultS;
-            $result[] = $dataE;
-        }
-
-        return $result;
+        $data =  ExamSchedule::getMyExam($semester_id, $class_id);
+        return $data;
     }
+
     /**
      * Get My Exam Teacher.
      *
@@ -630,6 +575,7 @@ class ExamService
 
         return $result;
     }
+
 
     /**
      * Add Scores By Teacher.

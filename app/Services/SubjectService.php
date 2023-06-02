@@ -15,6 +15,7 @@ namespace App\Services;
 
 use App\Http\Requests\SubjectRequest;
 use App\Models\ClassSubject;
+use App\Models\ClassTeacher;
 use App\Models\Subject;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -37,9 +38,9 @@ class SubjectService
      *
      * @return array
      */
-    public function getSubjects()
+    public function getSubjects(array $params = [])
     {
-        return Subject::getRecord();
+        return Subject::getRecord($params);
     }
     /**
      * Add a new subject
@@ -75,7 +76,7 @@ class SubjectService
      */
     public function deleteSubject($id)
     {
-        $subject = Subject::getSubjectId($id);
+        $subject = Subject::find($id);
         $subject->is_delete = 1;
         $subject->save();
     }
@@ -88,7 +89,7 @@ class SubjectService
      */
     public function getSubjectById($id)
     {
-        return Subject::getSubjectId($id);
+        return Subject::find($id);
     }
     /**
      * Update Subject By Id
@@ -113,6 +114,6 @@ class SubjectService
      */
     public function getMySubjects($class_id)
     {
-        return ClassSubject::getMySubjectTeacher($class_id);
+        return ClassTeacher::getMySubjectTeacher($class_id);
     }
 }

@@ -19,38 +19,98 @@ class ClassModel extends Model
         'is_delete',
     ];
 
-    // public function users()
-    // {
-    //     return $this->hasMany(User::class);
-    // }
-
-    public static function getClassId($id)
+    public function createdBy()
     {
-        return self::find($id);
+        return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function examScores()
+    {
+        return $this->hasMany(ExamScore::class, 'class_id');
+    }
+
+    public function teacherClasses()
+    {
+        return $this->hasMany(User::class, 'class_id', 'id')
+            ->where('is_delete', '=', 0)
+            ->where('user_type', '=', 2)
+            ->where('status', '=', 0);
+    }
+
+    public function students()
+    {
+        return $this->hasMany(User::class, 'class_id')->where('user_type', 3)->where('is_delete', 0);
+    }
+
+    public function teachers()
+    {
+        return $this->hasMany(ClassTeacher::class, 'class_id', 'id');
+    }
+
+
+
+
+
     protected $casts = [
         'created_at' => 'date:d-m-Y',
     ];
 
     public static function getClass()
     {
-        $return = ClassModel::select('class.*')
-            ->join('users', 'users.id', 'class.created_by')
-            ->where('class.is_delete', '=', 0)
-            ->where('class.status', '=', 0)
-            ->orderBy('class.name', 'asc')->get();
+        $return = ClassModel::with('createdBy')
+            ->where('is_delete', 0)
+            ->where('status', 0)
+            ->orderBy('name', 'asc')
+            ->get();
         return $return;
     }
 
     public static function getClassAcademic()
     {
-        $return = ClassModel::select('class.*', 'exam_score.semester_id as semester_id ')
-            ->join('exam_score', 'exam_score.class_id', '=', 'class.id')
-            ->where('class.is_delete', '=', 0)
-            ->where('class.status', '=', 0)
-            ->orderBy('class.name', 'asc')->first()->get();
+        $return = ClassModel::with(['examScores' => function ($query) {
+            $query->select('semester_id', 'class_id');
+        }])
+            ->where('is_delete', 0)
+            ->where('status', 0)
+            ->orderBy('name', 'asc')
+            ->get();
         return $return;
     }
+
+    public static function getRecord($name = '', $type = '', $date = '')
+    {
+        $query = self::with('createdBy')
+            ->where('is_delete', 0);
+
+        if (!empty($name)) {
+            $query = $query->where('class.name', 'like', '%' . $name . '%');
+        }
+
+        if (!empty($type)) {
+            $query = $query->where('class.type', 'like', '%' . $type . '%');
+        }
+
+        if (!empty($date)) {
+            $query = $query->whereDate('class.created_at', '=', $date);
+        }
+
+        $query = $query->orderBy('class.id', 'desc')->get();
+        return $query;
+    }
+
+
+    public static function getStudentTeacher($teacher_id)
+    {
+        $return = ClassModel::with(['students'])
+            ->whereHas('teachers', function ($query) use ($teacher_id) {
+                $query->where('teacher_id', $teacher_id)->where('status', 0);
+            })
+            ->orderBy('id', 'desc')
+            ->get();
+        return $return;
+    }
+
+
 
     public static function getStudent($id)
     {
@@ -61,49 +121,6 @@ class ClassModel extends Model
             ->where('class.status', '=', 0)
             ->where('class.id', '=', $id)
             ->orderBy('student_name', 'asc')->get();
-        return $return;
-    }
-
-    public static function getRecord()
-    {
-        $return = ClassModel::select('class.*', 'users.name as created_by_name')->join('users', 'users.id', 'class.created_by');
-        if (!empty(Request::get('name'))) {
-            $return = $return->where('class.name', 'like', '%' . Request::get('name') . '%');
-        }
-        if (!empty(Request::get('type'))) {
-            $return = $return->where('class.type', 'like', '%' . Request::get('type') . '%');
-        }
-        if (!empty(Request::get('date'))) {
-            $return = $return->whereDate('class.created_at', '=', Request::get('date'));
-        }
-
-        $return = $return->where('class.is_delete', '=', 0)->orderBy('class.id', 'desc')->get();
-        return $return;
-    }
-    public static function getTeacherClass($id)
-    {
-        $return = ClassModel::select('class.*', 'class.name as class_name')
-            ->join('users', 'users.class_id', '=', 'class.id')
-            ->where('users.is_delete', '=', 0)
-            ->where('class.status', '=', 0)
-            ->where('users.id', '=', $id)
-            ->orderBy('class_name', 'asc')->get();
-        return $return;
-    }
-
-    public static function getStudentTeacher($teacher_id)
-    {
-
-        $return = ClassModel::select('class.*', 'class.name as class_name', 'users.name as created_by_name')
-            ->join('users', 'users.class_id', '=', 'class.id')
-            ->join('teacher_class', 'teacher_class.class_id', '=', 'class.id')
-            ->where('teacher_class.teacher_id', '=', $teacher_id)
-            ->where('teacher_class.is_delete', '=', 0)
-            ->where('teacher_class.status', '=', 0)
-            ->where('users.user_type', '=', 3)
-            ->where('users.is_delete', '=', 0)
-            ->orderBy('class.id', 'desc')->groupBy('class.id')
-            ->get();
         return $return;
     }
 }

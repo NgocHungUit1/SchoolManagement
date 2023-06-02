@@ -40,9 +40,9 @@ class StudentService
      *
      * @return array
      */
-    public function getAllStudents()
+    public function getAllStudents(array $params = [])
     {
-        return User::getStudent();
+        return User::getStudent($params);
     }
 
     /**

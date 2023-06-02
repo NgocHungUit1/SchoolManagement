@@ -87,7 +87,7 @@
                                         <tr>
                                             <th>Subject</th>
                                             @foreach ($getExam as $value)
-                                                <th>{{ $value->exam_name }}</th>
+                                                <th>{{ $value->exam->name }}</th>
                                             @endforeach
                                             <th>
                                                 Average Score
@@ -104,7 +104,7 @@
 
                                         @foreach ($getSubject as $subject)
                                             <tr>
-                                                <td>{{ $subject->subject_name }}</td>
+                                                <td>{{ $subject->subjects->name }}</td>
                                                 @php
                                                     $i = 1;
                                                     $total = 0;

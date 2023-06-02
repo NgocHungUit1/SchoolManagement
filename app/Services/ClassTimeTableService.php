@@ -23,6 +23,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Week;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * ClassTimeTableService
@@ -45,53 +46,42 @@ class ClassTimeTableService
      *
      * @return array
      */
+
+    //Sử dụng method keyBy để biến đổi classSubjectList thành một associative array với key là day_id, giúp việc tìm kiếm thông tin cho ngày học trở nên nhanh chóng hơn.
+    // Sử dụng method map thay vì foreach để sinh ra một mảng mới được biến đổi từ mảng daysOfWeek ban đầu. Method map sẽ trả về một collection mới sau khi áp dụng callback function truyền vào trên mỗi phần tử của mảng gốc.
+    // Sử dụng toArrayOf để chuyển collection thành mảng.
     public static function getClassTimetable($class_id, $subject_id, $semester_id)
     {
-        $data = [
-            'getClass' => ClassModel::getClass(),
-            'getExamSemester' => Semester::whereIn('id', [1, 2])->get(),
-            'ClassSubjectDate' => ClassSubjectTimeTable::getDate($class_id, $subject_id, $semester_id),
-            'day' => [],
-        ];
-
-        if (!empty($class_id)) {
-            $data['getSubject'] = ClassSubject::MySubject($class_id);
-        }
+        $daysOfWeek = Week::all();
 
         $classSubjectList = ClassSubjectTimeTable::getRecord(
             [$class_id],
             [$subject_id],
             Week::pluck('id')->toArray(),
             $semester_id
-        );
-        $daysOfWeek = Week::all();
+        )->keyBy('day_id');
 
-        foreach ($daysOfWeek as $day) {
-            $ClassSubject = $classSubjectList->where('class_id', $class_id)
-                ->where('subject_id', $subject_id)
-                ->where('day_id', $day->id)
-                ->where('semester_id', $semester_id)
-                ->first();
-
-            $dataDay = [
-                'day_id' => $day->id,
-                'day_name' => $day->name,
-                'start_time' => '',
-                'end_time' => '',
-                'room_number' => '',
-            ];
-
-            if ($ClassSubject) {
-                $dataDay['start_time'] = $ClassSubject->start_time;
-                $dataDay['end_time'] = $ClassSubject->end_time;
-                $dataDay['room_number'] = $ClassSubject->room_number;
-            }
-
-            $data['day'][] = $dataDay;
-        }
+        $data = [
+            'getClass' => ClassModel::getClass(),
+            'getExamSemester' => Semester::whereIn('id', [1, 2])->get(),
+            'ClassSubjectDate' => ClassSubjectTimeTable::getDate($class_id, $subject_id, $semester_id),
+            'getSubject' => !empty($class_id) ? ClassSubject::MySubject($class_id) : null,
+            'day' => $daysOfWeek->map(function ($day) use ($classSubjectList) {
+                $classSubject = $classSubjectList->get($day->id);
+                return [
+                    'day_id' => $day->id,
+                    'day_name' => $day->name,
+                    'start_time' => $classSubject ? $classSubject->start_time : '',
+                    'end_time' => $classSubject ? $classSubject->end_time : '',
+                    'room_number' => $classSubject ? $classSubject->room_number : '',
+                ];
+            })->toArray(),
+        ];
 
         return $data;
     }
+
+
 
 
     /**
@@ -218,7 +208,6 @@ class ClassTimeTableService
      */
     public function getTeacherTimeTable($class_id, $subject_id, $semester_id)
     {
-
         $weekIDs = Week::pluck('id')->toArray();
         $classSubjectList = ClassSubjectTimeTable::getRecord([$class_id], [$subject_id], $weekIDs, $semester_id);
         $result = [];

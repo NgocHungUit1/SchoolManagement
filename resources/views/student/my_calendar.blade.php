@@ -80,27 +80,23 @@
     <script type="text/javascript">
         var events = new Array();
 
-        @foreach ($getExamTimeTable as $valueE)
-            @foreach ($valueE['exam'] as $exam)
-                events.push({
-                    title: 'Exam : {{ $valueE['name'] }} - {{ $exam['subject_name'] }} ({{ date('h:m A', strtotime($exam['start_time'])) }} to {{ date('h:m A', strtotime($exam['end_time'])) }})',
-                    start: '{{ $exam['exam_date'] }}',
-                    end: '{{ $exam['exam_date'] }}',
-                    color: 'red',
-                    url: '{{ url('student/my-exam') }}'
-                });
-            @endforeach
+        @foreach ($getExamTimeTable as $exam)
+            events.push({
+                title: 'Exam : {{ $exam->exam['name'] }} - {{ $exam->subject['name'] }} ({{ date('h:m A', strtotime($exam['start_time'])) }} to {{ date('h:m A', strtotime($exam['end_time'])) }})',
+                start: '{{ $exam['exam_date'] }}',
+                end: '{{ $exam['exam_date'] }}',
+                color: 'red',
+                url: '{{ url('student/my-exam') }}'
+            });
         @endforeach
 
         @foreach ($getTimeTable as $value)
-            @foreach ($value['day'] as $day)
-                events.push({
-                    title: 'Subject : {{ $value['name'] }} - Room   : {{ $day['room_number'] }} -  \nTeacher : {{ $value['teacher_name'] }} ',
-                    daysOfWeek: [{{ $day['fullcalendar_day'] }}],
-                    startTime: '{{ $day['start_time'] }}',
-                    endTime: '{{ $day['end_time'] }}',
-                });
-            @endforeach
+            events.push({
+                title: 'Subject : {{ $value->subjects['name'] }} - Room   : {{ $value['room_number'] }} -  }}  ',
+                daysOfWeek: [{{ $value->days['fullcalendar_day'] }}],
+                startTime: '{{ $value['start_time'] }}',
+                endTime: '{{ $value['end_time'] }}',
+            });
         @endforeach
 
         var calendarID = document.getElementById('calendar');

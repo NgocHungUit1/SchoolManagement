@@ -130,13 +130,13 @@
                             data: "id"
                         },
                         {
-                            data: "class_name"
+                            data: "classes.name"
                         },
                         {
-                            data: "subject_name"
+                            data: "subjects.name"
                         },
                         {
-                            data: "created_by_name"
+                            data: "created_by.name"
                         },
                         {
                             data: "created_at"

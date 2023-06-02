@@ -18,6 +18,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\InsertStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Services\StudentService;
+use Illuminate\Http\Request;
 
 /**
  * StudentController
@@ -58,8 +59,6 @@ class StudentController extends Controller
     public function list()
     {
         $data['getRecord'] = $this->service->getAllStudents();
-
-
         return view('admin.student.list', $data);
     }
 
@@ -68,9 +67,18 @@ class StudentController extends Controller
      *
      * @return array Array containing all student records
      */
-    public function getData()
+    public function getData(Request $request)
     {
-        $data['data'] = $this->service->getAllStudents();
+        $mobile_number = $request->input('mobile_number');
+        $name = $request->input('name');
+        $class = $request->input('class');
+
+        $params = [
+            'mobile_number' => $mobile_number,
+            'class' => $class,
+            'name' => $name
+        ];
+        $data['data'] = $this->service->getAllStudents($params);
         return $data;
     }
 

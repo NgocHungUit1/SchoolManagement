@@ -57,9 +57,9 @@
                                         @foreach ($getRecord as $key => $value)
                                             <tr id="sid{{ $value->id }}">
                                                 <td>{{ $key + 1 }}</td>
-                                                <td>{{ $value->class_name }}</td>
-                                                <td>{{ $value->subject_name }}</td>
-                                                <td>{{ $value->subject_type }}</td>
+                                                <td>{{ $value->classes->name }}</td>
+                                                <td>{{ $value->subjects->name }}</td>
+                                                <td>{{ $value->subjects->type }}</td>
                                                 <td>{{ date('d-m-Y H:i A', strtotime($value->created_at)) }}</td>
                                                 <td>
                                                     <a style="color:white" class="btn btn-success" data-bs-toggle="modal"

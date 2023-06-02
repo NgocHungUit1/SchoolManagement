@@ -18,12 +18,4 @@ class StudentScoreSemester extends Model
         'average_score_year',
         'rank'
     ];
-
-    public static function getAcademicRecords()
-    {
-        return StudentScoreSemester::select('student_score_average.*', 'users.name as student_name', 'class.name as class_name')
-            ->join('users', 'users.id', '=', 'student_score_average.student_id')
-            ->join('class', 'class.id', '=', 'users.class_id')
-            ->get();
-    }
 }

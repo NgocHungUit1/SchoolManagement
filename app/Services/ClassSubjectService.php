@@ -40,10 +40,11 @@ class ClassSubjectService
      *
      * @return mixed
      */
-    public function getList()
+    public function getList(array $params = [])
     {
-        return ClassSubject::getRecord();
+        return ClassSubject::getRecord($params);
     }
+
 
     /**
      * Get a class subject by ID.
@@ -76,19 +77,16 @@ class ClassSubjectService
      *
      * @return bool True if the addition was successful, false otherwise.
      */
-    public function add($request)
+    public function add($class_id, $subject_ids, $status)
     {
         try {
-            if (!empty($request->subject_id)) {
-                foreach ($request->subject_id as $subject_id) {
-                    $getAlready = ClassSubject
-                        ::getAlreadyFirst($request->class_id, $subject_id);
-                    $status = $request->status;
-
+            if (!empty($subject_ids)) {
+                foreach ($subject_ids as $subject_id) {
+                    $getAlready = ClassSubject::getAlreadyFirst($class_id, $subject_id);
                     $getAlready ? $getAlready->update(compact('status'))
                         : ClassSubject::create(
                             [
-                                'class_id' => $request->class_id,
+                                'class_id' => $class_id,
                                 'subject_id' => $subject_id,
                                 'status' => $status,
                                 'created_by' => Auth::user()->id,
@@ -105,6 +103,7 @@ class ClassSubjectService
         }
     }
 
+
     /**
      * Update the assigned subjects for a given class ID.
      *
@@ -112,20 +111,19 @@ class ClassSubjectService
      *
      * @return bool True if the update was successful, false otherwise.
      */
-    public function update($request)
+    public function update($class_id, $subject_ids, $status)
     {
         try {
-            ClassSubject::deleteSubject($request->class_id);
-            if (!empty($request->subject_id)) {
-                foreach ($request->subject_id as $subject_id) {
+            ClassSubject::deleteSubject($class_id);
+            if (!empty($subject_ids)) {
+                foreach ($subject_ids as $subject_id) {
                     $getAlready = ClassSubject
-                        ::getAlreadyFirst($request->class_id, $subject_id);
-                    $status = $request->status;
+                        ::getAlreadyFirst($class_id, $subject_id);
 
                     $getAlready ? $getAlready->update(compact('status'))
                         : ClassSubject::create(
                             [
-                                'class_id' => $request->class_id,
+                                'class_id' => $class_id,
                                 'subject_id' => $subject_id,
                                 'status' => $status,
                                 'created_by' => Auth::user()->id,
@@ -141,6 +139,7 @@ class ClassSubjectService
             throw new Exception('Update class subject error!');
         }
     }
+
 
     /**
      * Delete a class subject by ID.

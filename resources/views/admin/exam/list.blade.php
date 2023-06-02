@@ -26,9 +26,10 @@
                             @include('_message')
                             <div class="col-lg-3 col-md-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control exam" name="exam"
+                                    <input type="text" class="form-control exam" name="exam_name"
                                         value="{{ Request::get('exam_name') }}" placeholder="Search by Exam Name ...">
                                 </div>
+
                             </div>
 
                             <div class="col-lg-2">
@@ -120,7 +121,7 @@
                             data: "description"
                         },
                         {
-                            data: "created_by_name"
+                            data: "created_by.name"
                         },
                         {
                             data: ""
@@ -155,15 +156,14 @@
             })
 
             function handleSearch() {
-                const class_name = $(".class").val();
-                const subject_name = $(".subject").val();
                 const exam_name = $(".exam").val();
                 var exam_table = $('.exam_table').DataTable();
                 exam_table.ajax.url(
-                        `/admin/exam/getData?class=${class_name}&subject=${subject_name}&exam=${exam_name}`)
-                    .load();
+                    `/admin/exam/getData?exam=${encodeURIComponent(exam_name)}`
+                ).load();
                 exam_table.draw();
             }
+
 
             function handleReset() {
                 var exam_table = $('.exam_table').DataTable();

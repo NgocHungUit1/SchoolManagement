@@ -68,7 +68,6 @@ class CalendarController extends Controller
         $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
         $data['getTimeTable'] = $this->calendarService
             ->getTimeTable($request->semester_id, Auth::user()->class_id);
-        // Lấy semester_id từ request
         $data['getExamTimeTable'] = $this->calendarService
             ->getExamTimeTable($request->semester_id, Auth::user()->class_id);
         return view('student.my_calendar', $data)
@@ -88,7 +87,6 @@ class CalendarController extends Controller
         $semester_id = $request->semester_id;
         $data['getCalendarTeacher'] = ClassTeacher::getCalendarTeacher($teacher_id, $semester_id);
         $data['getExamCalendar'] = $this->examService->getMyExamTeacher($request, $teacher_id);
-        // dd($data);
         return view('teacher.my_calendar', $data)
             ->with('success', 'My Time Table Teacher ');
     }

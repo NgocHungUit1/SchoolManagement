@@ -100,7 +100,7 @@
 
         @foreach ($getCalendarTeacher as $value)
             events.push({
-                title: 'Class : {{ $value->class_name }} - Subject : {{ $value->subject_name }} - Room :{{ $value->room_number }} ',
+                title: 'Class : {{ $value->classes->name }} - Subject : {{ $value->subjects->name }} - Room :{{ $value->room_number }} ',
                 daysOfWeek: [{{ $value->fullcalendar_day }}],
                 startTime: '{{ $value->start_time }}',
                 endTime: '{{ $value->end_time }}',

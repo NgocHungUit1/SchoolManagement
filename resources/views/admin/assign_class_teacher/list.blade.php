@@ -131,13 +131,13 @@
                             data: "id"
                         },
                         {
-                            data: "classroom.name"
+                            data: "classes.name"
                         },
                         {
-                            data: "subject.name"
+                            data: "subjects.name"
                         },
                         {
-                            data: "teacher.name"
+                            data: "teachers.name"
                         },
                         {
                             data: "created_by.name"
