@@ -42,6 +42,11 @@ class TeacherService
      *
      * @return Redirect Redirect response to teacher list page
      */
+    public function getAllTeachers(array $params = [])
+    {
+        return User::getTeacher($params);
+    }
+
     public function createTeacher(TeacherRequest $request)
     {
         $data = $request->validated();
@@ -149,6 +154,7 @@ class TeacherService
     public function getMyStudent()
     {
         $data['getRecord'] = ClassModel::getStudentTeacher(Auth::user()->id);
+
         return view('teacher.my_student_class', $data);
     }
     /**
@@ -164,24 +170,10 @@ class TeacherService
         $data['getClass'] = ClassModel::find($id);
         return view('admin.class.view', $data);
     }
-    /**
-     * Display view my Class
-     *
-     * @return \Illuminate\View\View View
-     */
-    public function getMyClass()
-    {
-        $data['getRecord'] = ClassModel::getTeacherClass(Auth::user()->id);
-        return view('teacher.my_student_class', $data);
-    }
+
     /**
      * Display view my Student
      *
      * @return \Illuminate\View\View View
      */
-    public function getMyStudentList()
-    {
-        $data['getRecord'] = User::getStudentTeacher(Auth::user()->id);
-        return $data;
-    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\Constants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Request;
@@ -19,30 +20,45 @@ class Subject extends Model
         'is_delete',
     ];
 
+    public function examScores()
+    {
+        return $this->hasMany(ExamScore::class);
+    }
+
     public function user()
     {
         return $this->belongsTo('App\Models\User', 'created_by');
     }
 
-    public static function getRecord()
+    public function teachers()
     {
-        $return = Subject::select('subject.*', 'users.name as created_by_name')->join('users', 'users.id', 'subject.created_by');
-        if (!empty(Request::get('name'))) {
-            $return = $return->where('subject.name', 'like', '%' . Request::get('name') . '%');
+        return $this->hasMany(ClassTeacher::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function timetables()
+    {
+        return $this->hasMany(ClassSubjectTimetable::class);
+    }
+    public static function getRecord(array $params = [])
+    {
+        $return = Subject::with('createdBy');
+        if (!empty($params['name'])) {
+            $return = $return->where('subject.name', 'like', '%' . $params['name'] . '%');
         }
-        if (!empty(Request::get('type'))) {
-            $return = $return->where('subject.type', 'like', '%' . Request::get('type') . '%');
+        if (!empty($params['type'])) {
+            $return = $return->where('subject.type', 'like', '%' . $params['type']  . '%');
         }
-        if (!empty(Request::get('status'))) {
-            $return = $return->where('subject.status', 'like', '%' . Request::get('status') . '%');
+        if (!empty($params['status'])) {
+            $return = $return->where('subject.status', 'like', '%' . $params['status']  . '%');
         }
 
         $return = $return->where('subject.is_delete', '=', 0)->orderBy('subject.id', 'desc')->get();
         return $return;
-    }
-    public static function getSubjectId($id)
-    {
-        return self::find($id);
     }
 
 
@@ -51,8 +67,8 @@ class Subject extends Model
     {
         $return = Subject::select('subject.*')
             ->join('users', 'users.id', 'subject.created_by')
-            ->where('subject.is_delete', '=', 0)
-            ->where('subject.status', '=', 0)
+            ->where('subject.is_delete', '=', Constants::IS_NOT_DELETED)
+            ->where('subject.status', '=',  Constants::STATUS_ACTIVE)
             ->orderBy('subject.name', 'asc')->get();
         return $return;
     }

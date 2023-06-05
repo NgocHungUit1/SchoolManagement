@@ -161,7 +161,7 @@
                             data: "created_at"
                         },
                         {
-                            data: "created_by_name"
+                            data: "created_by.name"
                         },
                         {
                             data: "status"

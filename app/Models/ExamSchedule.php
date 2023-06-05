@@ -23,20 +23,44 @@ class ExamSchedule extends Model
         'created_by',
         'semester_id'
     ];
-
-    public function exam()
-    {
-        return $this->belongsTo(Exam::class, 'exam_id'); // Mối quan hệ 1-nhiều (Belongs To) với bảng Class (Laravel sẽ tự đoán khóa ngoại là class_id)
-    }
-
     public function subject()
     {
-        return $this->belongsTo(Subject::class, 'subject_id'); // Mối quan hệ 1-nhiều (Belongs To) với bảng Subject (Laravel sẽ tự đoán khóa ngoại là subject_id)
+        return $this->belongsTo(Subject::class, 'subject_id');
     }
 
     public function classroom()
     {
-        return $this->belongsTo(ClassModel::class, 'class_id'); // Mối quan hệ 1-nhiều (Belongs To) với bảng Class (Laravel sẽ tự đoán khóa ngoại là class_id)
+        return $this->belongsTo(ClassModel::class, 'class_id');
+    }
+
+    public function exam()
+    {
+        return $this->belongsTo(Exam::class, 'exam_id');
+    }
+
+    public static function getExamTimeTable($exam_id, $class_id, $semester_id)
+    {
+        return ExamSchedule::with(['subject', 'exam', 'classroom'])
+            ->whereHas('subject', function ($query) {
+                $query->where('is_delete', 0)->where('status', 0);
+            })
+            ->where('exam_id', $exam_id)
+            ->where('class_id', $class_id)
+            ->where('semester_id', $semester_id)
+            ->get();
+    }
+
+    public static function getMyExam($semester_id, $class_id)
+    {
+        return ExamSchedule::with(['subject', 'exam', 'classroom'])
+            ->where('semester_id', $semester_id)
+            ->whereIn('exam_id', function ($query) use ($class_id) {
+                $query->select('exam_id')
+                    ->from('exam_schedule')
+                    ->where('class_id', $class_id)
+                    ->groupBy('exam_id');
+            })
+            ->get();
     }
 
 
@@ -54,39 +78,16 @@ class ExamSchedule extends Model
             ->get();
     }
 
-    public static function getExamTimeTable($exam_id, $class_id, $semester_id)
+    public static function getExamTimeTableTeacher($exam_id, $class_id, $subject_id, $semester_id)
     {
-        return ExamSchedule::with('subject')
+        return ExamSchedule::with(['subject', 'exam', 'classroom'])
             ->whereHas('subject', function ($query) {
                 $query->where('is_delete', 0)->where('status', 0);
             })
             ->where('exam_id', $exam_id)
             ->where('class_id', $class_id)
+            ->where('subject_id', $subject_id)
             ->where('semester_id', $semester_id)
-            ->get();
-    }
-
-
-    // public static function getExamTimeTable($exam_id, $class_id, $semester_id)
-    // {
-    //     return ExamSchedule::select('exam_schedule.*', 'subject.name as subject_name', 'subject.type as subject_type')
-    //         ->join('subject', 'subject.id', '=', 'exam_schedule.subject_id')
-    //         ->where('subject.is_delete', '=', 0)
-    //         ->where('subject.status', '=', 0)
-    //         ->where('exam_schedule.exam_id', '=', $exam_id)
-    //         ->where('exam_schedule.class_id', '=', $class_id)
-    //         ->where('exam_schedule.semester_id', '=', $semester_id)
-    //         ->get();
-    // }
-
-    public static function getExamTimeTableTeacher($exam_id, $class_id, $subject_id, $semester_id)
-    {
-        return ExamSchedule::select('exam_schedule.*', 'subject.name as subject_name', 'subject.type as subject_type')
-            ->join('subject', 'subject.id', '=', 'exam_schedule.subject_id')
-            ->where('exam_schedule.exam_id', '=', $exam_id)
-            ->where('exam_schedule.class_id', '=', $class_id)
-            ->where('exam_schedule.subject_id', '=', $subject_id)
-            ->where('exam_schedule.semester_id', '=', $semester_id)
             ->get();
     }
 
@@ -99,16 +100,6 @@ class ExamSchedule extends Model
             ->groupBy('exam_id')
             ->get();
     }
-
-
-    // public static function getExam($class_id)
-    // {
-    //     return ExamSchedule::select('exam_schedule.*', 'exam.name as exam_name', 'exam.description as percent')
-    //         ->join('exam', 'exam.id', '=', 'exam_schedule.exam_id')
-    //         ->where('exam_schedule.class_id', '=', $class_id)
-    //         ->groupBy('exam_schedule.exam_id')
-    //         ->get();
-    // }
 
 
     public static function getExamSemester()
@@ -126,25 +117,34 @@ class ExamSchedule extends Model
     //         ->where('exam_schedule.class_id', '=', $class_id)
     //         ->get();
     // }
-    public static function getExamTeacher($class_id, $subject_id)
+    // public static function getExamTeacher($class_id, $subject_id)
+    // {
+    //     return ExamSchedule::select('exam_schedule.*', 'exam.name as exam_name')
+    //         ->join('exam', 'exam.id', '=', 'exam_schedule.exam_id')
+    //         ->where('exam_schedule.class_id', '=', $class_id)
+    //         ->where('exam_schedule.subject_id', '=', $subject_id)
+    //         ->groupBy('exam_schedule.exam_id')
+    //         ->get();
+    // }
+    public static function getExamCalendarTeacher($teacher_id, $semester_id)
     {
-        return ExamSchedule::select('exam_schedule.*', 'exam.name as exam_name')
-            ->join('exam', 'exam.id', '=', 'exam_schedule.exam_id')
-            ->where('exam_schedule.class_id', '=', $class_id)
-            ->where('exam_schedule.subject_id', '=', $subject_id)
-            ->groupBy('exam_schedule.exam_id')
-            ->get();
-    }
-    public static function  getExamCalendarTeacher($teacher_id)
-    {
-        return ExamSchedule::select('exam_schedule.*', 'exam.name as exam_name', 'class.name as class_name', 'subject.name as subject_name')
+        return ExamSchedule::select(
+            'exam_schedule.*',
+            'exam.name as exam_name',
+            'class.name as class_name',
+            'subject.name as subject_name'
+        )
+            ->distinct()
             ->join('teacher_class', 'teacher_class.class_id', '=', 'exam_schedule.class_id')
             ->join('class', 'class.id', '=', 'teacher_class.class_id')
             ->join('subject', 'subject.id', '=', 'teacher_class.subject_id')
             ->join('exam', 'exam.id', '=', 'exam_schedule.exam_id')
             ->where('teacher_class.teacher_id', '=', $teacher_id)
+            ->where('exam_schedule.semester_id', '=', $semester_id)
             ->get();
     }
+
+
     public static function getScore($class_id, $student_id, $subject_id, $exam_id)
     {
         return ExamScore::CheckAlready($class_id, $student_id, $subject_id, $exam_id);

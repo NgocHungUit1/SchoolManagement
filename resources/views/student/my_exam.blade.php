@@ -50,15 +50,13 @@
                 <div class="col-sm-12">
 
                     <div class="card card-table comman-shadow">
-                        @foreach ($getRecord as $value)
-                            <div class="card-body">
-
+                        <div class="card-body">
+                            @foreach ($getRecord as $valueS)
                                 <div class="page-header">
                                     <div class="row align-items-center">
                                         <div class="col">
-                                            <h3 class="page-title">{{ $value['name'] }}</h3>
+                                            <h3 class="page-title">{{ $valueS->exam['name'] }}</h3>
                                         </div>
-
                                     </div>
                                 </div>
 
@@ -78,26 +76,21 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($value['exam'] as $valueS)
-                                                <tr>
-                                                    <td>{{ $valueS['subject_name'] }}</td>
-                                                    <td>{{ date('1', strtotime($valueS['exam_date'])) }}</td>
-                                                    <td>{{ date('d-m-Y', strtotime($valueS['exam_date'])) }}</td>
-                                                    <td>{{ date('h:i A', strtotime($valueS['start_time'])) }}</td>
-                                                    <td>{{ date('h:i A', strtotime($valueS['end_time'])) }}</td>
-                                                    <td>{{ $valueS['room_number'] }}</td>
-                                                    <td>{{ $valueS['full_mark'] }}</td>
-                                                    <td>{{ $valueS['passing_mark'] }}</td>
-                                                </tr>
-                                            @endforeach
-
-
+                                            <tr>
+                                                <td>{{ $valueS->subject['name'] }}</td>
+                                                <td>{{ date('1', strtotime($valueS['exam_date'])) }}</td>
+                                                <td>{{ date('d-m-Y', strtotime($valueS['exam_date'])) }}</td>
+                                                <td>{{ date('h:i A', strtotime($valueS['start_time'])) }}</td>
+                                                <td>{{ date('h:i A', strtotime($valueS['end_time'])) }}</td>
+                                                <td>{{ $valueS['room_number'] }}</td>
+                                                <td>{{ $valueS['full_mark'] }}</td>
+                                                <td>{{ $valueS['passing_mark'] }}</td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
-
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>

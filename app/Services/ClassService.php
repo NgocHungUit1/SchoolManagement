@@ -15,6 +15,7 @@ namespace App\Services;
 
 use App\Http\Requests\ClassRequest;
 use App\Models\ClassModel;
+use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -79,10 +80,9 @@ class ClassService
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function insertClass(ClassRequest $request)
+    public function insertClass()
     {
         try {
-            $data = $request->validated();
             $data['created_by'] = Auth::user()->id;
             ClassModel::create($data);
             return redirect('admin/class/list')
@@ -106,7 +106,7 @@ class ClassService
      */
     public function edit($id)
     {
-        $data['getRecord'] = ClassModel::getClassId($id);
+        $data['getRecord'] = ClassModel::find($id);
 
         return view('admin.class.edit', $data);
     }
@@ -122,9 +122,9 @@ class ClassService
      */
     public function view($id)
     {
-        $data['getRecord'] = ClassModel::getStudent($id);
+        $data['getRecord'] = User::getStudents($id);
         $data['getClass'] = ClassModel::find($id);
-        return view('admin.class.view', $data);
+        return  $data;
     }
 
     /**
@@ -132,13 +132,12 @@ class ClassService
      *
      * Displays the details of a student's class.
      *
-     * @return \Illuminate\View\View
      */
     public function myClass()
     {
-        $data['getRecord'] = ClassModel::getStudent(Auth::user()->class_id);
+        $data['getRecord'] = User::getStudents(Auth::user()->class_id);
         $data['getClass'] = ClassModel::find(Auth::user()->class_id);
-        return view('student.my_class', $data);
+        return  $data;
     }
 
     /**
@@ -149,21 +148,19 @@ class ClassService
      * @param ClassRequest $request The request object containing class information.
      * @param int          $id      The ID of the class to update.
      *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function editClass(ClassRequest $request, $id)
+    public function editClass($data, $id)
     {
         try {
             $class = ClassModel::findOrFail($id);
-            $data = $request->validated();
             $class->update($data);
-            return redirect('admin/class/list')
-                ->with('success', 'Class successfully updated ');
+            return $class;
         } catch (\Exception $e) {
             Log::error($e); // Ghi lỗi vào log
             throw new Exception('error!');
         }
     }
+
 
     /**
      * ClassService::delete()
@@ -179,7 +176,6 @@ class ClassService
         $class = ClassModel::find($id);
         $class->is_delete = 1;
         $class->save();
-        return redirect('admin/admin/list')
-            ->with('success', 'Class successfully deleted ');
+        return $class;
     }
 }

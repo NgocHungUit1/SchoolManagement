@@ -22,15 +22,15 @@
                                     <div class="col-lg-2">
                                         <div class="form-group">
                                             <a style="color: white"
-                                                href="{{ url('admin/academic_record/' . $getClass->id . '/1') }}"
+                                                href="{{ url('admin/academic_record/' . $class->id . '/1') }}"
                                                 class="btn btn-primary ">HK1
                                             </a>
                                             <a style="color: white"
-                                                href="{{ url('admin/academic_record/' . $getClass->id . '/2') }}"
+                                                href="{{ url('admin/academic_record/' . $class->id . '/2') }}"
                                                 class="btn btn-primary ">HK2
                                             </a>
                                             <a style="color: white"
-                                                href="{{ url('admin/academic_record_year/' . $getClass->id) }}"
+                                                href="{{ url('admin/academic_record_year/' . $class->id) }}"
                                                 class="btn btn-primary ">Summary
                                             </a>
                                         </div>
@@ -42,7 +42,7 @@
                     </div>
                 </div>
                 <div class="table-responsive" id="user">
-                    <h3 class="page-title">Class {{ $getClass->name }}</h3>
+                    <h3 class="page-title">Class {{ $class->name }}</h3>
                     <form action="" method="post">
                         @csrf
                         <table class="table border-0 star-student datatable table-striped">
@@ -51,66 +51,26 @@
                                 <tr>
                                     <th>Student Name</th>
                                     @foreach ($getSubject as $value)
-                                        <th>{{ $value->subject_name }}</th>
+                                        <th>{{ $value->subjects->name }}</th>
                                     @endforeach
                                     <th>Average Score</th>
-                                    <th>Classification</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @if (!empty($getStudent) && !empty($getStudent->count()))
-                                    @php
-                                        $all_subjects = count($getSubject);
-                                    @endphp
-
-                                    @foreach ($getStudent as $student)
-                                        <tr>
-                                            <td>{{ $student->name }}</td>
-                                            @php
-                                                $total_score = 0;
-                                                $total_subjects_scored = 0;
-                                            @endphp
-
-                                            @foreach ($getSubject as $subject)
-                                                @php
-                                                    $scores =
-                                                        $getScore
-                                                            ->where('subject_id', $subject->subject_id)
-                                                            ->where('student_id', $student->id)
-                                                            ->first()->score ?? '';
-                                                    if (!empty($scores)) {
-                                                        $total_score += $scores;
-                                                        $total_subjects_scored++;
-                                                    }
-                                                @endphp
-                                                <td>{{ !empty($scores) ? number_format(floatval($scores), 2) : '' }}</td>
-                                            @endforeach
-
-                                            @if ($total_subjects_scored == $all_subjects)
-                                                @php
-                                                    $average = number_format($total_score / $all_subjects, 2);
-                                                    if ($average > 8) {
-                                                        $xep_loai = 'A';
-                                                        $color = 'green';
-                                                    } elseif ($average >= 6.5) {
-                                                        $xep_loai = 'B';
-                                                        $color = 'blue';
-                                                    } elseif ($average >= 5) {
-                                                        $xep_loai = 'C';
-                                                        $color = 'orange';
-                                                    } else {
-                                                        $xep_loai = 'D';
-                                                        $color = 'red';
-                                                    }
-                                                @endphp
-                                                <td style="color:{{ $color }}">{{ $average }}</td>
-                                                <td style="color:{{ $color }}">{{ $xep_loai }}</td>
-                                            @else
-                                                <td></td>
-                                                <td></td>
-                                            @endif
-                                        </tr>
-                                    @endforeach
+                                    @if (!empty($result))
+                                        @foreach ($result as $student_id => $student_data)
+                                            <tr>
+                                                <td>{{ $getStudent->where('id', $student_id)->first()->name }}</td>
+                                                @foreach ($getSubject as $subject)
+                                                    <td>{{ !empty($student_data[$subject->subject_id]) ? number_format(floatval($student_data[$subject->subject_id]), 2) : '' }}
+                                                    </td>
+                                                @endforeach
+                                                <td>{{ !empty($student_data['avage_score']) ? number_format(floatval($student_data['avage_score']), 2) : '' }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
                                 @endif
                             </tbody>
                         </table>
@@ -125,29 +85,6 @@
 
 
     </div>
-
-
-    <div class="modal fade contentmodal" id="myModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content doctor-profile">
-                <div class="modal-header pb-0 border-bottom-0  justify-content-end">
-
-                </div>
-                <div class="modal-body">
-                    <div class="delete-wrap text-center">
-                        <div class="del-icon">
-                            <i class="feather-check-circle text-success"></i>
-                        </div>
-                        <h2>Thêm điểm thành công</h2>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Đóng</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
 
 
 

@@ -14,6 +14,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassTeacher;
+use App\Models\ExamSchedule;
 use App\Models\Semester;
 use Illuminate\Http\Request;
 use App\Services\CalendarService;
@@ -68,9 +69,9 @@ class CalendarController extends Controller
         $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
         $data['getTimeTable'] = $this->calendarService
             ->getTimeTable($request->semester_id, Auth::user()->class_id);
-        // Lấy semester_id từ request
         $data['getExamTimeTable'] = $this->calendarService
             ->getExamTimeTable($request->semester_id, Auth::user()->class_id);
+
         return view('student.my_calendar', $data)
             ->with('success', 'My Time Table Student ');
     }
@@ -87,8 +88,7 @@ class CalendarController extends Controller
         $teacher_id = Auth::user()->id;
         $semester_id = $request->semester_id;
         $data['getCalendarTeacher'] = ClassTeacher::getCalendarTeacher($teacher_id, $semester_id);
-        $data['getExamCalendar'] = $this->examService->getMyExamTeacher($request, $teacher_id);
-        // dd($data);
+        $data['getExamCalendar'] = ExamSchedule::getExamCalendarTeacher($teacher_id, $semester_id);
         return view('teacher.my_calendar', $data)
             ->with('success', 'My Time Table Teacher ');
     }

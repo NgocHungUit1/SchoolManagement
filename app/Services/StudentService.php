@@ -40,9 +40,9 @@ class StudentService
      *
      * @return array
      */
-    public function getAllStudents()
+    public function getAllStudents(array $params = [])
     {
-        return User::getStudent();
+        return User::getStudent($params);
     }
 
     /**
@@ -64,27 +64,19 @@ class StudentService
      *
      * @return Redirect Redirect response to student list page
      */
-    public function createStudent(InsertStudentRequest $request)
+    public function createStudent(array $data)
     {
-        $data = $request->validated();
         $data['admission_number'] = 'Student -' . substr(md5(microtime()), rand(0, 26), 5);
-        $data['date_of_birth'] = Carbon::createFromFormat(
-            'd-m-Y',
-            $request->date_of_birth
-        )
+        $data['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $data['date_of_birth'])
             ->toDateTimeString();
-        $data['password'] = Hash::make($request->password);
+        $data['password'] = Hash::make($data['password']);
         $data['user_type'] = 3;
 
-        if ($request->hasFile('user_avatar')) {
+        if (!empty($data['user_avatar'])) {
             $path = 'public/uploads/profile/';
-            $get_image = $request->file('user_avatar');
-            $name_image = pathinfo(
-                $get_image->getClientOriginalName(),
-                PATHINFO_FILENAME
-            );
-            $new_image = $name_image . rand(0, 99) . '.' . $get_image
-                ->getClientOriginalExtension();
+            $get_image = $data['user_avatar'];
+            $name_image = pathinfo($get_image->getClientOriginalName(), PATHINFO_FILENAME);
+            $new_image = $name_image . rand(0, 99) . '.' . $get_image->getClientOriginalExtension();
             $get_image->move($path, $new_image);
 
             $data['user_avatar'] = $new_image;
@@ -92,6 +84,7 @@ class StudentService
 
         User::create($data);
     }
+
 
     /**
      * Update student

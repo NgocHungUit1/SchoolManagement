@@ -16,6 +16,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ClassRequest;
 use App\Services\ClassService;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Sentry\SentryLaravel\SentryFacade as Sentry;
 
@@ -111,9 +113,10 @@ class ClassController extends Controller
      *
      * @return mixed The details of a class
      */
-    public function view($id)
+    public function view(Request $request)
     {
-        return $this->_service->view($id);
+        $data = $this->_service->view($request->id);
+        return view('admin.class.view', $data);
     }
 
     /**
@@ -123,7 +126,8 @@ class ClassController extends Controller
      */
     public function myClass()
     {
-        return $this->_service->myClass();
+        $data = $this->_service->myClass();
+        return view('student.my_class', $data);
     }
 
     /**
@@ -136,7 +140,9 @@ class ClassController extends Controller
      */
     public function editClass(ClassRequest $request, $id)
     {
-        return $this->_service->editClass($request, $id);
+        $data = $this->_service->editClass($request->all(), $id);
+        return redirect('admin/class/list')
+            ->with('success', 'Class successfully updated ');
     }
 
     /**
@@ -148,6 +154,8 @@ class ClassController extends Controller
      */
     public function delete($id)
     {
-        return $this->_service->delete($id);
+        $this->_service->delete($id);
+        return redirect('admin/class/list')
+            ->with('success', 'Class successfully updated ');
     }
 }

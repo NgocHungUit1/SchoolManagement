@@ -23,11 +23,49 @@ class ExamScore extends Model
         'semester_id'
     ];
 
-    public static function CheckAlready($class_id, $student_id, $exam_id, $subject_id)
+    public function student()
     {
-        return self::where('class_id', '=', $class_id)->where('student_id', '=', $student_id)->where('exam_id', '=', $exam_id)->where('subject_id', '=', $subject_id)->first();
+        return $this->belongsTo(User::class, 'student_id');
     }
 
+    public function studentScore()
+    {
+        return $this->belongsTo(
+            StudentScore::class,
+            ['subject_id', 'class_id', 'student_id'],
+            ['subject_id', 'class_id', 'student_id']
+        );
+    }
+
+    public function subjects()
+    {
+        return $this->belongsTo(Subject::class, 'subject_id');
+    }
+
+    public function classes()
+    {
+        return $this->belongsTo(ClassModel::class, 'class_id');
+    }
+
+    public function exams()
+    {
+        return $this->belongsTo(Exam::class, 'exam_id');
+    }
+    public static function CheckAlready($class_id, $student_id, $exam_id, $subject_id)
+    {
+        return self::where('class_id', '=', $class_id)
+            ->where('student_id', '=', $student_id)
+            ->where('exam_id', '=', $exam_id)
+            ->where('subject_id', '=', $subject_id)->first();
+    }
+
+    public static function deleteScoreByClassSubjectSemester($class_id, $subject_id, $semester_id)
+    {
+        self::where('class_id', $class_id)
+            ->where('subject_id', $subject_id)
+            ->where('semester_id', $semester_id)
+            ->delete();
+    }
     public static function CheckAlreadySemester($class_id, $student_id, $exam_id, $subject_id, $semester_id)
     {
         return self::where('class_id', '=', $class_id)
@@ -39,40 +77,20 @@ class ExamScore extends Model
 
     public static function getRecordStudent($class_id, $student_id, $semester_id)
     {
-        return ExamScore::select('exam_score.*', 'subject.name as subject_name', 'exam.name as exam_name')
-            ->leftJoin('exam', 'exam.id', '=', 'exam_score.exam_id')
-            ->leftJoin('subject', 'subject.id', '=', 'exam_score.subject_id')
-            ->where('exam_score.student_id', '=', $student_id)
-            ->where('exam_score.class_id', '=', $class_id)
-            ->where('exam_score.semester_id', '=', $semester_id)
+        return ExamScore::with(['exams', 'subjects'])
+            ->where('student_id', $student_id)
+            ->where('class_id', $class_id)
+            ->where('semester_id', $semester_id)
             ->get();
     }
 
-    public static function getAcademicRecord($class_id, $semester_id)
-    {
-        return ExamScore::select('exam_score.*', 'subject.name as subject_name')
-            ->leftJoin('subject', 'subject.id', '=', 'exam_score.subject_id')
-            ->where('exam_score.class_id', '=', $class_id)
-            ->where('exam_score.semester_id', '=', $semester_id)
-            ->get();
-    }
-
-    public static function getAcademicRecords($class_id, $semester_id)
-    {
-        return StudentScore::select('student_score.*', 'subject.name as subject_name')
-            ->leftJoin('subject', 'subject.id', '=', 'student_score.subject_id')
-            ->where('student_score.class_id', '=', $class_id)
-            ->where('student_score.semester_id', '=', $semester_id)
-            ->get();
-    }
-    public static function getAcademicRecordsStudent($class_id, $semester_id, $student_id)
-    {
-        return StudentScore::select('student_score.*', 'subject.name as subject_name')
-            ->join('subject', 'subject.id', '=', 'student_score.subject_id')
-            ->join('exam_score', 'exam_score.subject_id', '=', 'student_score.subject_id')
-            ->where('student_score.class_id', '=', $class_id)
-            ->where('student_score.semester_id', '=', $semester_id)
-            ->where('student_score.student_id', '=', $student_id)
-            ->get();
-    }
+    // public static function getRecordStudentS($class_id, $subject_id, $student_id, $semester_id)
+    // {
+    //     return ExamScore::with(['exams', 'subjects', 'student'])
+    //         ->whereIn('student_id', $student_id)
+    //         ->whereIn('subject_id', $subject_id)
+    //         ->where('class_id', $class_id)
+    //         ->where('semester_id', $semester_id)
+    //         ->get();
+    // }
 }

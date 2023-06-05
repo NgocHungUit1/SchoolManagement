@@ -71,9 +71,9 @@
                                         @foreach ($getRecord as $value)
                                             <tr id="sid{{ $value->id }}">
                                                 <td>{{ $value->id }}</td>
-                                                <td>{{ $value->subject_name }}</td>
-                                                <td>{{ $value->subject_type }}</td>
-                                                <td>{{ $value->teacher_name }}</td>
+                                                <td>{{ $value->subjects->name }}</td>
+                                                <td>{{ $value->subjects->type }}</td>
+                                                <td>{{ $value->teachers->name }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>

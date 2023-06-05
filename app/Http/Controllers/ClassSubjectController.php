@@ -69,11 +69,22 @@ class ClassSubjectController extends Controller
      *
      * @return array The data for assigned subjects to classes.
      */
-    public function getData()
+    public function getData(Request $request)
     {
-        $data['data'] = $this->_classSubjectService->getList();
+        $class_name = $request->input('class_name');
+        $subject_name = $request->input('subject_name');
+        $date = $request->input('date');
+
+        $params = [
+            'class_name' => $class_name,
+            'subject_name' => $subject_name,
+            'date' => $date
+        ];
+
+        $data['data'] = $this->_classSubjectService->getList($params);
         return $data;
     }
+
 
     /**
      * Show the form to add an assigned subject to a class.
@@ -118,7 +129,10 @@ class ClassSubjectController extends Controller
      */
     public function assignSubject(AssignSubjectClassRequest $request)
     {
-        if ($this->_classSubjectService->add($request)) {
+        $class_id = $request->input('class_id');
+        $subject_ids = $request->input('subject_id');
+        $status = $request->input('status');
+        if ($this->_classSubjectService->add($class_id, $subject_ids, $status)) {
             return redirect('admin/assign_subject/list')
                 ->with('success', 'subject assign class created successfully  ');
         } else {
@@ -136,7 +150,10 @@ class ClassSubjectController extends Controller
      */
     public function update(AssignSubjectClassRequest $request)
     {
-        if ($this->_classSubjectService->update($request)) {
+        $class_id = $request->input('class_id');
+        $subject_ids = $request->input('subject_id');
+        $status = $request->input('status');
+        if ($this->_classSubjectService->update($class_id, $subject_ids, $status)) {
             return redirect('admin/assign_subject/list')
                 ->with('success', 'subject assign class updated successfully  ');
         } else {

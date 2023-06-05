@@ -9,8 +9,8 @@
                             <div class="page-sub-header">
                                 <h3 class="page-title">My Exam List</h3>
                                 <ul class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="{{ url('teacher/dashboard') }}">DashBoard</a></li>
-                                    <li class="breadcrumb-item active"> My Exam List</li>
+                                    <li class="breadcrumb-item"><a href="{{ url('student/dashboard') }}">DashBoard</a></li>
+                                    <li class="breadcrumb-item active"> MyExam List</li>
                                 </ul>
                             </div>
                         </div>
@@ -44,63 +44,53 @@
                     color: #fff;
                 }
             </style>
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="card card-table comman-shadow">
-                        @foreach ($getRecord as $value)
-                            <div class="card-body">
 
+            <div class="row">
+
+                <div class="col-sm-12">
+
+                    <div class="card card-table comman-shadow">
+                        <div class="card-body">
+                            @foreach ($getRecord as $valueS)
                                 <div class="page-header">
                                     <div class="row align-items-center">
                                         <div class="col">
-                                            <h1 class="page-title">Class: {{ $value['class_name'] }}</h1>
+                                            <h3 class="page-title">{{ $valueS->exam['name'] }}</h3>
                                         </div>
-
                                     </div>
                                 </div>
-                                @foreach ($value['exam'] as $exam)
-                                    <div class="card-header">
-                                        <div class="row align-items-center">
-                                            <div class="col">
-                                                <h2 class="card-title">{{ $exam['name'] }}</h2>
-                                            </div>
 
-                                        </div>
-                                    </div>
-
-                                    <div class="table-responsive" id="user">
-                                        <table
-                                            class="table border-0 star-student table-hover table-center mb-0  table-striped exam_table">
-                                            <thead class="student-thread">
-                                                <tr>
-                                                    <th>Subject</th>
-                                                    <th>Exam Date</th>
-                                                    <th>Start Time</th>
-                                                    <th>End Time</th>
-                                                    <th>Room Number</th>
-                                                    <th>Full Marks</th>
-                                                    <th>Passing Marks</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($exam['subject'] as $valueS)
-                                                    <tr>
-                                                        <td>{{ $valueS['subject_name'] }}</td>
-                                                        <td>{{ date('d-m-Y', strtotime($valueS['exam_date'])) }}</td>
-                                                        <td>{{ date('h:i A', strtotime($valueS['start_time'])) }}</td>
-                                                        <td>{{ date('h:i A', strtotime($valueS['end_time'])) }}</td>
-                                                        <td>{{ $valueS['room_number'] }}</td>
-                                                        <td>{{ $valueS['full_mark'] }}</td>
-                                                        <td>{{ $valueS['passing_mark'] }}</td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @endforeach
-
-                            </div>
-                        @endforeach
+                                <div class="table-responsive" id="user">
+                                    <table
+                                        class="table border-0 star-student table-hover table-center mb-0  table-striped exam_table">
+                                        <thead class="student-thread">
+                                            <tr>
+                                                <th>Subject</th>
+                                                <th>Day</th>
+                                                <th>Exam Date</th>
+                                                <th>Start Time</th>
+                                                <th>End Time</th>
+                                                <th>Room Number</th>
+                                                <th>Full Marks</th>
+                                                <th>Passing Marks</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>{{ $valueS->subject['name'] }}</td>
+                                                <td>{{ date('1', strtotime($valueS['exam_date'])) }}</td>
+                                                <td>{{ date('d-m-Y', strtotime($valueS['exam_date'])) }}</td>
+                                                <td>{{ date('h:i A', strtotime($valueS['start_time'])) }}</td>
+                                                <td>{{ date('h:i A', strtotime($valueS['end_time'])) }}</td>
+                                                <td>{{ $valueS['room_number'] }}</td>
+                                                <td>{{ $valueS['full_mark'] }}</td>
+                                                <td>{{ $valueS['passing_mark'] }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
