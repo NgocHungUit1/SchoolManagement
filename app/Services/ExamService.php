@@ -375,10 +375,11 @@ class ExamService
                 ->avg('avage_score');
 
             if ($semester1Average !== null && $semester2Average !== null) {
+
                 $this->calculateAndSaveYearlyAverage($student, $semester1Average, $semester2Average);
             }
         }
-
+        // StudentScoreSemester::deleteScores($student->pluck('id')->toArray(), 3);
         StudentScoreSemester::deleteScore($students->pluck('id')->toArray(), $semester_id);
         StudentScoreSemester::insert($studentScoreSemesterData);
     }
@@ -396,7 +397,7 @@ class ExamService
     public function calculateAndSaveYearlyAverage($student, $semester1Average, $semester2Average)
     {
         $studentScoreSemesterYear = [];
-        StudentScoreSemester::deleteScores($student->id, 3);
+
         $total_average = $semester1Average + ($semester2Average * 2);
         $yearly_average = number_format($total_average / 3, 2);
 

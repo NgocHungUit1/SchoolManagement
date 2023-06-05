@@ -48,7 +48,7 @@ class StudentScoreSemester extends Model
 
     public static function deleteScores($student_id, $semester_id)
     {
-        return self::where('student_id', $student_id)
+        return self::whereIn('student_id', $student_id)
             ->where('semester_id', $semester_id)
             ->delete();
     }
