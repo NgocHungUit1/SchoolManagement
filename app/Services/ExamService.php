@@ -351,7 +351,7 @@ class ExamService
         $subjects = ClassSubject::MySubject($class_id);
         $scores = StudentScore::getAcademicRecordStudent($class_id, $semester_id);
         $studentScoreSemesterData = [];
-
+        $studentScoreSemesterYear = [];
         foreach ($students as $student) {
             $scoredSubjects = $scores
                 ->where('student_id', $student->id)
@@ -376,7 +376,7 @@ class ExamService
 
             if ($semester1Average !== null && $semester2Average !== null) {
 
-                $this->calculateAndSaveYearlyAverage($student, $semester1Average, $semester2Average);
+                $this->calculateAndSaveYearlyAverage($studentScoreSemesterYear, $student, $semester1Average, $semester2Average);
             }
         }
         // StudentScoreSemester::deleteScores($student->pluck('id')->toArray(), 3);
@@ -394,10 +394,8 @@ class ExamService
         ];
     }
 
-    public function calculateAndSaveYearlyAverage($student, $semester1Average, $semester2Average)
+    public function calculateAndSaveYearlyAverage(&$studentScoreSemesterYear, $student, $semester1Average, $semester2Average)
     {
-        $studentScoreSemesterYear = [];
-
         $total_average = $semester1Average + ($semester2Average * 2);
         $yearly_average = number_format($total_average / 3, 2);
 
@@ -425,6 +423,7 @@ class ExamService
             'semester_id' => 3,
             'student_id' => $student->id,
         ];
+
         StudentScoreSemester::insert($studentScoreSemesterYear);
     }
 
