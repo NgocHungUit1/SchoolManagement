@@ -380,6 +380,7 @@ class ExamService
             }
         }
         // StudentScoreSemester::deleteScores($student->pluck('id')->toArray(), 3);
+        StudentScoreSemester::insert($studentScoreSemesterYear);
         StudentScoreSemester::deleteScore($students->pluck('id')->toArray(), $semester_id);
         StudentScoreSemester::insert($studentScoreSemesterData);
     }
@@ -423,8 +424,6 @@ class ExamService
             'semester_id' => 3,
             'student_id' => $student->id,
         ];
-
-        StudentScoreSemester::insert($studentScoreSemesterYear);
     }
 
 
