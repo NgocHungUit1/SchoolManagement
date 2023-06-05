@@ -94,24 +94,19 @@ class StudentService
      *
      * @return Redirect Redirect response to student list page
      */
-    public function updateStudent(UpdateStudentRequest $request, $id)
+    public function updateStudent(array $data, $id)
     {
         $student = User::findOrFail($id);
-        $data = $request->validated();
-        $data['date_of_birth'] = Carbon::createFromFormat(
-            'd-m-Y',
-            $request->date_of_birth
-        )->toDateTimeString();
 
-        if ($request->hasFile('user_avatar')) {
+        if (isset($data['date_of_birth'])) {
+            $data['date_of_birth'] = Carbon::createFromFormat('d-m-Y', $data['date_of_birth'])->toDateTimeString();
+        }
+
+        if (isset($data['user_avatar'])) {
             $path = 'public/uploads/profile/';
-            $get_image = $request->file('user_avatar');
-            $name_image = pathinfo(
-                $get_image->getClientOriginalName(),
-                PATHINFO_FILENAME
-            );
-            $new_image = $name_image . rand(0, 99) . '.' .
-                $get_image->getClientOriginalExtension();
+            $get_image = $data['user_avatar'];
+            $name_image = pathinfo($get_image->getClientOriginalName(), PATHINFO_FILENAME);
+            $new_image = $name_image . rand(0, 99) . '.' . $get_image->getClientOriginalExtension();
             $get_image->move($path, $new_image);
 
             $oldImage = $student->user_avatar;
@@ -122,8 +117,8 @@ class StudentService
             $data['user_avatar'] = $new_image;
         }
 
-        if (!empty($request->password)) {
-            $data['password'] = Hash::make($request->password);
+        if (!empty($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
         }
 
         $student->update($data);

@@ -83,14 +83,4 @@ class ExamScore extends Model
             ->where('semester_id', $semester_id)
             ->get();
     }
-
-    // public static function getRecordStudentS($class_id, $subject_id, $student_id, $semester_id)
-    // {
-    //     return ExamScore::with(['exams', 'subjects', 'student'])
-    //         ->whereIn('student_id', $student_id)
-    //         ->whereIn('subject_id', $subject_id)
-    //         ->where('class_id', $class_id)
-    //         ->where('semester_id', $semester_id)
-    //         ->get();
-    // }
 }

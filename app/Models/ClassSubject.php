@@ -25,17 +25,17 @@ class ClassSubject extends Model
 
     public function classes()
     {
-        return $this->belongsTo(ClassModel::class, 'class_id'); // Mối quan hệ 1-nhiều (Belongs To) với bảng Class (Laravel sẽ tự đoán khóa ngoại là class_id)
+        return $this->belongsTo(ClassModel::class, 'class_id');
     }
 
     public function subjects()
     {
-        return $this->belongsTo(Subject::class, 'subject_id'); // Mối quan hệ 1-nhiều (Belongs To) với bảng Subject (Laravel sẽ tự đoán khóa ngoại là subject_id)
+        return $this->belongsTo(Subject::class, 'subject_id');
     }
 
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by'); // Mối quan hệ 1-nhiều (Belongs To) với bảng User với khóa ngoại là created_by
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public static function getRecord(array $params = [])

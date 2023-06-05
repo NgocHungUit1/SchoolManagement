@@ -91,7 +91,9 @@ class SubjectController extends Controller
      */
     public function insertSubject(SubjectRequest $request)
     {
-        return $this->_subjectService->createSubject($request);
+        $data = $request->validated();
+        $this->_subjectService->createSubject($data);
+        return view('admin.subject.list', $data);
     }
 
     /**

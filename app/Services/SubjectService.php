@@ -49,23 +49,10 @@ class SubjectService
      *
      * @return Redirect Redirect response to subject list page
      */
-    public function createSubject(SubjectRequest $request)
+    public function createSubject(array $data)
     {
-        Log::info('createSubject request', ['data' => $request->all()]);
-
-        $data = $request->validated();
         $data['created_by'] = Auth::user()->id;
-
-        try {
-            $subject = Subject::create($data);
-            Log::info('createSubject success', ['subject_id' => $subject->id]);
-            return redirect('admin/subject/list')
-                ->with('success', 'Subject successfully created ');
-        } catch (\Exception $e) {
-            Log::error('createSubject error', ['message' => $e->getMessage()]);
-            return redirect()->back()->withInput()
-                ->withErrors(['error' => 'Unable to create subject']);
-        }
+        Subject::create($data);
     }
     /**
      * Delete subject

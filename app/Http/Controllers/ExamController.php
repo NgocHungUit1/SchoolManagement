@@ -350,28 +350,9 @@ class ExamController extends Controller
     {
         $class_id = Auth::user()->class_id;
         $semester_id = $request->semester_id;
-        $data['getExam'] = ExamSchedule::getExam($class_id);
-        $data['getRecord'] = ExamScore::getRecordStudent(
-            $class_id,
-            Auth::user()->id,
-            $semester_id
-        );
 
-        $data['getRecordStudent'] = StudentScore::getRecordStudent(
-            $class_id,
-            Auth::user()->id,
-            $semester_id
-        );
+        $data = $this->examService->getStudentScores($class_id, $semester_id);
 
-        $data['StudentScoreSemester'] = StudentScoreSemester::getAcademicRecordStudent(
-            Auth::user()->id,
-            $semester_id,
-        );
-
-        $data['StudentScoreSemesterYear'] = StudentScoreSemester::where(
-            'student_id',
-            Auth::user()->id
-        )->where('semester_id', 3)->get();
         return view('student.academic_record', $data);
     }
 
@@ -416,43 +397,17 @@ class ExamController extends Controller
     public function examScoreTeacher(Request $request)
     {
 
-        $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
-        $data['getClass'] = ClassModel::getStudentTeacher(Auth::user()->id);
-        $class_id = $request->input('class_id');
-        // Kiểm tra xem môn học được chọn có thuộc danh sách các môn học được phân công cho giáo viên hay không
-        $assigned_subjects = ClassTeacher::getAssignedSubjects(Auth::user()->id, $class_id);
-        $subject_id = $request->input('subject_id');
-        if (!empty($subject_id) && !in_array($subject_id, $assigned_subjects)) {
-            return redirect(URL::previous())->with('error', 'Unauthorized access ');
-        }
+        $classId = $request->input('class_id');
+        $subjectId = $request->input('subject_id');
 
-        if (!empty($request->class_id)) {
-            $data['getSubject'] =  ClassTeacher::getSubjectExam(
-                $request->class_id,
-                Auth::user()->id
-            )->whereIn('subject_id', $assigned_subjects); // Thêm điều kiện kiểm tra môn học
-        }
-
-        if (!empty($request->subject_id) && !empty($request->class_id)) {
-            $data['getExam'] = ExamSchedule::getExam($request->class_id);
-            $data['getStudent'] = User::getStudentClassExam($request->class_id);
+        try {
+            $data = $this->examService->getExamData($classId, $subjectId, Auth::user()->id);
+        } catch (\Exception $e) {
+            return redirect(URL::previous())->with('error', $e->getMessage());
         }
 
         return view('teacher.exam_score', $data);
     }
-
-
-    /**
-     * ADd Exam score by Teacher
-     *
-     * @param Request $request Request object
-     *
-     * @return mixed Result of the update operation
-     */
-    // public function addScoreByTeacher(Request $request)
-    // {
-    //     return $this->examService->insertScore($request);
-    // }
 
     /**
      * Get subject of class

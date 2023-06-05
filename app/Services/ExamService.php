@@ -53,7 +53,6 @@ class ExamService
 
         if (!empty($examId) && !empty($classId)  && !empty($semesterId)) {
             $getSubject = ClassSubject::MySubject($classId);
-
             $examSchedules = ExamSchedule::getExamSchedules(
                 $getSubject->pluck('subject_id')->toArray(),
                 $classId,
@@ -140,7 +139,6 @@ class ExamService
             $class_id,
             $semester_id
         );
-
         $toInsert = [];
         foreach ($schedules as $schedule) {
             if (
@@ -281,7 +279,6 @@ class ExamService
         StudentScore::deleteScoreByClassSubjectSemester($class_id, $subject_id, $semester_id);
         $examScoreData = [];
         $studentScoreData = [];
-
         foreach ($exam_score as $studentId => $scores) {
             $total = 0;
             $total_weight = 0;
@@ -386,6 +383,16 @@ class ExamService
         StudentScoreSemester::insert($studentScoreSemesterData);
     }
 
+    public function calculateAndSaveSemesterAverage(&$studentScoreSemesterData, $studentId, $semesterId, $totalScore, $subjects)
+    {
+        $average = number_format($totalScore / count($subjects), 2);
+        $studentScoreSemesterData[] = [
+            'avage_score' => $average,
+            'semester_id' => $semesterId,
+            'student_id' => $studentId,
+        ];
+    }
+
     public function calculateAndSaveYearlyAverage($student, $semester1Average, $semester2Average)
     {
         $studentScoreSemesterYear = [];
@@ -420,15 +427,7 @@ class ExamService
         StudentScoreSemester::insert($studentScoreSemesterYear);
     }
 
-    public function calculateAndSaveSemesterAverage(&$studentScoreSemesterData, $studentId, $semesterId, $totalScore, $subjects)
-    {
-        $average = number_format($totalScore / count($subjects), 2);
-        $studentScoreSemesterData[] = [
-            'avage_score' => $average,
-            'semester_id' => $semesterId,
-            'student_id' => $studentId,
-        ];
-    }
+
 
     public function getAverages($students)
     {
@@ -470,6 +469,60 @@ class ExamService
     public function getMyExam($semester_id, $class_id)
     {
         $data =  ExamSchedule::getMyExam($semester_id, $class_id);
+        return $data;
+    }
+
+    public function getExamData($classId, $subjectId, $userId)
+    {
+        $data = [];
+        $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
+
+        $data['getClass'] = ClassModel::getStudentTeacher($userId);
+
+        if (!empty($classId)) {
+            $assigned_subjects = ClassTeacher::getAssignedSubjects($userId, $classId);
+
+            // Check if the selected subject belongs to the assigned subjects
+            if (!empty($subjectId) && !in_array($subjectId, $assigned_subjects)) {
+                throw new \Exception('Unauthorized access');
+            }
+
+            $data['getSubject'] =  ClassTeacher::getSubjectExam($classId, $userId)->whereIn('subject_id', $assigned_subjects);
+        }
+
+        if (!empty($subjectId) && !empty($classId)) {
+            $data['getExam'] = ExamSchedule::getExam($classId);
+            $data['getStudent'] = User::getStudentClassExam($classId);
+        }
+
+        return $data;
+    }
+
+    public function getStudentScores($class_id, $semester_id)
+    {
+        $data['getExam'] = ExamSchedule::getExam($class_id);
+        $data['getRecord'] = ExamScore::getRecordStudent(
+            $class_id,
+            Auth::user()->id,
+            $semester_id
+        );
+
+        $data['getRecordStudent'] = StudentScore::getRecordStudent(
+            $class_id,
+            Auth::user()->id,
+            $semester_id
+        );
+
+        $data['StudentScoreSemester'] = StudentScoreSemester::getAcademicRecordStudent(
+            Auth::user()->id,
+            $semester_id,
+        );
+
+        $data['StudentScoreSemesterYear'] = StudentScoreSemester::where(
+            'student_id',
+            Auth::user()->id
+        )->where('semester_id', 3)->get();
+
         return $data;
     }
 }

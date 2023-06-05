@@ -47,25 +47,24 @@ class TeacherService
         return User::getTeacher($params);
     }
 
-    public function createTeacher(TeacherRequest $request)
+    public function createTeacher(array $data)
     {
-        $data = $request->validated();
         $data['teacher_id'] = 'Teacher' . substr(md5(microtime()), rand(0, 26), 5);
         $data['date_of_birth'] = Carbon::createFromFormat(
             'd-m-Y',
-            $request->date_of_birth
+            $data['date_of_birth']
         )
             ->toDateTimeString();
         $data['joining_date'] = Carbon::createFromFormat(
             'd-m-Y',
-            $request->joining_date
+            $data['joining_date']
         )->toDateTimeString();
-        $data['password'] = Hash::make($request->password);
+        $data['password'] = Hash::make($data['password']);
         $data['user_type'] = 2;
 
-        if ($request->hasFile('user_avatar')) {
+        if (!empty($data['user_avatar'])) {
             $path = 'public/uploads/profile/';
-            $get_image = $request->file('user_avatar');
+            $get_image = $data['user_avatar'];
             $name_image = pathinfo(
                 $get_image->getClientOriginalName(),
                 PATHINFO_FILENAME
@@ -87,24 +86,23 @@ class TeacherService
      *
      * @return Redirect Redirect response to Teacher list page
      */
-    public function updateTeacher(UpdateTeacherRequest $request, $id)
+    public function updateTeacher(array $data, $id)
     {
         $teacher = User::findOrFail($id);
-        $data = $request->validated();
         $data['joining_date'] = Carbon::createFromFormat(
             'd-m-Y',
-            $request->joining_date
+            $data['joining_date']
         )
             ->toDateTimeString();
         $data['date_of_birth'] = Carbon::createFromFormat(
             'd-m-Y',
-            $request->date_of_birth
+            $data['date_of_birth']
         )
             ->toDateTimeString();
 
-        if ($request->hasFile('user_avatar')) {
+        if (!empty($data['user_avatar'])) {
             $path = 'public/uploads/profile/';
-            $get_image = $request->file('user_avatar');
+            $get_image = $data['user_avatar'];
             $name_image = pathinfo(
                 $get_image->getClientOriginalName(),
                 PATHINFO_FILENAME
@@ -120,10 +118,8 @@ class TeacherService
 
             $data['user_avatar'] = $new_image;
         }
+        $data['password'] = Hash::make($data['password']);
 
-        if (!empty($request->password)) {
-            $data['password'] = Hash::make($request->password);
-        }
 
         $teacher->update($data);
     }
@@ -137,43 +133,7 @@ class TeacherService
     public function deleteTeacher($id)
     {
         $teacher = User::find($id);
-        if (!empty($teacher)) {
-            $teacher->is_delete = 1;
-            $teacher->save();
-            return redirect('admin/teacher/list')
-                ->with('success', 'teacher successfully deleted ');
-        } else {
-            abort(404);
-        }
+        $teacher->is_delete = 1;
+        $teacher->save();
     }
-    /**
-     * Display my student of teacher
-     *
-     * @return \Illuminate\View\View View
-     */
-    public function getMyStudent()
-    {
-        $data['getRecord'] = ClassModel::getStudentTeacher(Auth::user()->id);
-
-        return view('teacher.my_student_class', $data);
-    }
-    /**
-     * Display view student of teacher,class
-     *
-     * @param int $id ID of the Class
-     *
-     * @return \Illuminate\View\View View
-     */
-    public function viewStudent($id)
-    {
-        $data['getRecord'] = ClassModel::getStudent($id);
-        $data['getClass'] = ClassModel::find($id);
-        return view('admin.class.view', $data);
-    }
-
-    /**
-     * Display view my Student
-     *
-     * @return \Illuminate\View\View View
-     */
 }

@@ -127,7 +127,8 @@ class TeacherController extends Controller
      */
     public function addTeacher(TeacherRequest $request)
     {
-        $this->service->createTeacher($request);
+        $data = $request->validated();
+        $this->service->createTeacher($data);
 
         return redirect('admin/teacher/list')
             ->with('success', 'Teacher successfully created');
@@ -143,7 +144,8 @@ class TeacherController extends Controller
      */
     public function editTeacher(UpdateTeacherRequest $request, $id)
     {
-        $this->service->updateTeacher($request, $id);
+        $data = $request->validated();
+        $this->service->updateTeacher($data, $id);
         return redirect('admin/teacher/list')
             ->with('success', 'Teacher successfully updated');
     }
@@ -157,6 +159,9 @@ class TeacherController extends Controller
     public function delete($id)
     {
         return $this->service->deleteTeacher($id);
+
+        return redirect('admin/teacher/list')
+            ->with('success', 'teacher successfully deleted ');
     }
     /**
      * Display my student of teacher
@@ -165,7 +170,8 @@ class TeacherController extends Controller
      */
     public function myStudent()
     {
-        return $this->service->getMyStudent();
+        $data['getRecord'] = ClassModel::getStudentTeacher(Auth::user()->id);
+        return view('teacher.my_student_class', $data);
     }
     /**
      * Display view student of teacher,class
@@ -176,7 +182,9 @@ class TeacherController extends Controller
      */
     public function viewStudent($id)
     {
-        return $this->service->viewStudent($id);
+        $data['getRecord'] = ClassModel::getStudent($id);
+        $data['getClass'] = ClassModel::find($id);
+        return view('admin.class.view', $data);
     }
     /**
      * Display view my Class
