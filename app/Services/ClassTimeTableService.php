@@ -73,6 +73,8 @@ class ClassTimeTableService
                     'day_name' => $day->name,
                     'start_time' => $classSubject ? $classSubject->start_time : '',
                     'end_time' => $classSubject ? $classSubject->end_time : '',
+                    'start_date' => $classSubject ? $classSubject->start_date : '',
+                    'end_date' => $classSubject ? $classSubject->end_date : '',
                     'room_number' => $classSubject ? $classSubject->room_number : '',
                 ];
             })->toArray(),
@@ -212,23 +214,23 @@ class ClassTimeTableService
         $classSubjectList = ClassSubjectTimeTable::getRecord([$class_id], [$subject_id], $weekIDs, $semester_id);
         $result = [];
         $getDay = Week::all();
-        foreach ($getDay as $valueDay) {
-            $dataDay['day_name'] = $valueDay->name;
-            $dataDay['day_id'] = $valueDay->id;
+        foreach ($getDay as $value) {
+            $data['day_name'] = $value->name;
+            $data['day_id'] = $value->id;
 
             $ClassSubject = $classSubjectList->where('class_id', $class_id)
                 ->where('subject_id', $subject_id)
-                ->where('day_id', $valueDay->id)
+                ->where('day_id', $value->id)
                 ->where('semester_id', $semester_id)
                 ->first();
 
-            $dataDay['start_time'] = !empty($ClassSubject) ? $ClassSubject->start_time : '';
-            $dataDay['end_time'] = !empty($ClassSubject) ? $ClassSubject->end_time : '';
-            $dataDay['room_number'] = !empty($ClassSubject) ? $ClassSubject->room_number : '';
-            $dataDay['start_date'] = !empty($ClassSubject) ? $ClassSubject->start_date : '';
-            $dataDay['end_date'] = !empty($ClassSubject) ? $ClassSubject->end_date : '';
+            $data['start_time'] = !empty($ClassSubject) ? $ClassSubject->start_time : '';
+            $data['end_time'] = !empty($ClassSubject) ? $ClassSubject->end_time : '';
+            $data['room_number'] = !empty($ClassSubject) ? $ClassSubject->room_number : '';
+            $data['start_date'] = !empty($ClassSubject) ? $ClassSubject->start_date : '';
+            $data['end_date'] = !empty($ClassSubject) ? $ClassSubject->end_date : '';
 
-            $result[] = $dataDay;
+            $result[] = $data;
         }
 
         return $result;

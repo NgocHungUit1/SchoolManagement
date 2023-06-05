@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
+use App\Constants\Constants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Request;
 
 class ClassModel extends Model
 {
@@ -32,24 +31,22 @@ class ClassModel extends Model
     public function teacherClasses()
     {
         return $this->hasMany(User::class, 'class_id', 'id')
-            ->where('is_delete', '=', 0)
+            ->where('is_delete',  Constants::IS_NOT_DELETED)
             ->where('user_type', '=', 2)
-            ->where('status', '=', 0);
+            ->where('status', Constants::STATUS_ACTIVE);
     }
 
     public function students()
     {
-        return $this->hasMany(User::class, 'class_id')->where('user_type', 3)->where('is_delete', 0);
+        return $this->hasMany(User::class, 'class_id')
+            ->where('user_type', 3)
+            ->where('is_delete',  Constants::IS_NOT_DELETED);
     }
 
     public function teachers()
     {
         return $this->hasMany(ClassTeacher::class, 'class_id', 'id');
     }
-
-
-
-
 
     protected $casts = [
         'created_at' => 'date:d-m-Y',
@@ -58,7 +55,7 @@ class ClassModel extends Model
     public static function getClass()
     {
         $return = ClassModel::with('createdBy')
-            ->where('is_delete', 0)
+            ->where('is_delete',  Constants::IS_NOT_DELETED)
             ->where('status', 0)
             ->orderBy('name', 'asc')
             ->get();
@@ -70,7 +67,7 @@ class ClassModel extends Model
         $return = ClassModel::with(['examScores' => function ($query) {
             $query->select('semester_id', 'class_id');
         }])
-            ->where('is_delete', 0)
+            ->where('is_delete',  Constants::IS_NOT_DELETED)
             ->where('status', 0)
             ->orderBy('name', 'asc')
             ->get();
@@ -80,7 +77,7 @@ class ClassModel extends Model
     public static function getRecord($name = '', $type = '', $date = '')
     {
         $query = self::with('createdBy')
-            ->where('is_delete', 0);
+            ->where('is_delete',  Constants::IS_NOT_DELETED);
 
         if (!empty($name)) {
             $query = $query->where('class.name', 'like', '%' . $name . '%');

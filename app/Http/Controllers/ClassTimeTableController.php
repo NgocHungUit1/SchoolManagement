@@ -124,7 +124,7 @@ class ClassTimeTableController extends Controller
         $html = "<option value=''> Select </option>";
         foreach ($getSubject as $value) {
             $html .= "<option value='" . $value->subject_id . "'>"
-                . $value->subject_name . " </option>";
+                . $value->subjects->name . " </option>";
         }
         $json['html'] = $html;
         echo json_encode($json);

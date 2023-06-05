@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\Constants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Request;
@@ -66,8 +67,8 @@ class Subject extends Model
     {
         $return = Subject::select('subject.*')
             ->join('users', 'users.id', 'subject.created_by')
-            ->where('subject.is_delete', '=', 0)
-            ->where('subject.status', '=', 0)
+            ->where('subject.is_delete', '=', Constants::IS_NOT_DELETED)
+            ->where('subject.status', '=',  Constants::STATUS_ACTIVE)
             ->orderBy('subject.name', 'asc')->get();
         return $return;
     }

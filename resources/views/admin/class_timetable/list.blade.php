@@ -65,7 +65,8 @@
                                             @foreach ($getSubject as $subject)
                                                 <option
                                                     {{ Request::get('subject_id') == $subject->subject_id ? 'selected' : '' }}
-                                                    value="{{ $subject->subject_id }}">{{ $subject->subject_name }}</option>
+                                                    value="{{ $subject->subject_id }}"> {{ $subject->subjects->name }}
+                                                </option>
                                             @endforeach
                                         @endif
                                     </select>
@@ -149,7 +150,6 @@
             </div>
 
         </div>
-
 
 
     </div>

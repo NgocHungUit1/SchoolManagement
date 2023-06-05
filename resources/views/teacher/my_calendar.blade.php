@@ -85,17 +85,13 @@
         var url = new URL('{{ url('teacher/my_exam') }}');
         url.searchParams.set('semester_id', semesterId);
         @foreach ($getExamCalendar as $valueE)
-            @foreach ($valueE['exam'] as $exam)
-                @foreach ($exam['subject'] as $subject)
-                    events.push({
-                        title: ' Class : {{ $valueE['class_name'] }} - Exam : {{ $exam['name'] }} - {{ $subject['subject_name'] }} - ({{ date('h:m A', strtotime($subject['start_time'])) }} to {{ date('h:m A', strtotime($subject['end_time'])) }})',
-                        start: '{{ $subject['exam_date'] }}',
-                        end: '{{ $subject['exam_date'] }}',
-                        color: 'red',
-                        url: url.toString()
-                    });
-                @endforeach
-            @endforeach
+            events.push({
+                title: ' Class : {{ $valueE['class_name'] }} - Exam : {{ $valueE['exam_name'] }} - {{ $valueE['subject_name'] }} - ({{ date('h:m A', strtotime($valueE['start_time'])) }} to {{ date('h:m A', strtotime($valueE['end_time'])) }})',
+                start: '{{ $valueE['exam_date'] }}',
+                end: '{{ $valueE['exam_date'] }}',
+                color: 'red',
+                url: url.toString()
+            });
         @endforeach
 
         @foreach ($getCalendarTeacher as $value)

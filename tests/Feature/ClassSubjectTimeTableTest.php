@@ -40,7 +40,7 @@ class ClassSubjectTimeTableTest extends TestCase
             'start_time' => ['11:30'],
             'end_time' => ['12:30'],
             'start_date' => '01-01-1999',
-            'end_date' => '01-01-1999',
+            'end_date' => '01-02-1999',
         ]);
 
         // Assert that the response status is HTTP 302 (redirect)

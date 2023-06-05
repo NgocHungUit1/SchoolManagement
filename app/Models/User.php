@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Constants\Constants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -71,12 +73,6 @@ class User extends Authenticatable
         return $this->belongsTo(ClassModel::class, 'class_id');
     }
 
-    public function teachingClasses()
-    {
-        return $this->belongsToMany(ClassModel::class, 'teacher_class', 'teacher_id', 'class_id')
-            ->withPivot('subject_id', 'created_by', 'status')
-            ->wherePivot('is_delete', 0);
-    }
 
     public function subjects()
     {
@@ -88,9 +84,14 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\Exam', 'created_by', 'id');
     }
 
-    public function studentScoreAverages()
+    public function studentScoresSemester()
     {
-        return $this->hasMany(StudentScoreSemester::class);
+        return $this->hasMany(StudentScoreSemester::class, 'student_id');
+    }
+
+    public function examScoresSemester()
+    {
+        return $this->hasMany(ExamScore::class, 'student_id');
     }
 
     public static function getUserId($id)
@@ -110,7 +111,8 @@ class User extends Authenticatable
 
     public static function getAdmin()
     {
-        $return = self::select('users.*')->where('user_type', '=', 1)->where('is_delete', '=', 0);
+        $return = self::select('users.*')->where('user_type', '=', Constants::ADMIN)
+            ->where('is_delete',  Constants::IS_NOT_DELETED);
         if (!empty(Request::get('name'))) {
             $return = $return->where('name', 'like', '%' . Request::get('name') . '%');
         }
@@ -127,8 +129,8 @@ class User extends Authenticatable
     public static function getStudents($id)
     {
         $return = User::select('users.*', 'users.name as student_name')
-            ->where('users.user_type', '=', 3)
-            ->where('users.is_delete', '=', 0)
+            ->where('users.user_type', '=', Constants::STUDENT)
+            ->where('users.is_delete', '=',  Constants::IS_NOT_DELETED)
             ->whereHas('classes', function ($query) {
                 $query->where('status', '=', 0);
             })
@@ -143,8 +145,8 @@ class User extends Authenticatable
     public static function getStudent(array $params = [])
     {
         $return = self::with('classes')
-            ->where('users.user_type', '=', 3)
-            ->where('users.is_delete', '=', 0);
+            ->where('users.user_type', '=', Constants::STUDENT)
+            ->where('users.is_delete', '=',  Constants::IS_NOT_DELETED);
 
         if (!empty($params['mobile_number'])) {
             $return = $return->where('users.mobile_number', 'like', '%' . $params['mobile_number']  . '%');
@@ -165,8 +167,8 @@ class User extends Authenticatable
     public static function getTeacher(array $params = [])
     {
         $return = self::with('subjects')
-            ->where('users.user_type', '=', 2)
-            ->where('users.is_delete', '=', 0);
+            ->where('users.user_type', '=', Constants::TEACHER)
+            ->where('users.is_delete', '=',  Constants::IS_NOT_DELETED);
 
         if (!empty($params['mobile_number'])) {
             $return = $return->where('users.mobile_number', 'like', '%' . $params['mobile_number']  . '%');
@@ -184,9 +186,9 @@ class User extends Authenticatable
 
     public static function getStudentClassExam($id)
     {
-        return self::select('users.id', 'users.name')
-            ->where('users.user_type', '=', 3)
-            ->where('users.is_delete', '=', 0)
+        return self::with(['examScoresSemester', 'studentScoresSemester'])->select('users.id', 'users.name')
+            ->where('users.user_type', '=', Constants::STUDENT)
+            ->where('users.is_delete', '=',  Constants::IS_NOT_DELETED)
             ->where('users.class_id', '=', $id)
             ->orderBy('users.id', 'desc')
             ->get();
@@ -195,8 +197,8 @@ class User extends Authenticatable
     public static function getStudentClassScore($id)
     {
         return self::select('users.id', 'users.name', 'users.score')
-            ->where('users.user_type', '=', 3)
-            ->where('users.is_delete', '=', 0)
+            ->where('users.user_type', '=', Constants::STUDENT)
+            ->where('users.is_delete', '=',  Constants::IS_NOT_DELETED)
             ->where('users.class_id', '=', $id)
             ->orderBy('users.score', 'desc')
             ->get();
@@ -207,8 +209,8 @@ class User extends Authenticatable
         $return = User::select('users.*', 'users.name as teacher_name')
             ->join('subject', 'subject.id', '=', 'users.subject_id')
             ->where('users.subject_id', '=', $subject_id)
-            ->where('users.is_delete', '=', 0)
-            ->where('users.status', '=', 0)
+            ->where('users.is_delete', '=',  Constants::IS_NOT_DELETED)
+            ->where('users.status', '=', Constants::STATUS_ACTIVE)
             ->orderBy('users.id', 'desc')
             ->get();
         return $return;
@@ -221,8 +223,8 @@ class User extends Authenticatable
             ->leftJoin('class', 'class.id', '=', 'users.class_id')
             ->join('student_score_average', 'student_score_average.student_id', '=', 'users.id')
             ->where('student_score_average.semester_id', '=', 3)
-            ->where('users.user_type', '=', 3)
-            ->where('users.is_delete', '=', 0);
+            ->where('users.user_type', '=', Constants::STUDENT)
+            ->where('users.is_delete', '=',  Constants::IS_NOT_DELETED);
         $return = $return->orderBy('student_score_average.avage_score', 'desc')->limit(5)->get();
 
         return $return;

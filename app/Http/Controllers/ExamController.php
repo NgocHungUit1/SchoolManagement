@@ -70,12 +70,10 @@ class ExamController extends Controller
      */
     public function insertScore(Request $request)
     {
-
         $class_id = $request->class_id;
         $subject_id = $request->subject_id;
         $semester_id = $request->semester_id;
         $exam_score = $request->exam_score;
-
 
         $response = $this->examService->insertScore($class_id, $subject_id, $semester_id, $exam_score);
 
@@ -258,15 +256,14 @@ class ExamController extends Controller
      *
      * @return mixed Result of the AcademicRecord operation
      */
-    public function academicRecords($id)
+    public function academicRecords($class_id)
     {
-        $data['getClass'] = ClassModel::find($id);
-        $data['getStudent'] = User::getStudentClassExam($id);
-        $data['getSubject'] = ClassSubject::MySubject($id);
+        $data['getClass'] = ClassModel::find($class_id);
+        $data['getStudent'] = User::getStudentClassExam($class_id);
+        $data['getSubject'] = ClassSubject::MySubject($class_id);
         $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
         $data['getRecord'] = ClassModel::getClassAcademic();
         $studentAverages = $this->examService->getAverages($data['getStudent']);
-
         if (Auth::user()->user_type == 1) {
             return view('admin.exam.academic_record_year', $data, compact('studentAverages'));
         } elseif (Auth::user()->user_type == 2) {
@@ -338,6 +335,7 @@ class ExamController extends Controller
         $class_id = Auth::user()->class_id;
         $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
         $data['getRecord'] = $this->examService->getMyExam($request->semester_id, $class_id);
+
         return view('student.my_exam', $data);
     }
 
@@ -352,20 +350,28 @@ class ExamController extends Controller
     {
         $class_id = Auth::user()->class_id;
         $semester_id = $request->semester_id;
+        $data['getExam'] = ExamSchedule::getExam($class_id);
         $data['getRecord'] = ExamScore::getRecordStudent(
             $class_id,
             Auth::user()->id,
             $semester_id
         );
-        $data['getExam'] = ExamSchedule::getExam($class_id);
-        $data['getSubject'] = ClassTeacher::getMySubjectTeacher(
-            Auth::user()->class_id
+
+        $data['getRecordStudent'] = StudentScore::getRecordStudent(
+            $class_id,
+            Auth::user()->id,
+            $semester_id
         );
-        $data['StudentScoreSemester'] = StudentScoreSemester::where(
+
+        $data['StudentScoreSemester'] = StudentScoreSemester::getAcademicRecordStudent(
+            Auth::user()->id,
+            $semester_id,
+        );
+
+        $data['StudentScoreSemesterYear'] = StudentScoreSemester::where(
             'student_id',
             Auth::user()->id
         )->where('semester_id', 3)->get();
-        // dd($data);
         return view('student.academic_record', $data);
     }
 
@@ -378,9 +384,8 @@ class ExamController extends Controller
      */
     public function myExamTeacher(Request $request)
     {
-        $user_id = Auth::user()->id;
-        $data['getRecord'] = $this->examService->getMyExamTeacher($request, $user_id);
-
+        $teacher_id = Auth::user()->id;
+        $data['getRecord'] = ExamSchedule::getExamCalendarTeacher($teacher_id, $request->semester_id);
         return view('teacher.my_exam', $data);
     }
     /**
@@ -396,7 +401,7 @@ class ExamController extends Controller
         $data['getClass'] = ClassModel::find($id);
         $data['getStudent'] = User::getStudentClassExam($id);
         $data['getSubject'] = ClassSubject::MySubject($id);
-        $data['getScore'] = StudentScore::getAcademicRecords($id, $semester_id,);
+        $data['getScore'] = StudentScore::getAcademicRecordStudent($id, $semester_id);
         return view('teacher.class_academic_score', $data);
     }
 
@@ -410,6 +415,7 @@ class ExamController extends Controller
      */
     public function examScoreTeacher(Request $request)
     {
+
         $data['getExamSemester'] = Semester::whereIn('id', [1, 2])->get();
         $data['getClass'] = ClassModel::getStudentTeacher(Auth::user()->id);
         $class_id = $request->input('class_id');

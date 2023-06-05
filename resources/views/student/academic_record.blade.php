@@ -95,72 +95,34 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @php
-                                            $total_subjects = count($getSubject);
-                                            $total_score = 0;
-                                            $all_exam = count($getExam);
-                                            $average_score_count = 0;
-                                        @endphp
-
-                                        @foreach ($getSubject as $subject)
+                                        @foreach ($getRecordStudent as $scoreStudent)
                                             <tr>
-                                                <td>{{ $subject->subjects->name }}</td>
-                                                @php
-                                                    $i = 1;
-                                                    $total = 0;
-                                                    $total_weight = 0;
-                                                    $total_subjects_scored = 0;
-                                                @endphp
+                                                <td>{{ $scoreStudent->subjects->name }}</td>
 
                                                 @foreach ($getExam as $exam)
                                                     @php
                                                         $score =
                                                             $getRecord
-                                                                ->where('subject_id', $subject->subject_id)
+                                                                ->where('subject_id', $scoreStudent->subjects->id)
                                                                 ->where('exam_id', $exam->exam_id)
                                                                 ->first()->score ?? '';
-                                                        if (!empty($score)) {
-                                                            $subtotal = $score * $exam->percent;
-                                                            $total += $subtotal;
-                                                            $total_subjects_scored++;
-                                                            $total_weight += $exam->percent;
-                                                        }
                                                     @endphp
                                                     <td>{{ $score }}</td>
                                                 @endforeach
-
-                                                @if ($total_subjects_scored == $all_exam)
-                                                    @if ($total_weight > 0)
-                                                        @php
-                                                            $average_score_count++;
-                                                            $average = $total / $total_weight;
-                                                            $total_score += $average;
-                                                        @endphp
-                                                        @if ($average < 5)
-                                                            <td style="color:crimson">
-                                                                {{ !empty($average) ? number_format(floatval($average), 2) : '' }}
-                                                            </td>
-                                                        @else
-                                                            <td> {{ !empty($average) ? number_format(floatval($average), 2) : '' }}
-                                                            </td>
-                                                        @endif
-                                                    @endif
-                                                @else
-                                                    <td></td>
-                                                @endif
+                                                <td>{{ $scoreStudent->score }}</td>
                                             </tr>
                                         @endforeach
 
-                                        @if ($average_score_count === $total_subjects && $average_score_count > 0)
+                                        </tr>
+                                        @foreach ($StudentScoreSemester as $value)
                                             <tr>
                                                 <td style="color: blue">
                                                     <strong>Average:
-                                                        {{ number_format(round($total_score / $total_subjects, 2), 2) }}</strong>
+                                                        {{ $value->avage_score }}</strong>
                                                 </td>
-                                                <td colspan="{{ count($getExam) }}"></td>
                                             </tr>
-                                        @endif
-                                        @foreach ($StudentScoreSemester as $value)
+                                        @endforeach
+                                        @foreach ($StudentScoreSemesterYear as $value)
                                             <tr>
                                                 <td style="color: red">
                                                     <strong>Average year:

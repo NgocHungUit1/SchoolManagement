@@ -122,11 +122,14 @@ class StudentController extends Controller
      */
     public function addStudent(InsertStudentRequest $request)
     {
-        $this->service->createStudent($request);
+        $data = $request->validated();
+
+        $this->service->createStudent($data);
 
         return redirect('admin/student/list')
             ->with('success', 'Student successfully created ');
     }
+
 
     /**
      * Update an existing student record
@@ -138,7 +141,8 @@ class StudentController extends Controller
      */
     public function editStudent(UpdateStudentRequest $request, $id)
     {
-        $this->service->updateStudent($request, $id);
+        $data = $request->validated();
+        $this->service->updateStudent($data, $id);
 
         return redirect('admin/student/list')
             ->with('success', 'Student successfully updated');

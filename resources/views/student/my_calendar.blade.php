@@ -92,7 +92,7 @@
 
         @foreach ($getTimeTable as $value)
             events.push({
-                title: 'Subject : {{ $value->subjects['name'] }} - Room   : {{ $value['room_number'] }} -  }}  ',
+                title: 'Subject : {{ $value->subjects['name'] }} - Room   : {{ $value['room_number'] }} - Teacher :  {{ $value['teacher_name'] }}  ',
                 daysOfWeek: [{{ $value->days['fullcalendar_day'] }}],
                 startTime: '{{ $value['start_time'] }}',
                 endTime: '{{ $value['end_time'] }}',

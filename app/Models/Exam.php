@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\Constants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Request;
@@ -30,7 +31,7 @@ class Exam extends Model
     public static function getRecord($exam_name = '')
     {
         $query = self::with('createdBy')
-            ->where('is_delete', 0);
+            ->where('is_delete',  Constants::IS_NOT_DELETED);
 
         if (!empty($exam_name)) {
             $query = $query->where('name', 'like', '%' . $exam_name . '%');
@@ -43,9 +44,14 @@ class Exam extends Model
     public static function getExam()
     {
         $return = self::with('createdBy')
-            ->where('is_delete', 0)
+            ->where('is_delete',  Constants::IS_NOT_DELETED)
             ->where('exam.is_delete', '=', 0)
             ->orderBy('exam.name', 'asc')->get();
         return $return;
+    }
+
+    public static function getExamsByIds($examIds)
+    {
+        return self::whereIn('id', $examIds)->get();
     }
 }

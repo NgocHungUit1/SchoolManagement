@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Request;
+use App\Constants\Constants;
+
 
 class ClassSubject extends Model
 {
@@ -40,7 +41,7 @@ class ClassSubject extends Model
     public static function getRecord(array $params = [])
     {
         $return = self::with(['subjects', 'classes', 'createdBy'])
-            ->where('is_delete', 0);
+            ->where('is_delete', '=', Constants::IS_NOT_DELETED);
 
         if (!empty($params['class_name'])) {
             $return = $return->whereHas('classes', function ($query) use ($params) {
@@ -80,8 +81,8 @@ class ClassSubject extends Model
             $query->select('id', 'name', 'type');
         }, 'createdBy', 'classes'])
             ->where('class_id', '=', $class_id)
-            ->where('is_delete', '=', 0)
-            ->where('status', '=', 0)
+            ->where('is_delete', '=', Constants::IS_NOT_DELETED)
+            ->where('status', '=', Constants::STATUS_ACTIVE)
             ->orderByDesc('id')
             ->get();
     }

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Constants\Constants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Request;
 
 class ClassTeacher extends Model
 {
@@ -33,6 +33,11 @@ class ClassTeacher extends Model
     public function classSubjectTimetables()
     {
         return $this->hasOne(ClassSubjectTimetable::class, 'subject_id', 'subject_id')->where('semester_id', '=', $this->semester_id);
+    }
+
+    public function examSchedules()
+    {
+        return $this->hasMany(ExamSchedule::class);
     }
 
     public function dayOfWeekInfo()
@@ -64,7 +69,7 @@ class ClassTeacher extends Model
     public static function getRecord(array $params = [])
     {
         $return = self::with(['teachers', 'subjects', 'classes', 'createdBy'])
-            ->where('teacher_class.is_delete', '=', 0);
+            ->where('teacher_class.is_delete', '=', Constants::IS_NOT_DELETED);
 
         if (!empty($params['class_name'])) {
             $return = $return->whereHas('classes', function ($query) use ($params) {
@@ -95,8 +100,8 @@ class ClassTeacher extends Model
                 $query->where([
                     ['id', $class_id],
                 ]);
-            })->where('is_delete', 0)
-            ->where('status', 0)
+            })->where('is_delete',  Constants::IS_NOT_DELETED)
+            ->where('status', Constants::STATUS_ACTIVE)
             ->orderBy('id', 'desc')
             ->get();
     }
@@ -108,7 +113,8 @@ class ClassTeacher extends Model
 
     public static function getAlreadyTeacher($class_id, $subject_id)
     {
-        return self::where('class_id', '=', $class_id)->where('subject_id', '=', $subject_id)->where('teacher_class.is_delete', '=', 0)->first();
+        return self::where('class_id', '=', $class_id)->where('subject_id', '=', $subject_id)
+            ->where('teacher_class.is_delete', '=', Constants::IS_NOT_DELETED)->first();
     }
 
     public static function deleteSubject($class_id, $subject_id)
@@ -119,15 +125,15 @@ class ClassTeacher extends Model
     public static function getMyClassSubject($teacher_id)
     {
         return ClassTeacher::with(['teachers', 'classes', 'subjects'])
-            ->where('is_delete', '=', 0)
-            ->where('status', '=', 0)
+            ->where('is_delete',  Constants::IS_NOT_DELETED)
+            ->where('status', Constants::STATUS_ACTIVE)
             ->whereHas('subjects', function ($query) {
-                $query->where('is_delete', '=', 0)
-                    ->where('status', '=', 0);
+                $query->where('is_delete',  Constants::IS_NOT_DELETED)
+                    ->where('status', Constants::STATUS_ACTIVE);
             })
             ->whereHas('classes', function ($query) {
-                $query->where('is_delete', '=', 0)
-                    ->where('status', '=', 0);
+                $query->where('is_delete',  Constants::IS_NOT_DELETED)
+                    ->where('status', Constants::STATUS_ACTIVE);
             })
             ->where('teacher_id', '=', $teacher_id)
             ->get();
@@ -136,15 +142,15 @@ class ClassTeacher extends Model
     public static function getSubjectExam($class_id, $teacher_id)
     {
         return ClassTeacher::with(['classes', 'subjects'])
-            ->where('is_delete', '=', 0)
-            ->where('status', '=', 0)
+            ->where('is_delete',  Constants::IS_NOT_DELETED)
+            ->where('status', Constants::STATUS_ACTIVE)
             ->whereHas('subjects', function ($query) {
-                $query->where('is_delete', '=', 0)
-                    ->where('status', '=', 0);
+                $query->where('is_delete',  Constants::IS_NOT_DELETED)
+                    ->where('status', Constants::STATUS_ACTIVE);
             })
             ->whereHas('classes', function ($query) {
-                $query->where('is_delete', '=', 0)
-                    ->where('status', '=', 0);
+                $query->where('is_delete',  Constants::IS_NOT_DELETED)
+                    ->where('status', Constants::STATUS_ACTIVE);
             })
             ->where('class_id', '=', $class_id)
             ->where('teacher_id', '=', $teacher_id)
@@ -156,15 +162,15 @@ class ClassTeacher extends Model
     public static function getMyClassTeacher($teacher_id)
     {
         return ClassTeacher::with(['classes', 'subjects'])
-            ->where('is_delete', '=', 0)
-            ->where('status', '=', 0)
+            ->where('is_delete',  Constants::IS_NOT_DELETED)
+            ->where('status', Constants::STATUS_ACTIVE)
             ->whereHas('subjects', function ($query) {
-                $query->where('is_delete', '=', 0)
-                    ->where('status', '=', 0);
+                $query->where('is_delete',  Constants::IS_NOT_DELETED)
+                    ->where('status', Constants::STATUS_ACTIVE);
             })
             ->whereHas('classes', function ($query) {
-                $query->where('is_delete', '=', 0)
-                    ->where('status', '=', 0);
+                $query->where('is_delete',  Constants::IS_NOT_DELETED)
+                    ->where('status', Constants::STATUS_ACTIVE);
             })
             ->where('teacher_id', '=', $teacher_id)
             ->groupBy('class_id')
@@ -186,8 +192,29 @@ class ClassTeacher extends Model
             ->join('class_subject_timetable', 'class_subject_timetable.subject_id', '=', 'subject.id')
             ->join('day_of_week', 'day_of_week.id', '=', 'class_subject_timetable.day_id')
             ->where('class_subject_timetable.semester_id', '=', $semester_id)
-            ->where('teacher_class.is_delete', '=', 0)
-            ->where('teacher_class.status', '=', 0)
+            ->where('teacher_class.is_delete', '=', Constants::IS_NOT_DELETED)
+            ->where('teacher_class.status', '=', Constants::STATUS_ACTIVE)
+            ->where('teacher_class.teacher_id', '=', $teacher_id)
+            ->get();
+    }
+
+    public static function getExamCalendarTeacher($teacher_id, $semester_id)
+    {
+        return ClassTeacher::select(
+            'exam_schedule.*',
+            'class.name as class_name',
+            'subject.name as subject_name',
+            'class.id as class_id',
+            'day_of_week.name as day_name',
+            'day_of_week.fullcalendar_day'
+        )
+            ->join('class', 'class.id', '=', 'teacher_class.class_id')
+            ->join('subject', 'subject.id', '=', 'teacher_class.subject_id')
+            ->join('class_subject_timetable', 'class_subject_timetable.subject_id', '=', 'subject.id')
+            ->join('day_of_week', 'day_of_week.id', '=', 'class_subject_timetable.day_id')
+            ->where('class_subject_timetable.semester_id', '=', $semester_id)
+            ->where('teacher_class.is_delete', '=', Constants::IS_NOT_DELETED)
+            ->where('teacher_class.status', '=', Constants::STATUS_ACTIVE)
             ->where('teacher_class.teacher_id', '=', $teacher_id)
             ->get();
     }

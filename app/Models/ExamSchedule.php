@@ -126,16 +126,25 @@ class ExamSchedule extends Model
     //         ->groupBy('exam_schedule.exam_id')
     //         ->get();
     // }
-    // public static function  getExamCalendarTeacher($teacher_id)
-    // {
-    //     return ExamSchedule::select('exam_schedule.*', 'exam.name as exam_name', 'class.name as class_name', 'subject.name as subject_name')
-    //         ->join('teacher_class', 'teacher_class.class_id', '=', 'exam_schedule.class_id')
-    //         ->join('class', 'class.id', '=', 'teacher_class.class_id')
-    //         ->join('subject', 'subject.id', '=', 'teacher_class.subject_id')
-    //         ->join('exam', 'exam.id', '=', 'exam_schedule.exam_id')
-    //         ->where('teacher_class.teacher_id', '=', $teacher_id)
-    //         ->get();
-    // }
+    public static function getExamCalendarTeacher($teacher_id, $semester_id)
+    {
+        return ExamSchedule::select(
+            'exam_schedule.*',
+            'exam.name as exam_name',
+            'class.name as class_name',
+            'subject.name as subject_name'
+        )
+            ->distinct()
+            ->join('teacher_class', 'teacher_class.class_id', '=', 'exam_schedule.class_id')
+            ->join('class', 'class.id', '=', 'teacher_class.class_id')
+            ->join('subject', 'subject.id', '=', 'teacher_class.subject_id')
+            ->join('exam', 'exam.id', '=', 'exam_schedule.exam_id')
+            ->where('teacher_class.teacher_id', '=', $teacher_id)
+            ->where('exam_schedule.semester_id', '=', $semester_id)
+            ->get();
+    }
+
+
     public static function getScore($class_id, $student_id, $subject_id, $exam_id)
     {
         return ExamScore::CheckAlready($class_id, $student_id, $subject_id, $exam_id);

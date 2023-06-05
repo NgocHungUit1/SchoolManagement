@@ -43,6 +43,7 @@ class ClassSubjectTimeTable extends Model
         return $this->belongsTo(Semester::class, 'semester_id');
     }
 
+
     public static function getRecord($classIds, $subjectIds, $dayIds, $semesterId)
     {
         return self::with(['subjects', 'classrooms', 'days'])
@@ -57,16 +58,19 @@ class ClassSubjectTimeTable extends Model
     public static function getTimeTable($semester_id, $class_id)
     {
         return self::with(['subjects', 'classrooms', 'days'])
+            ->select('class_subject_timetable.*', 'users.name as teacher_name')
             ->join('teacher_class', function ($join) use ($class_id) {
                 $join->on('class_subject_timetable.subject_id', '=', 'teacher_class.subject_id')
                     ->where('teacher_class.class_id', '=', $class_id)
                     ->where('teacher_class.is_delete', '=', 0)
                     ->where('teacher_class.status', '=', 0);
             })
+            ->join('users', 'users.id', '=', 'teacher_class.teacher_id')
             ->where('class_subject_timetable.class_id', '=', $class_id)
             ->where('class_subject_timetable.semester_id', '=', $semester_id)
             ->get();
     }
+
 
     // public static function getRecord($classIds, $subjectIds, $dayIds, $semesterId)
     // {

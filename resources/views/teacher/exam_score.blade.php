@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('content')
-
     <div class="main-wrapper">
         <div class="page-wrapper">
             <div class="content container-fluid">
@@ -44,7 +43,7 @@
                                                 <option
                                                     {{ Request::get('subject_id') == $subject->subject_id ? 'selected' : '' }}
                                                     value="{{ $subject->subject_id }}">Subject :
-                                                    {{ $subject->subject_name }}</option>
+                                                    {{ $subject->subjects->name }}</option>
                                             @endforeach
                                         @endif
                                     </select>
@@ -76,17 +75,19 @@
                             @csrf
                             <input type="hidden" name="class_id" value="{{ Request::get('class_id') }}">
                             <input type="hidden" name="subject_id" value="{{ Request::get('subject_id') }}">
-                            <table class="table border-0 star-student  table-striped">
+                            <input type="hidden" name="semester_id" value="{{ Request::get('semester_id') }}">
+                            <table class="table border-0 star-student datatable table-striped">
+                                <br>
                                 <div class="col-md-12 text-right">
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                 </div>
+                                <br>
                                 <thead class="student-thread">
                                     <tr>
                                         <th>Student Name</th>
                                         @foreach ($getExam as $exam)
-                                            <th>{{ $exam->exam_name }}</th>
+                                            <th>{{ $exam->exam->name }}</th>
                                         @endforeach
-                                        <th>Average Score</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -99,21 +100,12 @@
                                                 <td>{{ $student->name }}</td>
                                                 @php
                                                     $i = 1;
-                                                    $total = 0;
-                                                    $total_subjects_scored = 0;
-                                                    $total_weight = 0;
-                                                    $scores = [];
+                                                    
                                                 @endphp
                                                 @foreach ($getExam as $exam)
                                                     @php
                                                         $getScore = $exam->getScoreSemester(Request::get('class_id'), $student->id, $exam->exam_id, Request::get('subject_id'), Request::get('semester_id'));
-                                                        if (!empty($getScore)) {
-                                                            $subtotal = $getScore->score * $exam->percent;
-                                                            $total += $subtotal;
-                                                            $total_weight += $exam->percent;
-                                                            $total_subjects_scored++;
-                                                            $scores[$exam->exam_id] = !empty($getScore->score) ? $getScore->score : '';
-                                                        }
+                                                        
                                                     @endphp
                                                     <td>
                                                         <input type="hidden"
@@ -128,24 +120,9 @@
                                                         $i++;
                                                     @endphp
                                                 @endforeach
-                                                @if ($total_subjects_scored == $all_exam)
-                                                    @if ($total_weight > 0)
-                                                        @php
-                                                            $average = number_format($total / $total_weight, 2);
-                                                        @endphp
-                                                        <td>
-                                                            <input type="hidden"
-                                                                name="exam_score[{{ $student->id }}][avage_score]"
-                                                                value="{{ $average }}">
-                                                            {{ $average }}
-                                                        </td>
-                                                    @endif
-                                                @else
-                                                    <td></td>
-                                                @endif
-                                            </tr>
                                         @endforeach
                                     @endif
+
                                 </tbody>
                             </table>
 
@@ -153,6 +130,8 @@
                         </form>
                     </div>
                 @endif
+
+
             </div>
 
         </div>
@@ -160,6 +139,7 @@
 
 
     </div>
+
 
 
     @push('js')
@@ -170,15 +150,19 @@
                 var $form = $(this);
 
                 $.ajax({
-                    url: "{{ url('teacher/exam/exam_score') }}",
+                    url: "{{ url('admin/exam/exam_score') }}",
                     type: "POST",
                     data: $form.serialize(),
                     dataType: "json",
                     success: function(data) {
-
-
+                        if (data.message == "Exam score successfully saved") {
+                            // Lấy giá trị total từ server và cập nhật lại giá trị của td chứa $total
+                            $form.find("td:last-child").html(data.total);
+                        }
                     },
-
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
                 });
             });
         </script>
@@ -188,6 +172,7 @@
         <script type="text/javascript">
             $('.getClass').change(function() {
                 var class_id = $(this).val();
+
                 $.ajax({
                     url: " {{ url('teacher/exam/get_subject') }}",
                     type: "POST",

@@ -54,26 +54,23 @@
                                         <th>{{ $value->subjects->name }}</th>
                                     @endforeach
                                     <th>Average Score</th>
-                                    <th>Classification</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @if (!empty($getStudent) && !empty($getStudent->count()))
-                                    @php
-                                        $all_subjects = count($getSubject);
-                                    @endphp
-
-                                    @foreach ($scores as $score)
-                                        <tr>
-                                            <td>123</td>
-
-
-                                            <td>{{ $score->score }}</td>
-
-
-
-                                        </tr>
-                                    @endforeach
+                                    @if (!empty($result))
+                                        @foreach ($result as $student_id => $student_data)
+                                            <tr>
+                                                <td>{{ $getStudent->where('id', $student_id)->first()->name }}</td>
+                                                @foreach ($getSubject as $subject)
+                                                    <td>{{ !empty($student_data[$subject->subject_id]) ? number_format(floatval($student_data[$subject->subject_id]), 2) : '' }}
+                                                    </td>
+                                                @endforeach
+                                                <td>{{ !empty($student_data['avage_score']) ? number_format(floatval($student_data['avage_score']), 2) : '' }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
                                 @endif
                             </tbody>
                         </table>
@@ -88,29 +85,6 @@
 
 
     </div>
-
-
-    <div class="modal fade contentmodal" id="myModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content doctor-profile">
-                <div class="modal-header pb-0 border-bottom-0  justify-content-end">
-
-                </div>
-                <div class="modal-body">
-                    <div class="delete-wrap text-center">
-                        <div class="del-icon">
-                            <i class="feather-check-circle text-success"></i>
-                        </div>
-                        <h2>Thêm điểm thành công</h2>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Đóng</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
 
 
 

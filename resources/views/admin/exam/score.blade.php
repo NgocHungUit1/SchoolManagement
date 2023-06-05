@@ -43,7 +43,7 @@
                                                 <option
                                                     {{ Request::get('subject_id') == $subject->subject_id ? 'selected' : '' }}
                                                     value="{{ $subject->subject_id }}">Subject :
-                                                    {{ $subject->subject_name }}</option>
+                                                    {{ $subject->subjects->name }}</option>
                                             @endforeach
                                         @endif
                                     </select>
@@ -86,9 +86,8 @@
                                     <tr>
                                         <th>Student Name</th>
                                         @foreach ($getExam as $exam)
-                                            <th>{{ $exam->exam_name }}</th>
+                                            <th>{{ $exam->exam->name }}</th>
                                         @endforeach
-                                        <th>Average Score</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -101,21 +100,11 @@
                                                 <td>{{ $student->name }}</td>
                                                 @php
                                                     $i = 1;
-                                                    $total = 0;
-                                                    $total_subjects_scored = 0;
-                                                    $total_weight = 0;
-                                                    $scores = [];
                                                 @endphp
                                                 @foreach ($getExam as $exam)
                                                     @php
                                                         $getScore = $exam->getScoreSemester(Request::get('class_id'), $student->id, $exam->exam_id, Request::get('subject_id'), Request::get('semester_id'));
-                                                        if (!empty($getScore)) {
-                                                            $subtotal = $getScore->score * $exam->percent;
-                                                            $total += $subtotal;
-                                                            $total_weight += $exam->percent;
-                                                            $total_subjects_scored++;
-                                                            $scores[$exam->exam_id] = !empty($getScore->score) ? $getScore->score : '';
-                                                        }
+                                                        
                                                     @endphp
                                                     <td>
                                                         <input type="hidden"
@@ -130,22 +119,6 @@
                                                         $i++;
                                                     @endphp
                                                 @endforeach
-                                                @if ($total_subjects_scored == $all_exam)
-                                                    @if ($total_weight > 0)
-                                                        @php
-                                                            $average = number_format($total / $total_weight, 2);
-                                                        @endphp
-                                                        <td>
-                                                            <input type="hidden"
-                                                                name="exam_score[{{ $student->id }}][avage_score]"
-                                                                value="{{ $average }}">
-                                                            {{ $average }}
-                                                        </td>
-                                                    @endif
-                                                @else
-                                                    <td></td>
-                                                @endif
-                                            </tr>
                                         @endforeach
                                     @endif
 

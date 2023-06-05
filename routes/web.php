@@ -152,7 +152,7 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::get('teacher/my-subject-class', [ClassTeacherController::class, 'mySubjectClass']);
     Route::get('teacher/my-subject-class/timetable/{class_id}/{subject_id}', [ClassTimeTableController::class, 'myTimeTableTeacher']);
     Route::post('teacher/exam/get_subject', [ExamController::class, 'getSubjectTeacher']);
-    Route::post('teacher/exam_score', [ExamController::class, 'addScoreByTeacher']);
+    Route::post('teacher/exam_score', [ExamController::class, 'insertScore']);
     Route::get('teacher/exam_score', [ExamController::class, 'examScoreTeacher']);
     Route::get('teacher/my-student', [TeacherController::class, 'myStudent']);
     Route::get('teacher/my-student/view/{id}', [ClassController::class, 'view']);
