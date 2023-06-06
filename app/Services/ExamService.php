@@ -64,6 +64,7 @@ class ExamService
                 $dataExam = [
                     'subject_id' => $value->subject_id,
                     'class_id' => $value->class_id,
+                    'semester_id' => $semesterId,
                     'subject_name' => $value->subjects->name,
                     'subject_type' => $value->subjects->type,
                 ];
@@ -79,9 +80,10 @@ class ExamService
                 $dataExam['room_number'] = !empty($examSchedule) ? $examSchedule->room_number : '';
                 $dataExam['passing_mark'] = !empty($examSchedule) ? $examSchedule->passing_mark : '';
                 $dataExam['full_mark'] = !empty($examSchedule) ? $examSchedule->full_mark : '';
-                $dataExam['semester_id'] = !empty($examSchedule) ? $examSchedule->semester_id : '';
+                // $dataExam['semester_id'] = !empty($examSchedule) ? $examSchedule->semester_id : '';
 
                 $result[] = $dataExam;
+
             }
         }
 
