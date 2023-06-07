@@ -249,6 +249,7 @@
                 var class_id = $(e.relatedTarget).data('class-id');
                 var subject_id = $(e.relatedTarget).data('subject-id');
                 var semester_id = $(e.relatedTarget).data('semester-id');
+
                 $.ajax({
                     url: '/admin/my-subject-class/timetable/' + class_id + '/' + subject_id + '/' +
                         semester_id,
@@ -257,6 +258,10 @@
                     success: function(data) {
                         var tbody = $('#timetable-table').find('tbody');
                         tbody.empty();
+
+                        var start_date = '';
+                        var end_date = '';
+
                         data.forEach(function(item) {
                             var tr = $('<tr></tr>');
                             tr.append('<td>' + item.day_name + '</td>');
@@ -265,12 +270,17 @@
                             tr.append('<td>' + item.room_number + '</td>');
                             tbody.append(tr);
 
-                            $('#start_date').val(data[0].start_date);
-                            $('#end_date').val(data[0].end_date);
-                            $('#date_range_input').val(data[0].start_date);
-                            $('#date_range_input').attr('min', data[0].start_date);
-                            $('#date_range_input').attr('max', data[0].end_date);
+                            if (item.start_date && item.end_date) {
+                                start_date = item.start_date;
+                                end_date = item.end_date;
+                            }
                         });
+
+                        $('#start_date').val(start_date);
+                        $('#end_date').val(end_date);
+                        $('#date_range_input').val(start_date);
+                        $('#date_range_input').attr('min', start_date);
+                        $('#date_range_input').attr('max', end_date);
                     },
                     error: function(xhr, status, error) {
                         console.log(error);
