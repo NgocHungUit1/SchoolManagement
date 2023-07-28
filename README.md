@@ -30,10 +30,8 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-Manga website
-<img width="923" alt="image" src="https://github.com/NgocHungUit1/SchoolManagement/assets/108797023/9fb98384-c689-4ae4-bf08-a112fea63e52">
-
-<img width="895" alt="image" src="https://github.com/NgocHungUit1/SchoolManagement/assets/108797023/3c58dafe-a143-4379-8d85-46988a3f7f53">
+The school management project is a software system that helps manage activities within a school, including features such as student management, teacher management, class management, timetable management, exam results management, and more.
+![image](https://github.com/NgocHungUit1/SchoolManagement/assets/108797023/c3276ba0-4c1f-4aab-8112-2f8b08468f68)
 
 
 
